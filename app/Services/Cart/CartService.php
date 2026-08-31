@@ -1,0 +1,138 @@
+<?php
+
+namespace App\Services\Cart;
+
+use App\Enums\CartStatus;
+use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\ProductVariant;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
+
+class CartService
+{
+    public function getActiveCart(User $user): Cart
+    {
+        return Cart::firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'status' => CartStatus::ACTIVE,
+            ]
+        );
+    }
+
+    public function addItem(
+        User $user,
+        ProductVariant $variant,
+        int $quantity
+    ): CartItem {
+        if ($quantity <= 0) {
+            throw new InvalidArgumentException(
+                'Quantity must be greater than zero.'
+            );
+        }
+
+        $this->validateVariant($variant);
+
+        return DB::transaction(function () use (
+            $user,
+            $variant,
+            $quantity
+        ) {
+            $cart = $this->getActiveCart($user);
+
+            $item = $cart->items()
+                ->where('product_variant_id', $variant->id)
+                ->lockForUpdate()
+                ->first();
+
+            if ($item) {
+                $item->increment('quantity', $quantity);
+
+                return $item->refresh();
+            }
+
+            return $cart->items()->create([
+                'product_variant_id' => $variant->id,
+                'quantity' => $quantity,
+            ]);
+        });
+    }
+
+    public function updateQuantity(
+        User $user,
+        CartItem $item,
+        int $quantity
+    ): CartItem {
+        if ($quantity <= 0) {
+            throw new InvalidArgumentException(
+                'Quantity must be greater than zero.'
+            );
+        }
+
+        $this->ensureCartOwnership($user, $item);
+
+        $item->update([
+            'quantity' => $quantity,
+        ]);
+
+        return $item->refresh();
+    }
+
+    public function removeItem(
+        User $user,
+        CartItem $item
+    ): void {
+        $this->ensureCartOwnership($user, $item);
+
+        $item->delete();
+    }
+
+    public function clear(User $user): void
+    {
+        $cart = $this->getActiveCart($user);
+
+        $cart->items()->delete();
+    }
+
+    private function validateVariant(ProductVariant $variant): void
+    {
+        if (! $variant->is_active) {
+            throw new InvalidArgumentException(
+                'This product variant is not available.'
+            );
+        }
+
+        if (! $variant->product) {
+            throw new InvalidArgumentException(
+                'The product does not exist.'
+            );
+        }
+
+        if (! $variant->product->is_active) {
+            throw new InvalidArgumentException(
+                'This product is not available.'
+            );
+        }
+    }
+
+    private function ensureCartOwnership(
+        User $user,
+        CartItem $item
+    ): void {
+        $item->loadMissing('cart');
+
+        if ($item->cart->user_id !== $user->id) {
+            throw new InvalidArgumentException(
+                'This cart item does not belong to the user.'
+            );
+        }
+
+        if ($item->cart->status !== CartStatus::ACTIVE) {
+            throw new InvalidArgumentException(
+                'This cart is not active.'
+            );
+        }
+    }
+}

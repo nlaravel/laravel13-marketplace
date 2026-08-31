@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
  use Laravel\Fortify\TwoFactorAuthenticatable;
  use Spatie\Permission\Traits\HasRoles;
+ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 
@@ -44,6 +45,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sellerProfile()
     {
         return $this->hasOne(SellerProfile::class);
+    }
+    public function carts(): HasMany
+    {
+        return $this->hasMany(Cart::class);
     }
     protected function casts(): array
     {
