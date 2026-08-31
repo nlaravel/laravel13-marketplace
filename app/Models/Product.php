@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Enums\ProductStatus;
+class Product extends Model
+{
+    use SoftDeletes;
+
+    protected $fillable = [
+        'store_id',
+        'category_id',
+        'name',
+        'slug',
+        'description',
+        'status',
+    ];
+
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function variants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'status' => ProductStatus::class,
+        ];
+    }
+}
