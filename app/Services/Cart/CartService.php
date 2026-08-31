@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Services\Cart;
-
+use App\Enums\ProductStatus;
 use App\Enums\CartStatus;
 use App\Models\Cart;
 use App\Models\CartItem;
@@ -65,13 +65,33 @@ class CartService
         CartItem $item,
         int $quantity
     ): CartItem {
-        if ($quantity <= 0) {
+        if ($quantity < 1) {
             throw new InvalidArgumentException(
-                'Quantity must be greater than zero.'
+                'Quantity must be at least 1.'
             );
         }
 
-        $this->ensureCartOwnership($user, $item);
+        if ($item->cart->user_id !== $user->id) {
+            throw new InvalidArgumentException(
+                'This cart item does not belong to the user.'
+            );
+        }
+
+        $item->loadMissing('productVariant.inventory');
+
+        $inventory = $item->productVariant->inventory;
+
+        if (! $inventory) {
+            throw new InvalidArgumentException(
+                'Inventory not found.'
+            );
+        }
+
+        if ($quantity > $inventory->available_quantity) {
+            throw new InvalidArgumentException(
+                'Insufficient stock.'
+            );
+        }
 
         $item->update([
             'quantity' => $quantity,
@@ -110,11 +130,12 @@ class CartService
             );
         }
 
-        if (! $variant->product->is_active) {
+        if ($variant->product->status !== ProductStatus::ACTIVE) {
             throw new InvalidArgumentException(
                 'This product is not available.'
             );
         }
+
     }
 
     private function ensureCartOwnership(

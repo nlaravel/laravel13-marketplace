@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Enums\StoreStatus;
 class Store extends Model
 {
     use SoftDeletes;
@@ -23,6 +24,7 @@ class Store extends Model
     protected function casts(): array
     {
         return [
+            'status' => StoreStatus::class,
             'approved_at' => 'datetime',
         ];
     }
