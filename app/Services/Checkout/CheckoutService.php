@@ -9,9 +9,15 @@ use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
-
+use App\Services\Inventory\InventoryReservationService;
 class CheckoutService
 {
+
+    public function __construct(
+    private InventoryReservationService $inventoryReservationService
+) {
+}
+
     public function checkout(User $customer): Order
     {
         return DB::transaction(function () use ($customer) {
@@ -23,7 +29,7 @@ class CheckoutService
 
             $this->createSellerOrders($order, $cart);
             $this->createOrderAddresses($order, $customer);
-            $this->reserveInventory($cart, $order);
+            $this->inventoryReservationService->reserve($cart, $order);
             $this->clearCart($cart);
             return $order;
         });
@@ -203,52 +209,6 @@ class CheckoutService
         ]);
     }
 
-    private function reserveInventory(Cart $cart, Order $order): void
-    {
-        foreach ($cart->items as $item) {
-            $inventory = \App\Models\Inventory::where(
-                'product_variant_id',
-                $item->product_variant_id
-            )
-                ->lockForUpdate()
-                ->first();
-
-            if (! $inventory) {
-                throw new InvalidArgumentException(
-                    "Inventory not found for variant {$item->product_variant_id}."
-                );
-            }
-
-            $availableQuantity =
-                $inventory->quantity - $inventory->reserved_quantity;
-
-            if ($item->quantity > $availableQuantity) {
-                throw new InvalidArgumentException(
-                    "Insufficient stock for variant {$item->product_variant_id}."
-                );
-            }
-
-            $quantityBefore = $inventory->reserved_quantity;
-
-            $inventory->increment(
-                'reserved_quantity',
-                $item->quantity
-            );
-
-            $inventory->refresh();
-
-            $inventory->transactions()->create([
-                'type' => \App\Enums\InventoryTransactionType::RESERVATION,
-                'quantity' => $item->quantity,
-                'quantity_before' => $quantityBefore,
-                'quantity_after' => $inventory->reserved_quantity,
-                'reference_type' => \App\Models\Order::class,
-                'reference_id' => $order->id,
-                'created_by' => $order->customer_id,
-                'note' => 'Inventory reserved for order.',
-            ]);
-        }
-    }
 
     private function clearCart(Cart $cart): void
     {
