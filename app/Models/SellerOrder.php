@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Enums\SellerOrderStatus;
 class SellerOrder extends Model
 {
@@ -46,5 +47,10 @@ class SellerOrder extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function delivery(): HasOne
+    {
+        return $this->hasOne(Delivery::class);
     }
 }
