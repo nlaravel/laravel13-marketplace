@@ -17,6 +17,14 @@ class AddressService
             ->get();
     }
 
+    public function findAddress(
+        User $user,
+        int $addressId
+    ): Address {
+        return $user->addresses()
+            ->findOrFail($addressId);
+    }
+
     public function createAddress(
         User $user,
         array $data

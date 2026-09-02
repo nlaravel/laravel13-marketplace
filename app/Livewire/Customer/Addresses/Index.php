@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Customer\Addresses;
 
+use App\Models\Address;
 use App\Services\Customer\AddressService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
@@ -10,7 +11,7 @@ use Livewire\Component;
 
 class Index extends Component
 {
-private AddressService $addressService;
+    private AddressService $addressService;
 
     public function boot(AddressService $addressService): void
     {
@@ -20,32 +21,57 @@ private AddressService $addressService;
     #[Computed]
     public function addresses(): Collection
     {
-        return $this->addressService->getAddresses(auth()->user());
-    }
-
-    public function setDefault(int $addressId): void
-    {
-        $address = auth()->user()->addresses()->findOrFail($addressId);
-
-        $this->addressService->setDefaultAddress(auth()->user(), $address);
-
-        unset($this->addresses);
-
+        return $this->addressService->getAddresses(
+            auth()->user()
+        );
     }
 
     public function delete(int $addressId): void
     {
-        $address = auth()->user()->addresses()->findOrFail($addressId);
+        $address = $this->findAddress($addressId);
 
-        $this->addressService->deleteAddress(auth()->user(), $address);
+        $this->addressService->deleteAddress(
+            auth()->user(),
+            $address
+        );
 
         unset($this->addresses);
 
-        session()->flash('success', 'Address deleted successfully.');
+        session()->flash(
+            'success',
+            'Address deleted successfully.'
+        );
+    }
+
+    public function setDefault(int $addressId): void
+    {
+        $address = $this->findAddress($addressId);
+
+        $this->addressService->setDefaultAddress(
+            auth()->user(),
+            $address
+        );
+
+        unset($this->addresses);
+
+        session()->flash(
+            'success',
+            'Default address updated successfully.'
+        );
+    }
+
+    private function findAddress(int $addressId): Address
+    {
+        return auth()
+            ->user()
+            ->addresses()
+            ->findOrFail($addressId);
     }
 
     public function render(): View
     {
-        return view('livewire.customer.addresses.index');
+        return view(
+            'livewire.customer.addresses.index'
+        );
     }
 }
