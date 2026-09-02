@@ -4,16 +4,15 @@ namespace App\Services\Delivery;
 
 use App\Enums\DeliveryStatus;
 use App\Models\Delivery;
+use App\Services\Orders\SellerOrderStatusService;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
-use App\Services\Orders\SellerOrderStatusService;
+
 class DeliveryService
 {
-
     public function __construct(
-    private SellerOrderStatusService $sellerOrderStatusService
-) {
-}
+        private SellerOrderStatusService $sellerOrderStatusService
+    ) {}
 
     public function assign(
         Delivery $delivery,
@@ -60,30 +59,30 @@ class DeliveryService
     }
 
     public function deliver(Delivery $delivery): Delivery
-{
-    return DB::transaction(function () use ($delivery) {
-        $delivery->refresh();
+    {
+        return DB::transaction(function () use ($delivery) {
+            $delivery->refresh();
 
-        if ($delivery->status !== DeliveryStatus::IN_TRANSIT) {
-            throw new InvalidArgumentException(
-                "Only in-transit deliveries can be delivered."
-            );
-        }
+            if ($delivery->status !== DeliveryStatus::IN_TRANSIT) {
+                throw new InvalidArgumentException(
+                    'Only in-transit deliveries can be delivered.'
+                );
+            }
 
-        $delivery->update([
-            'status' => DeliveryStatus::DELIVERED,
-            'delivered_at' => now(),
-        ]);
+            $delivery->update([
+                'status' => DeliveryStatus::DELIVERED,
+                'delivered_at' => now(),
+            ]);
 
-        $delivery->refresh();
+            $delivery->refresh();
 
-        $sellerOrder = $delivery->sellerOrder()->firstOrFail();
+            $sellerOrder = $delivery->sellerOrder()->firstOrFail();
 
-        $this->sellerOrderStatusService->markDelivered($sellerOrder);
+            $this->sellerOrderStatusService->markDelivered($sellerOrder);
 
-        return $delivery;
-    });
-}
+            return $delivery;
+        });
+    }
 
     public function fail(Delivery $delivery, ?string $notes = null): Delivery
     {

@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Models;
+
 use App\Enums\OrderAddressType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 class OrderAddress extends Model
 {
     protected $fillable = [

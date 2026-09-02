@@ -1,7 +1,8 @@
 <?php
+
+use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Customer\AddressController;
 use App\Http\Controllers\Api\V1\Customer\ProfileController;
-use App\Http\Controllers\Api\V1\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -18,13 +19,11 @@ Route::prefix('v1')->group(function () {
         });
     });
 
-
-
 });
-Route::prefix('v1/customer')->middleware('auth:sanctum') ->group(function () {
+Route::prefix('v1/customer')->middleware('auth:sanctum')->group(function () {
 
-        Route::get('/profile', [ ProfileController::class,'show',  ]);
-        Route::put('/profile', [ ProfileController::class, 'update',  ]);
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::put('/profile', [ProfileController::class, 'update']);
 
     Route::get('/addresses', [
         AddressController::class,
@@ -56,7 +55,4 @@ Route::prefix('v1/customer')->middleware('auth:sanctum') ->group(function () {
         'setDefault',
     ]);
 
-    });
-
-
-
+});

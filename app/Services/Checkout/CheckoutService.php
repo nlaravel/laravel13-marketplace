@@ -1,22 +1,24 @@
 <?php
 
 namespace App\Services\Checkout;
-use App\Models\SellerOrder;
+
 use App\Enums\CartStatus;
+use App\Enums\OrderAddressType;
 use App\Enums\OrderStatus;
+use App\Enums\SellerOrderStatus;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\SellerOrder;
 use App\Models\User;
+use App\Services\Inventory\InventoryReservationService;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
-use App\Services\Inventory\InventoryReservationService;
+
 class CheckoutService
 {
-
     public function __construct(
-    private InventoryReservationService $inventoryReservationService
-) {
-}
+        private InventoryReservationService $inventoryReservationService
+    ) {}
 
     public function checkout(User $customer): Order
     {
@@ -31,6 +33,7 @@ class CheckoutService
             $this->createOrderAddresses($order, $customer);
             $this->inventoryReservationService->reserve($cart, $order);
             $this->clearCart($cart);
+
             return $order;
         });
     }
@@ -139,7 +142,7 @@ class CheckoutService
 
             $sellerOrder = $order->sellerOrders()->create([
                 'store_id' => $storeId,
-                'status' => \App\Enums\SellerOrderStatus::PENDING,
+                'status' => SellerOrderStatus::PENDING,
                 'subtotal' => $subtotal,
                 'shipping_amount' => 0,
                 'discount_amount' => 0,
@@ -179,6 +182,7 @@ class CheckoutService
             ]);
         }
     }
+
     private function createOrderAddresses(
         Order $order,
         User $customer
@@ -194,7 +198,7 @@ class CheckoutService
         }
 
         $order->addresses()->create([
-            'type' => \App\Enums\OrderAddressType::SHIPPING,
+            'type' => OrderAddressType::SHIPPING,
             'recipient_name' => $address->recipient_name,
             'phone' => $address->phone,
             'country' => $address->country,
@@ -209,7 +213,6 @@ class CheckoutService
         ]);
     }
 
-
     private function clearCart(Cart $cart): void
     {
         $cart->items()->delete();
@@ -217,6 +220,6 @@ class CheckoutService
 
     private function generateOrderNumber(): string
     {
-        return 'ORD-' . now()->format('YmdHis') . '-' . random_int(1000, 9999);
+        return 'ORD-'.now()->format('YmdHis').'-'.random_int(1000, 9999);
     }
 }

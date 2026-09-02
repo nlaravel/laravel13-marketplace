@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\InventoryTransactionType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Enums\InventoryTransactionType;
+
 class InventoryTransaction extends Model
 {
     protected $fillable = [

@@ -39,7 +39,6 @@ return new class extends Migration
             $table->index(['seller_id', 'status']);
         });
 
-
     }
 
     /**

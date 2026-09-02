@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Services\Auth;
-use Illuminate\Support\Facades\Password;
+
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class AuthService
@@ -92,7 +94,7 @@ class AuthService
                 $user->password = $password;
 
                 $user->setRememberToken(
-                    \Illuminate\Support\Str::random(60)
+                    Str::random(60)
                 );
 
                 $user->save();

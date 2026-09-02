@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\StoreStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Enums\StoreStatus;
+
 class Store extends Model
 {
     use SoftDeletes;

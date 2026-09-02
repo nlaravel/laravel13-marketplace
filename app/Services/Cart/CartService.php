@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Services\Cart;
-use App\Enums\ProductStatus;
+
 use App\Enums\CartStatus;
+use App\Enums\ProductStatus;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\ProductVariant;

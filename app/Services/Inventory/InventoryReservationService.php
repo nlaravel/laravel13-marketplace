@@ -6,7 +6,6 @@ use App\Enums\InventoryTransactionType;
 use App\Models\Cart;
 use App\Models\Inventory;
 use App\Models\Order;
-use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
 class InventoryReservationService

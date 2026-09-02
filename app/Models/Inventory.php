@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class Inventory extends Model
 {
     protected $fillable = [
@@ -25,10 +26,12 @@ class Inventory extends Model
     {
         return $this->belongsTo(ProductVariant::class);
     }
+
     public function transactions(): HasMany
     {
         return $this->hasMany(InventoryTransaction::class);
     }
+
     public function getAvailableQuantityAttribute(): int
     {
         return max(

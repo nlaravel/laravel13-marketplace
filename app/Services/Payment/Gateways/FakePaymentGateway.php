@@ -13,9 +13,9 @@ class FakePaymentGateway implements PaymentGateway
     {
         $payment->update([
             'status' => PaymentStatus::SUCCEEDED,
-            'transaction_id' => 'FAKE-' . Str::upper(Str::random(16)),
-            'provider_payment_id' => 'fake_' . Str::lower(Str::random(20)),
-            'provider_reference' => 'FAKE-REF-' . Str::upper(Str::random(12)),
+            'transaction_id' => 'FAKE-'.Str::upper(Str::random(16)),
+            'provider_payment_id' => 'fake_'.Str::lower(Str::random(20)),
+            'provider_reference' => 'FAKE-REF-'.Str::upper(Str::random(12)),
             'paid_at' => now(),
         ]);
 

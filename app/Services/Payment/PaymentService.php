@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Services\Payment;
+
 use App\Enums\OrderStatus;
-use App\Enums\SellerOrderStatus;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
+use App\Enums\SellerOrderStatus;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Services\Payment\Contracts\PaymentGateway;
-use App\Services\Payment\Gateways\FakePaymentGateway;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -17,91 +17,90 @@ class PaymentService
 {
     public function __construct(
         private readonly PaymentGateway $gateway,
-    ) {
-    }
+    ) {}
 
-public function create(Order $order, PaymentMethod $method): Payment
-{
-    if ($order->status !== \App\Enums\OrderStatus::PENDING) {
-        throw new RuntimeException(
-            'Payment can only be created for a pending order.'
-        );
-    }
-
-    $existingPayment = $order->payments()
-        ->whereIn('status', [
-            PaymentStatus::PENDING,
-            PaymentStatus::PROCESSING,
-            PaymentStatus::SUCCEEDED,
-        ])
-        ->latest()
-        ->first();
-
-    if ($existingPayment) {
-        return $existingPayment;
-    }
-
-    return DB::transaction(function () use ($order, $method) {
-        $payment = $order->payments()->create([
-            'payment_number' => 'PAY-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(4)),
-            'provider' => 'fake',
-            'method' => $method,
-            'status' => PaymentStatus::PENDING,
-            'amount' => $order->total_amount,
-            'currency' => $order->currency,
-        ]);
-
-        return $this->gateway->create($payment);
-    });
-}
-
-public function check(Payment $payment): Payment
-{
-    return $this->gateway->check($payment);
-}
-
-public function refund(Payment $payment): Payment
-{
-    if ($payment->status !== PaymentStatus::SUCCEEDED) {
-        throw new RuntimeException(
-            'Only successful payments can be refunded.'
-        );
-    }
-
-    return DB::transaction(function () use ($payment) {
-        return $this->gateway->refund($payment);
-    });
-}
-
-public function confirmOrderFromPayment(Payment $payment): Order
-{
-    return DB::transaction(function () use ($payment) {
-        $payment->refresh();
-
-        if ($payment->status !== PaymentStatus::SUCCEEDED) {
-            throw new RuntimeException(
-                'Only successful payments can confirm an order.'
-            );
-        }
-
-        $order = $payment->order()->lockForUpdate()->firstOrFail();
-
+    public function create(Order $order, PaymentMethod $method): Payment
+    {
         if ($order->status !== OrderStatus::PENDING) {
             throw new RuntimeException(
-                'Only pending orders can be confirmed.'
+                'Payment can only be created for a pending order.'
             );
         }
 
-        $order->update([
-            'status' => OrderStatus::CONFIRMED,
-            'confirmed_at' => now(),
-        ]);
+        $existingPayment = $order->payments()
+            ->whereIn('status', [
+                PaymentStatus::PENDING,
+                PaymentStatus::PROCESSING,
+                PaymentStatus::SUCCEEDED,
+            ])
+            ->latest()
+            ->first();
 
-        $order->sellerOrders()->update([
-            'status' => SellerOrderStatus::CONFIRMED,
-        ]);
+        if ($existingPayment) {
+            return $existingPayment;
+        }
 
-        return $order->refresh();
-    });
-}
+        return DB::transaction(function () use ($order, $method) {
+            $payment = $order->payments()->create([
+                'payment_number' => 'PAY-'.now()->format('YmdHis').'-'.Str::upper(Str::random(4)),
+                'provider' => 'fake',
+                'method' => $method,
+                'status' => PaymentStatus::PENDING,
+                'amount' => $order->total_amount,
+                'currency' => $order->currency,
+            ]);
+
+            return $this->gateway->create($payment);
+        });
+    }
+
+    public function check(Payment $payment): Payment
+    {
+        return $this->gateway->check($payment);
+    }
+
+    public function refund(Payment $payment): Payment
+    {
+        if ($payment->status !== PaymentStatus::SUCCEEDED) {
+            throw new RuntimeException(
+                'Only successful payments can be refunded.'
+            );
+        }
+
+        return DB::transaction(function () use ($payment) {
+            return $this->gateway->refund($payment);
+        });
+    }
+
+    public function confirmOrderFromPayment(Payment $payment): Order
+    {
+        return DB::transaction(function () use ($payment) {
+            $payment->refresh();
+
+            if ($payment->status !== PaymentStatus::SUCCEEDED) {
+                throw new RuntimeException(
+                    'Only successful payments can confirm an order.'
+                );
+            }
+
+            $order = $payment->order()->lockForUpdate()->firstOrFail();
+
+            if ($order->status !== OrderStatus::PENDING) {
+                throw new RuntimeException(
+                    'Only pending orders can be confirmed.'
+                );
+            }
+
+            $order->update([
+                'status' => OrderStatus::CONFIRMED,
+                'confirmed_at' => now(),
+            ]);
+
+            $order->sellerOrders()->update([
+                'status' => SellerOrderStatus::CONFIRMED,
+            ]);
+
+            return $order->refresh();
+        });
+    }
 }

@@ -9,7 +9,6 @@ use App\Actions\Fortify\UpdateUserProfileInformation;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
@@ -88,7 +87,7 @@ class FortifyServiceProvider extends ServiceProvider
             $throttleKey = Str::transliterate(
                 Str::lower(
                     $request->input(Fortify::username())
-                ) . '|' . $request->ip()
+                ).'|'.$request->ip()
             );
 
             return Limit::perMinute(5)->by($throttleKey);
@@ -117,7 +116,7 @@ class FortifyServiceProvider extends ServiceProvider
 
             return Limit::perMinute(10)->by(
                 ($credentialId ?: $request->session()->getId())
-                . '|' . $request->ip()
+                .'|'.$request->ip()
             );
         });
     }

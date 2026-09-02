@@ -225,10 +225,10 @@ class MarketplaceTestSeeder extends Seeder
 
         $this->command->newLine();
 
-        $this->command->info('Store ID: ' . $store->id);
-        $this->command->info('Product ID: ' . $product->id);
-        $this->command->info('Variant ID: ' . $variant->id);
-        $this->command->info('Inventory ID: ' . $variant->inventory->id);
-        $this->command->info('Cart ID: ' . $cart->id);
+        $this->command->info('Store ID: '.$store->id);
+        $this->command->info('Product ID: '.$product->id);
+        $this->command->info('Variant ID: '.$variant->id);
+        $this->command->info('Inventory ID: '.$variant->inventory->id);
+        $this->command->info('Cart ID: '.$cart->id);
     }
 }

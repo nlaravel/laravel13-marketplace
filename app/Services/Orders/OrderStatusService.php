@@ -54,39 +54,39 @@ class OrderStatusService
     private function allowedTransitions(OrderStatus $status): array
     {
         return match ($status) {
-        OrderStatus::PENDING => [
-        OrderStatus::CONFIRMED,
-        OrderStatus::CANCELLED,
-    ],
+            OrderStatus::PENDING => [
+                OrderStatus::CONFIRMED,
+                OrderStatus::CANCELLED,
+            ],
 
             OrderStatus::CONFIRMED => [
-        OrderStatus::PROCESSING,
-        OrderStatus::CANCELLED,
-    ],
+                OrderStatus::PROCESSING,
+                OrderStatus::CANCELLED,
+            ],
 
             OrderStatus::PROCESSING => [
-        OrderStatus::PARTIALLY_SHIPPED,
-        OrderStatus::SHIPPED,
-        OrderStatus::CANCELLED,
-    ],
+                OrderStatus::PARTIALLY_SHIPPED,
+                OrderStatus::SHIPPED,
+                OrderStatus::CANCELLED,
+            ],
 
             OrderStatus::PARTIALLY_SHIPPED => [
-        OrderStatus::SHIPPED,
-        OrderStatus::PARTIALLY_DELIVERED,
-    ],
+                OrderStatus::SHIPPED,
+                OrderStatus::PARTIALLY_DELIVERED,
+            ],
 
             OrderStatus::SHIPPED => [
-        OrderStatus::PARTIALLY_DELIVERED,
-        OrderStatus::DELIVERED,
-    ],
+                OrderStatus::PARTIALLY_DELIVERED,
+                OrderStatus::DELIVERED,
+            ],
 
             OrderStatus::PARTIALLY_DELIVERED => [
-        OrderStatus::DELIVERED,
-    ],
+                OrderStatus::DELIVERED,
+            ],
 
             OrderStatus::DELIVERED => [
-        OrderStatus::COMPLETED,
-    ],
+                OrderStatus::COMPLETED,
+            ],
 
             OrderStatus::CANCELLED,
             OrderStatus::COMPLETED => [],
@@ -98,14 +98,11 @@ class OrderStatusService
         OrderStatus $status
     ): void {
         match ($status) {
-        OrderStatus::CONFIRMED =>
-                $order->confirmed_at = now(),
+            OrderStatus::CONFIRMED => $order->confirmed_at = now(),
 
-            OrderStatus::CANCELLED =>
-                $order->cancelled_at = now(),
+            OrderStatus::CANCELLED => $order->cancelled_at = now(),
 
-            OrderStatus::COMPLETED =>
-                $order->completed_at = now(),
+            OrderStatus::COMPLETED => $order->completed_at = now(),
 
             default => null,
         };
