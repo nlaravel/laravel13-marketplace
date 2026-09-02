@@ -30,6 +30,7 @@ private AddressService $addressService;
         $this->addressService->setDefaultAddress(auth()->user(), $address);
 
         unset($this->addresses);
+
     }
 
     public function delete(int $addressId): void
