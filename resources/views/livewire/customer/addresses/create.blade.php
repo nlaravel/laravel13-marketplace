@@ -1,104 +1,185 @@
-<x-customer-layout title="Add Address">
+<div class="min-h-full">
 
-    <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+    {{-- Header --}}
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
-        {{-- Header --}}
-        <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <div class="flex items-center gap-3">
 
-            <div>
-                <div class="mb-2 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                    <a
-                            href="{{ route('customer.addresses.index') }}"
-                            class="transition hover:text-slate-900 dark:hover:text-white"
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400">
+
+                    <svg
+                            class="h-6 w-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                     >
-                        Addresses
-                    </a>
+                        <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 4v16m8-8H4"
+                        />
+                    </svg>
 
-                    <span>/</span>
-
-                    <span>Add Address</span>
                 </div>
 
-                <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                    Add New Address
-                </h1>
+                <div>
 
-                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                    Add a new delivery address to your account.
-                </p>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">
+                        Add New Address
+                    </h1>
+
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                        Add a new delivery address to your account.
+                    </p>
+
+                </div>
+
             </div>
-
         </div>
 
-        {{-- Form --}}
-        <form
-                wire:submit="save"
-                class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950"
+
+        <a
+                href="{{ route('customer.addresses.index') }}"
+                wire:navigate
+                class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
         >
 
-            <div class="p-6 sm:p-8">
+            <svg
+                    class="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+            >
+                <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+            </svg>
 
-                @include(
-                    'livewire.customer.addresses._form-fields'
-                )
+            Back to Addresses
 
-            </div>
+        </a>
+
+    </div>
+
+
+    {{-- Form --}}
+    <form
+            wire:submit="save"
+            class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
+    >
+
+        <div class="p-6 sm:p-8">
+
+            @include(
+                'livewire.customer.addresses._form-fields'
+            )
+
 
             {{-- Actions --}}
-            <div class="flex flex-col-reverse gap-3 border-t border-slate-200 bg-slate-50 px-6 py-5 sm:flex-row sm:justify-end dark:border-slate-800 dark:bg-slate-900/50">
+            <div class="mt-8 flex flex-col-reverse gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:justify-end dark:border-slate-700">
 
+                {{-- Cancel --}}
                 <a
                         href="{{ route('customer.addresses.index') }}"
-                        class="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                        wire:navigate
+                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
+
+                    <svg
+                            class="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                    >
+                        <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                        />
+                    </svg>
+
                     Cancel
+
                 </a>
 
+
+                {{-- Save --}}
                 <button
                         type="submit"
                         wire:loading.attr="disabled"
-                        wire:target="save"
-                        class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                    <span wire:loading.remove wire:target="save">
-                        Create Address
+
+                    {{-- Loading --}}
+                    <svg
+                            wire:loading
+                            wire:target="save"
+                            class="h-4 w-4 animate-spin"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                    >
+                        <circle
+                                class="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                stroke-width="4"
+                        />
+
+                        <path
+                                class="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        />
+                    </svg>
+
+
+                    {{-- Icon --}}
+                    <svg
+                            wire:loading.remove
+                            wire:target="save"
+                            class="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                    >
+                        <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 13l4 4L19 7"
+                        />
+                    </svg>
+
+
+                    <span
+                            wire:loading.remove
+                            wire:target="save"
+                    >
+                        Save Address
                     </span>
+
 
                     <span
                             wire:loading
                             wire:target="save"
-                            class="inline-flex items-center gap-2"
                     >
-                        <svg
-                                class="h-4 w-4 animate-spin"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                        >
-                            <circle
-                                    cx="12"
-                                    cy="12"
-                                    r="9"
-                                    stroke="currentColor"
-                                    stroke-width="3"
-                                    class="opacity-25"
-                            />
-
-                            <path
-                                    d="M21 12a9 9 0 0 0-9-9"
-                                    stroke="currentColor"
-                                    stroke-width="3"
-                                    stroke-linecap="round"
-                            />
-                        </svg>
-
                         Saving...
                     </span>
+
                 </button>
 
             </div>
 
-        </form>
+        </div>
 
-    </div>
+    </form>
 
-</x-customer-layout>
+</div>

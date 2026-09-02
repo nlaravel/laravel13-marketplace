@@ -7,11 +7,13 @@ use App\Services\Customer\AddressService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
+#[Layout('components.customer-layout')]
 class Index extends Component
 {
-    private AddressService $addressService;
+private AddressService $addressService;
 
     public function boot(AddressService $addressService): void
     {
@@ -26,46 +28,60 @@ class Index extends Component
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Delete Address
+    |--------------------------------------------------------------------------
+    */
+
     public function delete(int $addressId): void
     {
-        $address = $this->findAddress($addressId);
+        $user = auth()->user();
+
+        $address = $this->addressService->findAddress(
+            $user,
+            $addressId
+        );
 
         $this->addressService->deleteAddress(
-            auth()->user(),
+            $user,
             $address
         );
 
         unset($this->addresses);
 
-        session()->flash(
-            'success',
-            'Address deleted successfully.'
+        $this->dispatch(
+            'show-success',
+            message: 'Address deleted successfully.'
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Set Default Address
+    |--------------------------------------------------------------------------
+    */
 
     public function setDefault(int $addressId): void
     {
-        $address = $this->findAddress($addressId);
+        $user = auth()->user();
+
+        $address = $this->addressService->findAddress(
+            $user,
+            $addressId
+        );
 
         $this->addressService->setDefaultAddress(
-            auth()->user(),
+            $user,
             $address
         );
 
         unset($this->addresses);
 
-        session()->flash(
-            'success',
-            'Default address updated successfully.'
+        $this->dispatch(
+            'show-success',
+            message: 'Default address updated successfully.'
         );
-    }
-
-    private function findAddress(int $addressId): Address
-    {
-        return auth()
-            ->user()
-            ->addresses()
-            ->findOrFail($addressId);
     }
 
     public function render(): View

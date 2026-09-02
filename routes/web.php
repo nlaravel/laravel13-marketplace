@@ -1,50 +1,30 @@
 <?php
 
+use App\Livewire\Customer\Dashboard;
+use App\Livewire\Customer\Addresses\Index;
+use App\Livewire\Customer\Addresses\Create;
+use App\Livewire\Customer\Addresses\Edit;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/home', function () {
-    return view('home');
-})
-    ->middleware('auth')
-    ->name('home');
 
 Route::middleware(['auth'])->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Customer Dashboard
-    |--------------------------------------------------------------------------
-    */
-
-    Route::view(
+    Route::get(
         '/customer',
-        'customer.dashboard'
+        Dashboard::class
     )->name('customer.dashboard');
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Customer Addresses
-    |--------------------------------------------------------------------------
-    */
-
-    Route::view(
+    Route::get(
         '/customer/addresses',
-        'customer.addresses.index'
+        Index::class
     )->name('customer.addresses.index');
 
-    Route::view(
+    Route::get(
         '/customer/addresses/create',
-        'customer.addresses.create'
+        Create::class
     )->name('customer.addresses.create');
 
-    Route::view(
+    Route::get(
         '/customer/addresses/{address}/edit',
-        'customer.addresses.edit'
+        Edit::class
     )->name('customer.addresses.edit');
-
 });

@@ -1024,5 +1024,51 @@
 
 @livewireScripts
 
+<script>
+    document.addEventListener('livewire:init', () => {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Livewire Success Event
+        |--------------------------------------------------------------------------
+        */
+
+        Livewire.on('show-success', (event) => {
+            showSuccess(event.message);
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Livewire Error Event
+        |--------------------------------------------------------------------------
+        */
+
+        Livewire.on('show-error', (event) => {
+            showError(event.message);
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Session Flash Messages
+        |--------------------------------------------------------------------------
+        */
+
+        @if (session('success'))
+        showSuccess(@js(session('success')));
+        @endif
+
+
+        @if (session('error'))
+        showError(@js(session('error')));
+        @endif
+
+    });
+</script>
+
+</body>
+</html>
+
 </body>
 </html>
