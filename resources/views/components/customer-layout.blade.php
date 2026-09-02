@@ -27,7 +27,23 @@
 
     @livewireStyles
 </head>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const dropdowns = document.querySelectorAll('header details');
 
+        dropdowns.forEach((dropdown) => {
+            dropdown.addEventListener('toggle', () => {
+                if (!dropdown.open) return;
+
+                dropdowns.forEach((otherDropdown) => {
+                    if (otherDropdown !== dropdown) {
+                        otherDropdown.removeAttribute('open');
+                    }
+                });
+            });
+        });
+    });
+</script>
 <body class="min-h-screen bg-slate-50 text-slate-900 antialiased transition-colors duration-200 dark:bg-slate-950 dark:text-slate-100">
 
 <div class="flex min-h-screen">
