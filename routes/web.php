@@ -1,9 +1,9 @@
 <?php
 
-use App\Livewire\Customer\Dashboard;
-use App\Livewire\Customer\Addresses\Index;
 use App\Livewire\Customer\Addresses\Create;
 use App\Livewire\Customer\Addresses\Edit;
+use App\Livewire\Customer\Addresses\Index;
+use App\Livewire\Customer\Dashboard;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {

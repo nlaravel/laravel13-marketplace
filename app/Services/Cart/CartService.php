@@ -15,12 +15,10 @@ class CartService
 {
     public function getActiveCart(User $user): Cart
     {
-        return Cart::firstOrCreate(
-            [
-                'user_id' => $user->id,
-                'status' => CartStatus::ACTIVE,
-            ]
-        );
+        return Cart::firstOrCreate([
+            'user_id' => $user->id,
+            'status' => CartStatus::ACTIVE,
+        ]);
     }
 
     public function addItem(
@@ -48,8 +46,30 @@ class CartService
                 ->lockForUpdate()
                 ->first();
 
+            $inventory = $variant->inventory;
+
+            if (! $inventory) {
+                throw new InvalidArgumentException(
+                    'Inventory not found.'
+                );
+            }
+
+            $newQuantity = $quantity;
+
             if ($item) {
-                $item->increment('quantity', $quantity);
+                $newQuantity = $item->quantity + $quantity;
+            }
+
+            if ($newQuantity > $inventory->available_quantity) {
+                throw new InvalidArgumentException(
+                    'Insufficient stock.'
+                );
+            }
+
+            if ($item) {
+                $item->update([
+                    'quantity' => $newQuantity,
+                ]);
 
                 return $item->refresh();
             }
@@ -72,11 +92,7 @@ class CartService
             );
         }
 
-        if ($item->cart->user_id !== $user->id) {
-            throw new InvalidArgumentException(
-                'This cart item does not belong to the user.'
-            );
-        }
+        $this->ensureCartOwnership($user, $item);
 
         $item->loadMissing('productVariant.inventory');
 
@@ -117,8 +133,9 @@ class CartService
         $cart->items()->delete();
     }
 
-    private function validateVariant(ProductVariant $variant): void
-    {
+    private function validateVariant(
+        ProductVariant $variant
+    ): void {
         if (! $variant->is_active) {
             throw new InvalidArgumentException(
                 'This product variant is not available.'
@@ -136,7 +153,6 @@ class CartService
                 'This product is not available.'
             );
         }
-
     }
 
     private function ensureCartOwnership(
@@ -144,6 +160,12 @@ class CartService
         CartItem $item
     ): void {
         $item->loadMissing('cart');
+
+        if (! $item->cart) {
+            throw new InvalidArgumentException(
+                'Cart not found.'
+            );
+        }
 
         if ($item->cart->user_id !== $user->id) {
             throw new InvalidArgumentException(

@@ -10,33 +10,33 @@ use Livewire\Component;
 #[Layout('components.customer-layout')]
 class Create extends Component
 {
-private AddressService $addressService;
+    private AddressService $addressService;
 
-public string $label = '';
+    public string $label = '';
 
-public string $recipient_name = '';
+    public string $recipient_name = '';
 
-public string $phone = '';
+    public string $phone = '';
 
-public string $country = '';
+    public string $country = '';
 
-public string $city = '';
+    public string $city = '';
 
-public string $area = '';
+    public string $area = '';
 
-public string $street = '';
+    public string $street = '';
 
-public string $building = '';
+    public string $building = '';
 
-public string $apartment = '';
+    public string $apartment = '';
 
-public string $address_line = '';
+    public string $address_line = '';
 
-public string $latitude = '';
+    public string $latitude = '';
 
-public string $longitude = '';
+    public string $longitude = '';
 
-public bool $is_default = false;
+    public bool $is_default = false;
 
     public function boot(AddressService $addressService): void
     {

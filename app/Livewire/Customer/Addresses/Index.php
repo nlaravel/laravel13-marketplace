@@ -13,7 +13,7 @@ use Livewire\Component;
 #[Layout('components.customer-layout')]
 class Index extends Component
 {
-private AddressService $addressService;
+    private AddressService $addressService;
 
     public function boot(AddressService $addressService): void
     {
