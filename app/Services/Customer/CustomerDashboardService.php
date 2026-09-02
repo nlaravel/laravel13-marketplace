@@ -5,6 +5,7 @@ namespace App\Services\Customer;
 use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Order;
+use Illuminate\Database\Eloquent\Collection;
 
 class CustomerDashboardService
 {
@@ -31,7 +32,7 @@ class CustomerDashboardService
             ->sum('quantity') ?? 0;
     }
 
-    public function recentOrders(int $customerId)
+    public function recentOrders(int $customerId): Collection
     {
         return Order::query()
             ->where('customer_id', $customerId)
