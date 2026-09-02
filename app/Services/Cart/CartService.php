@@ -9,8 +9,7 @@ use App\Models\CartItem;
 use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
-
+use App\Exceptions\CartException;
 class CartService
 {
     public function getActiveCart(User $user): Cart
@@ -27,7 +26,7 @@ class CartService
         int $quantity
     ): CartItem {
         if ($quantity <= 0) {
-            throw new InvalidArgumentException(
+            throw new CartException(
                 'Quantity must be greater than zero.'
             );
         }
@@ -39,6 +38,19 @@ class CartService
             $variant,
             $quantity
         ) {
+            $inventory = $variant->inventory()
+                ->lockForUpdate()
+                ->first();
+
+            if (! $inventory) {
+                throw new CartException(
+                    'Inventory not found.'
+                );
+            }
+
+            $availableQuantity =
+                $inventory->quantity - $inventory->reserved_quantity;
+
             $cart = $this->getActiveCart($user);
 
             $item = $cart->items()
@@ -46,22 +58,12 @@ class CartService
                 ->lockForUpdate()
                 ->first();
 
-            $inventory = $variant->inventory;
+            $newQuantity = $item
+                ? $item->quantity + $quantity
+                : $quantity;
 
-            if (! $inventory) {
-                throw new InvalidArgumentException(
-                    'Inventory not found.'
-                );
-            }
-
-            $newQuantity = $quantity;
-
-            if ($item) {
-                $newQuantity = $item->quantity + $quantity;
-            }
-
-            if ($newQuantity > $inventory->available_quantity) {
-                throw new InvalidArgumentException(
+            if ($newQuantity > $availableQuantity) {
+                throw new CartException(
                     'Insufficient stock.'
                 );
             }
@@ -87,34 +89,43 @@ class CartService
         int $quantity
     ): CartItem {
         if ($quantity < 1) {
-            throw new InvalidArgumentException(
+            throw new CartException(
                 'Quantity must be at least 1.'
             );
         }
 
         $this->ensureCartOwnership($user, $item);
 
-        $item->loadMissing('productVariant.inventory');
+        return DB::transaction(function () use (
+            $item,
+            $quantity
+        ) {
+            $inventory = $item->productVariant
+                ->inventory()
+                ->lockForUpdate()
+                ->first();
 
-        $inventory = $item->productVariant->inventory;
+            if (! $inventory) {
+                throw new CartException(
+                    'Inventory not found.'
+                );
+            }
 
-        if (! $inventory) {
-            throw new InvalidArgumentException(
-                'Inventory not found.'
-            );
-        }
+            $availableQuantity =
+                $inventory->quantity - $inventory->reserved_quantity;
 
-        if ($quantity > $inventory->available_quantity) {
-            throw new InvalidArgumentException(
-                'Insufficient stock.'
-            );
-        }
+            if ($quantity > $availableQuantity) {
+                throw new CartException(
+                    'Insufficient stock.'
+                );
+            }
 
-        $item->update([
-            'quantity' => $quantity,
-        ]);
+            $item->update([
+                'quantity' => $quantity,
+            ]);
 
-        return $item->refresh();
+            return $item->refresh();
+        });
     }
 
     public function removeItem(
@@ -136,20 +147,22 @@ class CartService
     private function validateVariant(
         ProductVariant $variant
     ): void {
+        $variant->loadMissing('product');
+
         if (! $variant->is_active) {
-            throw new InvalidArgumentException(
+            throw new CartException(
                 'This product variant is not available.'
             );
         }
 
         if (! $variant->product) {
-            throw new InvalidArgumentException(
+            throw new CartException(
                 'The product does not exist.'
             );
         }
 
         if ($variant->product->status !== ProductStatus::ACTIVE) {
-            throw new InvalidArgumentException(
+            throw new CartException(
                 'This product is not available.'
             );
         }
@@ -162,19 +175,19 @@ class CartService
         $item->loadMissing('cart');
 
         if (! $item->cart) {
-            throw new InvalidArgumentException(
+            throw new CartException(
                 'Cart not found.'
             );
         }
 
         if ($item->cart->user_id !== $user->id) {
-            throw new InvalidArgumentException(
+            throw new CartException(
                 'This cart item does not belong to the user.'
             );
         }
 
         if ($item->cart->status !== CartStatus::ACTIVE) {
-            throw new InvalidArgumentException(
+            throw new CartException(
                 'This cart is not active.'
             );
         }

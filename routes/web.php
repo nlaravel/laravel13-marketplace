@@ -5,7 +5,7 @@ use App\Livewire\Customer\Addresses\Edit;
 use App\Livewire\Customer\Addresses\Index;
 use App\Livewire\Customer\Dashboard;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Api\V1\Customer\CartController;
 Route::middleware(['auth'])->group(function () {
 
     Route::get(
@@ -27,4 +27,7 @@ Route::middleware(['auth'])->group(function () {
         '/customer/addresses/{address}/edit',
         Edit::class
     )->name('customer.addresses.edit');
+
+
+
 });
