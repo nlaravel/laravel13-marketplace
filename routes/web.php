@@ -10,3 +10,8 @@ Route::get('/', function () {
 Route::get('/home', function () {
     return view('home');
 })->middleware('auth')->name('home');
+
+Route::middleware(['auth'])->group(function () {
+    Route::view('/customer', 'customer.dashboard')->name('customer.dashboard');
+
+});
