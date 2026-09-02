@@ -11,7 +11,7 @@ use Livewire\Component;
 
 class Dashboard extends Component
 {
-private CustomerDashboardService $dashboardService;
+    private CustomerDashboardService $dashboardService;
 
     public function boot(CustomerDashboardService $dashboardService): void
     {
