@@ -12,7 +12,7 @@ class CustomerProfileServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-private CustomerProfileService $profileService;
+    private CustomerProfileService $profileService;
 
     protected function setUp(): void
     {

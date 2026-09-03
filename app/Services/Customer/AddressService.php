@@ -30,7 +30,6 @@ class AddressService
         array $data
     ): Address {
         return DB::transaction(function () use ($user, $data) {
-
             $isDefault = (bool) ($data['is_default'] ?? false);
 
             if ($isDefault) {
@@ -38,10 +37,16 @@ class AddressService
             }
 
             return $user->addresses()->create([
-                ...$data,
-                'is_default' => $isDefault,
-            ]);
-        });
+            ...$data,
+            'latitude' => ($data['latitude'] ?? '') !== ''
+                ? ($data['latitude'] ?? null)
+                : null,
+            'longitude' => ($data['longitude'] ?? '') !== ''
+                ? ($data['longitude'] ?? null)
+                : null,
+            'is_default' => $isDefault,
+        ]);
+    });
     }
 
     public function updateAddress(
@@ -49,18 +54,19 @@ class AddressService
         Address $address,
         array $data
     ): Address {
+        $this->ensureOwnership($user, $address);
+
         return DB::transaction(function () use (
             $user,
             $address,
             $data
         ) {
-
             $isDefault = array_key_exists(
                 'is_default',
                 $data
             )
                 ? (bool) $data['is_default']
-                : $address->is_default;
+                : (bool) $address->is_default;
 
             if ($isDefault) {
                 $this->clearDefaultAddress(
@@ -69,10 +75,24 @@ class AddressService
                 );
             }
 
-            $address->update([
+            $updateData = [
                 ...$data,
                 'is_default' => $isDefault,
-            ]);
+            ];
+
+            if (array_key_exists('latitude', $data)) {
+                $updateData['latitude'] = $data['latitude'] !== ''
+                    ? $data['latitude']
+                    : null;
+            }
+
+            if (array_key_exists('longitude', $data)) {
+                $updateData['longitude'] = $data['longitude'] !== ''
+                    ? $data['longitude']
+                    : null;
+            }
+
+            $address->update($updateData);
 
             return $address->fresh();
         });
@@ -82,9 +102,10 @@ class AddressService
         User $user,
         Address $address
     ): void {
-        DB::transaction(function () use ($user, $address) {
+        $this->ensureOwnership($user, $address);
 
-            $wasDefault = $address->is_default;
+        DB::transaction(function () use ($user, $address) {
+            $wasDefault = (bool) $address->is_default;
 
             $address->delete();
 
@@ -98,11 +119,12 @@ class AddressService
         User $user,
         Address $address
     ): Address {
+        $this->ensureOwnership($user, $address);
+
         return DB::transaction(function () use (
             $user,
             $address
         ) {
-
             $this->clearDefaultAddress(
                 $user,
                 $address->id
@@ -114,6 +136,16 @@ class AddressService
 
             return $address->fresh();
         });
+    }
+
+    private function ensureOwnership(
+        User $user,
+        Address $address
+    ): void {
+        abort_unless(
+            (int) $address->user_id === (int) $user->id,
+            404
+        );
     }
 
     private function clearDefaultAddress(

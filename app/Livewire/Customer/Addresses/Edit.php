@@ -11,35 +11,35 @@ use Livewire\Component;
 #[Layout('components.customer-layout')]
 class Edit extends Component
 {
-    private AddressService $addressService;
+private AddressService $addressService;
 
-    public Address $address;
+public Address $address;
 
-    public string $label = '';
+public string $label = '';
 
-    public string $recipient_name = '';
+public string $recipient_name = '';
 
-    public string $phone = '';
+public string $phone = '';
 
-    public string $country = '';
+public string $country = '';
 
-    public string $city = '';
+public string $city = '';
 
-    public string $area = '';
+public string $area = '';
 
-    public string $street = '';
+public string $street = '';
 
-    public string $building = '';
+public string $building = '';
 
-    public string $apartment = '';
+public string $apartment = '';
 
-    public string $address_line = '';
+public string $address_line = '';
 
-    public string $latitude = '';
+public string $latitude = '';
 
-    public string $longitude = '';
+public string $longitude = '';
 
-    public bool $is_default = false;
+public bool $is_default = false;
 
     public function boot(AddressService $addressService): void
     {
@@ -56,46 +56,25 @@ class Edit extends Component
         $this->address = $address;
 
         $this->label = $address->label ?? '';
+        $this->recipient_name = $address->recipient_name ?? '';
+        $this->phone = $address->phone ?? '';
+        $this->country = $address->country ?? '';
+        $this->city = $address->city ?? '';
+        $this->area = $address->area ?? '';
+        $this->street = $address->street ?? '';
+        $this->building = $address->building ?? '';
+        $this->apartment = $address->apartment ?? '';
+        $this->address_line = $address->address_line ?? '';
 
-        $this->recipient_name =
-            $address->recipient_name ?? '';
+        $this->latitude = $address->latitude !== null
+            ? (string) $address->latitude
+            : '';
 
-        $this->phone =
-            $address->phone ?? '';
+        $this->longitude = $address->longitude !== null
+            ? (string) $address->longitude
+            : '';
 
-        $this->country =
-            $address->country ?? '';
-
-        $this->city =
-            $address->city ?? '';
-
-        $this->area =
-            $address->area ?? '';
-
-        $this->street =
-            $address->street ?? '';
-
-        $this->building =
-            $address->building ?? '';
-
-        $this->apartment =
-            $address->apartment ?? '';
-
-        $this->address_line =
-            $address->address_line ?? '';
-
-        $this->latitude =
-            $address->latitude !== null
-                ? (string) $address->latitude
-                : '';
-
-        $this->longitude =
-            $address->longitude !== null
-                ? (string) $address->longitude
-                : '';
-
-        $this->is_default =
-            (bool) $address->is_default;
+        $this->is_default = (bool) $address->is_default;
     }
 
     protected function rules(): array
