@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Customer;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Customer\AddressRequest;
+use App\Http\Requests\Api\V1\Customer\AddressRequest;
 use App\Http\Resources\Api\Customer\AddressResource;
 use App\Models\Address;
 use App\Services\Customer\AddressService;
