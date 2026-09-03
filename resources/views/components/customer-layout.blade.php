@@ -180,7 +180,7 @@
             <div class="space-y-1">
 
                 {{-- Profile --}}
-                <a href="#"
+                <a href="{{route('customer.profile')}}"
                    class="group flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white">
 
                     <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
@@ -405,14 +405,14 @@
 
                         </a>
 
-                        <a href="#"
+                        <a href="{{route('customer.cart')}}"
                            class="mt-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
 
                             My Cart
 
                         </a>
 
-                        <a href="#"
+                        <a href="{{route('customer.profile')}}"
                            class="mt-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
 
                             Profile
@@ -918,7 +918,7 @@
                             </div>
 
 
-                            <a href="#"
+                            <a href="{{route('customer.profile')}}"
                                class="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
 
                                 Profile

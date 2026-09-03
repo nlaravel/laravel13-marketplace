@@ -5,12 +5,14 @@ use App\Livewire\Customer\Addresses\Edit;
 use App\Livewire\Customer\Addresses\Index;
 use App\Livewire\Customer\Cart;
 use App\Livewire\Customer\Dashboard;
+use App\Livewire\Customer\Profile;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
 
     /* Dashboard */
     Route::get('/customer', Dashboard::class)->name('customer.dashboard');
+    Route::get('/customer/profile', Profile::class)->name('customer.profile');
 
     /* Addresses */
     Route::get('/customer/addresses', Index::class)->name('customer.addresses.index');
