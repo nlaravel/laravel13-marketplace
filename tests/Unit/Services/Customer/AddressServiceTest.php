@@ -23,6 +23,12 @@ class AddressServiceTest extends TestCase
         $this->addressService = app(AddressService::class);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Get Addresses
+    |--------------------------------------------------------------------------
+    */
+
     public function test_get_addresses_returns_user_addresses_ordered_by_default_then_latest(): void
     {
         $user = User::factory()->create();
@@ -32,7 +38,7 @@ class AddressServiceTest extends TestCase
             'is_default' => false,
         ]);
 
-        $latestAddress = Address::factory()->create([
+        $newAddress = Address::factory()->create([
             'user_id' => $user->id,
             'is_default' => false,
         ]);
@@ -44,17 +50,31 @@ class AddressServiceTest extends TestCase
 
         $addresses = $this->addressService->getAddresses($user);
 
+        $this->assertCount(3, $addresses);
+
         $this->assertSame(
-            [
-                $defaultAddress->id,
-                $latestAddress->id,
-                $oldAddress->id,
-            ],
-            $addresses->pluck('id')->all()
+            $defaultAddress->id,
+            $addresses->first()->id
+        );
+
+        $this->assertSame(
+            $newAddress->id,
+            $addresses->get(1)->id
+        );
+
+        $this->assertSame(
+            $oldAddress->id,
+            $addresses->get(2)->id
         );
     }
 
-    public function test_find_address_returns_address_belonging_to_user(): void
+    /*
+    |--------------------------------------------------------------------------
+    | Find Address
+    |--------------------------------------------------------------------------
+    */
+
+    public function test_find_address_returns_own_address(): void
     {
         $user = User::factory()->create();
 
@@ -67,10 +87,13 @@ class AddressServiceTest extends TestCase
             $address->id
         );
 
-        $this->assertSame($address->id, $result->id);
+        $this->assertSame(
+            $address->id,
+            $result->id
+        );
     }
 
-    public function test_find_address_cannot_access_another_users_address(): void
+    public function test_find_address_cannot_find_another_users_address(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
@@ -79,7 +102,9 @@ class AddressServiceTest extends TestCase
             'user_id' => $otherUser->id,
         ]);
 
-        $this->expectException(ModelNotFoundException::class);
+        $this->expectException(
+            ModelNotFoundException::class
+        );
 
         $this->addressService->findAddress(
             $user,
@@ -87,32 +112,34 @@ class AddressServiceTest extends TestCase
         );
     }
 
-    public function test_create_address_creates_non_default_address(): void
+    /*
+    |--------------------------------------------------------------------------
+    | Create Address
+    |--------------------------------------------------------------------------
+    */
+
+    public function test_create_address_as_non_default(): void
     {
         $user = User::factory()->create();
 
-        $address = $this->addressService->createAddress(
-            $user,
-            [
-                'label' => 'Home',
-                'recipient_name' => 'Noor Abed',
-                'phone' => '0599000000',
-                'country' => 'Palestine',
-                'city' => 'Hebron',
-                'area' => 'Center',
-                'street' => 'Main Street',
-                'building' => '10',
-                'apartment' => '3',
-                'address_line' => 'Main Street, Building 10',
-                'latitude' => 31.5326,
-                'longitude' => 35.0998,
-                'is_default' => false,
-            ]
-        );
+        $address = $this->addressService->createAddress($user, [
+            'recipient_name' => 'Noor Abed',
+            'phone' => '0590000000',
+            'label' => 'Home',
+            'address_line' => 'Main Street',
+            'city' => 'Hebron',
+            'state' => 'West Bank',
+            'postal_code' => '00000',
+            'country' => 'Palestine',
+            'latitude' => null,
+            'longitude' => null,
+            'is_default' => false,
+        ]);
 
         $this->assertDatabaseHas('addresses', [
             'id' => $address->id,
             'user_id' => $user->id,
+            'recipient_name' => 'Noor Abed',
             'label' => 'Home',
             'is_default' => false,
         ]);
@@ -127,33 +154,37 @@ class AddressServiceTest extends TestCase
             'is_default' => true,
         ]);
 
-        $newDefault = $this->addressService->createAddress(
-            $user,
-            [
-                'label' => 'Work',
-                'recipient_name' => 'Noor Abed',
-                'phone' => '0599000000',
-                'country' => 'Palestine',
-                'city' => 'Hebron',
-                'area' => 'Center',
-                'street' => 'Main Street',
-                'building' => '10',
-                'apartment' => '3',
-                'address_line' => 'Main Street, Building 10',
-                'latitude' => 31.5326,
-                'longitude' => 35.0998,
-                'is_default' => true,
-            ]
-        );
+        $newDefault = $this->addressService->createAddress($user, [
+            'recipient_name' => 'Noor Abed',
+            'phone' => '0590000000',
+            'label' => 'Work',
+            'address_line' => 'Work Street',
+            'city' => 'Hebron',
+            'state' => 'West Bank',
+            'postal_code' => '00000',
+            'country' => 'Palestine',
+            'latitude' => null,
+            'longitude' => null,
+            'is_default' => true,
+        ]);
 
-        $this->assertFalse(
-            $oldDefault->fresh()->is_default
-        );
+        $this->assertDatabaseHas('addresses', [
+            'id' => $newDefault->id,
+            'recipient_name' => 'Noor Abed',
+            'is_default' => true,
+        ]);
 
-        $this->assertTrue(
-            $newDefault->fresh()->is_default
-        );
+        $this->assertDatabaseHas('addresses', [
+            'id' => $oldDefault->id,
+            'is_default' => false,
+        ]);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Address
+    |--------------------------------------------------------------------------
+    */
 
     public function test_update_address_updates_data(): void
     {
@@ -161,23 +192,33 @@ class AddressServiceTest extends TestCase
 
         $address = Address::factory()->create([
             'user_id' => $user->id,
-            'label' => 'Home',
-            'city' => 'Hebron',
             'is_default' => false,
         ]);
 
-        $updated = $this->addressService->updateAddress(
+        $updatedAddress = $this->addressService->updateAddress(
             $user,
             $address,
             [
-                'label' => 'Office',
+                'label' => 'Updated Home',
                 'city' => 'Ramallah',
             ]
         );
 
-        $this->assertSame('Office', $updated->label);
-        $this->assertSame('Ramallah', $updated->city);
-        $this->assertFalse($updated->is_default);
+        $this->assertSame(
+            'Updated Home',
+            $updatedAddress->label
+        );
+
+        $this->assertSame(
+            'Ramallah',
+            $updatedAddress->city
+        );
+
+        $this->assertDatabaseHas('addresses', [
+            'id' => $address->id,
+            'label' => 'Updated Home',
+            'city' => 'Ramallah',
+        ]);
     }
 
     public function test_update_address_as_default_clears_previous_default(): void
@@ -194,22 +235,23 @@ class AddressServiceTest extends TestCase
             'is_default' => false,
         ]);
 
-        $updated = $this->addressService->updateAddress(
+        $this->addressService->updateAddress(
             $user,
             $address,
             [
-                'label' => 'New Default',
                 'is_default' => true,
             ]
         );
 
-        $this->assertFalse(
-            $oldDefault->fresh()->is_default
-        );
+        $this->assertDatabaseHas('addresses', [
+            'id' => $address->id,
+            'is_default' => true,
+        ]);
 
-        $this->assertTrue(
-            $updated->fresh()->is_default
-        );
+        $this->assertDatabaseHas('addresses', [
+            'id' => $oldDefault->id,
+            'is_default' => false,
+        ]);
     }
 
     public function test_update_address_preserves_default_when_is_default_is_omitted(): void
@@ -221,7 +263,7 @@ class AddressServiceTest extends TestCase
             'is_default' => true,
         ]);
 
-        $updated = $this->addressService->updateAddress(
+        $this->addressService->updateAddress(
             $user,
             $address,
             [
@@ -229,16 +271,26 @@ class AddressServiceTest extends TestCase
             ]
         );
 
-        $this->assertTrue($updated->is_default);
-        $this->assertSame('Updated Home', $updated->label);
+        $this->assertDatabaseHas('addresses', [
+            'id' => $address->id,
+            'label' => 'Updated Home',
+            'is_default' => true,
+        ]);
     }
 
-    public function test_delete_address_removes_address(): void
+    /*
+    |--------------------------------------------------------------------------
+    | Delete Address
+    |--------------------------------------------------------------------------
+    */
+
+    public function test_delete_address(): void
     {
         $user = User::factory()->create();
 
         $address = Address::factory()->create([
             'user_id' => $user->id,
+            'is_default' => false,
         ]);
 
         $this->addressService->deleteAddress(
@@ -255,7 +307,7 @@ class AddressServiceTest extends TestCase
     {
         $user = User::factory()->create();
 
-        Address::factory()->create([
+        $olderAddress = Address::factory()->create([
             'user_id' => $user->id,
             'is_default' => false,
         ]);
@@ -275,8 +327,42 @@ class AddressServiceTest extends TestCase
             $defaultAddress
         );
 
-        $this->assertTrue(
-            $latestAddress->fresh()->is_default
+        $this->assertDatabaseMissing('addresses', [
+            'id' => $defaultAddress->id,
+        ]);
+
+        $this->assertDatabaseHas('addresses', [
+            'id' => $latestAddress->id,
+            'is_default' => true,
+        ]);
+
+        $this->assertDatabaseHas('addresses', [
+            'id' => $olderAddress->id,
+            'is_default' => false,
+        ]);
+    }
+
+    public function test_delete_last_remaining_address_does_not_error(): void
+    {
+        $user = User::factory()->create();
+
+        $address = Address::factory()->create([
+            'user_id' => $user->id,
+            'is_default' => true,
+        ]);
+
+        $this->addressService->deleteAddress(
+            $user,
+            $address
+        );
+
+        $this->assertDatabaseMissing('addresses', [
+            'id' => $address->id,
+        ]);
+
+        $this->assertSame(
+            0,
+            $user->addresses()->count()
         );
     }
 
@@ -299,10 +385,21 @@ class AddressServiceTest extends TestCase
             $address
         );
 
-        $this->assertTrue(
-            $defaultAddress->fresh()->is_default
-        );
+        $this->assertDatabaseMissing('addresses', [
+            'id' => $address->id,
+        ]);
+
+        $this->assertDatabaseHas('addresses', [
+            'id' => $defaultAddress->id,
+            'is_default' => true,
+        ]);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Set Default Address
+    |--------------------------------------------------------------------------
+    */
 
     public function test_set_default_address_clears_previous_default(): void
     {
@@ -318,19 +415,32 @@ class AddressServiceTest extends TestCase
             'is_default' => false,
         ]);
 
-        $updated = $this->addressService->setDefaultAddress(
+        $result = $this->addressService->setDefaultAddress(
             $user,
             $address
         );
 
-        $this->assertFalse(
-            $oldDefault->fresh()->is_default
+        $this->assertSame(
+            $address->id,
+            $result->id
         );
 
-        $this->assertTrue(
-            $updated->fresh()->is_default
-        );
+        $this->assertDatabaseHas('addresses', [
+            'id' => $address->id,
+            'is_default' => true,
+        ]);
+
+        $this->assertDatabaseHas('addresses', [
+            'id' => $oldDefault->id,
+            'is_default' => false,
+        ]);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ownership / Authorization
+    |--------------------------------------------------------------------------
+    */
 
     public function test_update_address_cannot_update_another_users_address(): void
     {
@@ -339,10 +449,11 @@ class AddressServiceTest extends TestCase
 
         $address = Address::factory()->create([
             'user_id' => $otherUser->id,
-            'label' => 'Original',
         ]);
 
-        $this->expectException(NotFoundHttpException::class);
+        $this->expectException(
+            NotFoundHttpException::class
+        );
 
         $this->addressService->updateAddress(
             $user,
@@ -351,11 +462,6 @@ class AddressServiceTest extends TestCase
                 'label' => 'Hacked',
             ]
         );
-
-        $this->assertDatabaseHas('addresses', [
-            'id' => $address->id,
-            'label' => 'Original',
-        ]);
     }
 
     public function test_delete_address_cannot_delete_another_users_address(): void
@@ -367,16 +473,14 @@ class AddressServiceTest extends TestCase
             'user_id' => $otherUser->id,
         ]);
 
-        $this->expectException(NotFoundHttpException::class);
+        $this->expectException(
+            NotFoundHttpException::class
+        );
 
         $this->addressService->deleteAddress(
             $user,
             $address
         );
-
-        $this->assertDatabaseHas('addresses', [
-            'id' => $address->id,
-        ]);
     }
 
     public function test_set_default_address_cannot_change_another_users_address(): void
@@ -389,15 +493,13 @@ class AddressServiceTest extends TestCase
             'is_default' => false,
         ]);
 
-        $this->expectException(NotFoundHttpException::class);
+        $this->expectException(
+            NotFoundHttpException::class
+        );
 
         $this->addressService->setDefaultAddress(
             $user,
             $address
-        );
-
-        $this->assertFalse(
-            $address->fresh()->is_default
         );
     }
 }

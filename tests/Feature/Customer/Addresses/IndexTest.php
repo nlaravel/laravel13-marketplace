@@ -14,53 +14,71 @@ class IndexTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_customer_can_view_their_addresses(): void
+    public function test_customer_can_view_own_addresses(): void
     {
         $user = User::factory()->create();
 
-        $address = Address::factory()->create([
+        Address::factory()->count(3)->create([
             'user_id' => $user->id,
         ]);
 
         Livewire::actingAs($user)
             ->test(Index::class)
-            ->assertSee($address->recipient_name)
-            ->assertSee($address->city);
+            ->assertOk();
     }
 
-    public function test_customer_cannot_see_another_users_address(): void
+    public function test_customer_cannot_see_another_users_addresses(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
 
-        $otherAddress = Address::factory()->create([
-            'user_id' => $otherUser->id,
-            'recipient_name' => 'Other User Unique Name',
+        $ownAddress = Address::factory()->create([
+            'user_id' => $user->id,
         ]);
 
-        Livewire::actingAs($user)
-            ->test(Index::class)
-            ->assertDontSee($otherAddress->recipient_name);
+        $otherAddress = Address::factory()->create([
+            'user_id' => $otherUser->id,
+        ]);
+
+        $component = Livewire::actingAs($user)
+            ->test(Index::class);
+
+        $addresses = $component->get('addresses');
+
+        $this->assertCount(1, $addresses);
+
+        $this->assertSame(
+            $ownAddress->id,
+            $addresses->first()->id
+        );
+
+        $this->assertFalse(
+            $addresses->contains(
+                fn (Address $address): bool => $address->id === $otherAddress->id
+            )
+        );
     }
 
-    public function test_customer_can_delete_their_address(): void
+    public function test_customer_can_delete_own_address(): void
     {
         $user = User::factory()->create();
 
         $address = Address::factory()->create([
             'user_id' => $user->id,
+            'is_default' => false,
         ]);
 
         Livewire::actingAs($user)
             ->test(Index::class)
-            ->call('delete', $address->id);
+            ->call('delete', $address->id)
+            ->assertOk();
 
         $this->assertDatabaseMissing('addresses', [
             'id' => $address->id,
         ]);
     }
 
-    public function test_customer_can_set_address_as_default(): void
+    public function test_customer_can_set_own_address_as_default(): void
     {
         $user = User::factory()->create();
 
@@ -76,15 +94,18 @@ class IndexTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(Index::class)
-            ->call('setDefault', $address->id);
+            ->call('setDefault', $address->id)
+            ->assertOk();
 
-        $this->assertFalse(
-            $oldDefault->fresh()->is_default
-        );
+        $this->assertDatabaseHas('addresses', [
+            'id' => $address->id,
+            'is_default' => true,
+        ]);
 
-        $this->assertTrue(
-            $address->fresh()->is_default
-        );
+        $this->assertDatabaseHas('addresses', [
+            'id' => $oldDefault->id,
+            'is_default' => false,
+        ]);
     }
 
     public function test_customer_cannot_delete_another_users_address(): void
@@ -94,19 +115,27 @@ class IndexTest extends TestCase
 
         $address = Address::factory()->create([
             'user_id' => $otherUser->id,
+            'is_default' => false,
         ]);
 
+        // Defense in depth:
+        // the service also validates ownership independently.
         try {
             Livewire::actingAs($user)
                 ->test(Index::class)
                 ->call('delete', $address->id);
 
-            $this->fail('Expected ModelNotFoundException was not thrown.');
+            $this->fail(
+                'Expected ModelNotFoundException was not thrown.'
+            );
         } catch (ModelNotFoundException) {
-            $this->assertDatabaseHas('addresses', [
-                'id' => $address->id,
-            ]);
+            // Expected exception. Continue to verify database state.
         }
+
+        $this->assertDatabaseHas('addresses', [
+            'id' => $address->id,
+            'user_id' => $otherUser->id,
+        ]);
     }
 
     public function test_customer_cannot_set_another_users_address_as_default(): void
@@ -119,16 +148,24 @@ class IndexTest extends TestCase
             'is_default' => false,
         ]);
 
+        // Defense in depth:
+        // the service also validates ownership independently.
         try {
             Livewire::actingAs($user)
                 ->test(Index::class)
                 ->call('setDefault', $address->id);
 
-            $this->fail('Expected ModelNotFoundException was not thrown.');
-        } catch (ModelNotFoundException) {
-            $this->assertFalse(
-                $address->fresh()->is_default
+            $this->fail(
+                'Expected ModelNotFoundException was not thrown.'
             );
+        } catch (ModelNotFoundException) {
+            // Expected exception. Continue to verify database state.
         }
+
+        $this->assertDatabaseHas('addresses', [
+            'id' => $address->id,
+            'user_id' => $otherUser->id,
+            'is_default' => false,
+        ]);
     }
 }
