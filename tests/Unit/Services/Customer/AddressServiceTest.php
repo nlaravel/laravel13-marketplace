@@ -14,7 +14,7 @@ class AddressServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    private AddressService $addressService;
+private AddressService $addressService;
 
     protected function setUp(): void
     {
@@ -140,6 +140,7 @@ class AddressServiceTest extends TestCase
             'id' => $address->id,
             'user_id' => $user->id,
             'recipient_name' => 'Noor Abed',
+            'phone' => '0590000000',
             'label' => 'Home',
             'is_default' => false,
         ]);
@@ -171,6 +172,7 @@ class AddressServiceTest extends TestCase
         $this->assertDatabaseHas('addresses', [
             'id' => $newDefault->id,
             'recipient_name' => 'Noor Abed',
+            'phone' => '0590000000',
             'is_default' => true,
         ]);
 
@@ -449,19 +451,30 @@ class AddressServiceTest extends TestCase
 
         $address = Address::factory()->create([
             'user_id' => $otherUser->id,
+            'label' => 'Original',
         ]);
 
-        $this->expectException(
-            NotFoundHttpException::class
-        );
+        try {
+            $this->addressService->updateAddress(
+                $user,
+                $address,
+                [
+                    'label' => 'Hacked',
+                ]
+            );
 
-        $this->addressService->updateAddress(
-            $user,
-            $address,
-            [
-                'label' => 'Hacked',
-            ]
-        );
+            $this->fail(
+                'Expected NotFoundHttpException was not thrown.'
+            );
+        } catch (NotFoundHttpException) {
+            // Expected exception. Continue to verify database state.
+        }
+
+        $this->assertDatabaseHas('addresses', [
+            'id' => $address->id,
+            'user_id' => $otherUser->id,
+            'label' => 'Original',
+        ]);
     }
 
     public function test_delete_address_cannot_delete_another_users_address(): void
@@ -471,16 +484,29 @@ class AddressServiceTest extends TestCase
 
         $address = Address::factory()->create([
             'user_id' => $otherUser->id,
+            'label' => 'Original',
+            'is_default' => false,
         ]);
 
-        $this->expectException(
-            NotFoundHttpException::class
-        );
+        try {
+            $this->addressService->deleteAddress(
+                $user,
+                $address
+            );
 
-        $this->addressService->deleteAddress(
-            $user,
-            $address
-        );
+            $this->fail(
+                'Expected NotFoundHttpException was not thrown.'
+            );
+        } catch (NotFoundHttpException) {
+            // Expected exception. Continue to verify database state.
+        }
+
+        $this->assertDatabaseHas('addresses', [
+            'id' => $address->id,
+            'user_id' => $otherUser->id,
+            'label' => 'Original',
+            'is_default' => false,
+        ]);
     }
 
     public function test_set_default_address_cannot_change_another_users_address(): void
@@ -493,13 +519,23 @@ class AddressServiceTest extends TestCase
             'is_default' => false,
         ]);
 
-        $this->expectException(
-            NotFoundHttpException::class
-        );
+        try {
+            $this->addressService->setDefaultAddress(
+                $user,
+                $address
+            );
 
-        $this->addressService->setDefaultAddress(
-            $user,
-            $address
-        );
+            $this->fail(
+                'Expected NotFoundHttpException was not thrown.'
+            );
+        } catch (NotFoundHttpException) {
+            // Expected exception. Continue to verify database state.
+        }
+
+        $this->assertDatabaseHas('addresses', [
+            'id' => $address->id,
+            'user_id' => $otherUser->id,
+            'is_default' => false,
+        ]);
     }
 }
