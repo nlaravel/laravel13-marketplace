@@ -4,7 +4,6 @@ namespace App\Livewire\Customer;
 
 use App\Services\Customer\CustomerProfileService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Validator;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Throwable;
@@ -34,26 +33,26 @@ class Profile extends Component
         $this->phone = $profile->phone ?? '';
     }
 
+    protected function rules(): array
+    {
+        return [
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'phone' => [
+                'nullable',
+                'string',
+                'max:30',
+            ],
+        ];
+    }
+
     public function updateProfile(): void
     {
-        $validated = Validator::make(
-            [
-                'name' => $this->name,
-                'phone' => $this->phone,
-            ],
-            [
-                'name' => [
-                    'required',
-                    'string',
-                    'max:255',
-                ],
-                'phone' => [
-                    'nullable',
-                    'string',
-                    'max:30',
-                ],
-            ]
-        )->validate();
+        $validated = $this->validate();
 
         try {
             $this->profileService->updateProfile(
