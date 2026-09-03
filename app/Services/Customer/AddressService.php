@@ -37,16 +37,16 @@ class AddressService
             }
 
             return $user->addresses()->create([
-            ...$data,
-            'latitude' => ($data['latitude'] ?? '') !== ''
-                ? ($data['latitude'] ?? null)
-                : null,
-            'longitude' => ($data['longitude'] ?? '') !== ''
-                ? ($data['longitude'] ?? null)
-                : null,
-            'is_default' => $isDefault,
-        ]);
-    });
+                ...$data,
+                'latitude' => ($data['latitude'] ?? '') !== ''
+                    ? ($data['latitude'] ?? null)
+                    : null,
+                'longitude' => ($data['longitude'] ?? '') !== ''
+                    ? ($data['longitude'] ?? null)
+                    : null,
+                'is_default' => $isDefault,
+            ]);
+        });
     }
 
     public function updateAddress(

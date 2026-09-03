@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\Customer\AddressService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tests\TestCase;
 
 class AddressServiceTest extends TestCase
@@ -331,7 +332,6 @@ class AddressServiceTest extends TestCase
         );
     }
 
-
     public function test_update_address_cannot_update_another_users_address(): void
     {
         $user = User::factory()->create();
@@ -342,7 +342,7 @@ class AddressServiceTest extends TestCase
             'label' => 'Original',
         ]);
 
-        $this->expectException(\Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class);
+        $this->expectException(NotFoundHttpException::class);
 
         $this->addressService->updateAddress(
             $user,
@@ -367,7 +367,7 @@ class AddressServiceTest extends TestCase
             'user_id' => $otherUser->id,
         ]);
 
-        $this->expectException(\Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class);
+        $this->expectException(NotFoundHttpException::class);
 
         $this->addressService->deleteAddress(
             $user,
@@ -389,7 +389,7 @@ class AddressServiceTest extends TestCase
             'is_default' => false,
         ]);
 
-        $this->expectException(\Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class);
+        $this->expectException(NotFoundHttpException::class);
 
         $this->addressService->setDefaultAddress(
             $user,
