@@ -57,13 +57,13 @@ Route::prefix('v1/customer')->middleware('auth:sanctum')->group(function () {
     ]);
 
     // Cart
-    Route::get('/cart', [CartController::class, 'show']) ->name('api.v1.customer.cart.show');
+    Route::get('/cart', [CartController::class, 'show'])->name('api.v1.customer.cart.show');
 
     Route::post('/cart/items', [CartController::class, 'store'])->name('api.v1.customer.cart.items.store');
 
-    Route::put('/cart/items/{item}', [CartController::class, 'update']) ->name('api.v1.customer.cart.items.update');
+    Route::put('/cart/items/{item}', [CartController::class, 'update'])->name('api.v1.customer.cart.items.update');
 
-    Route::delete('/cart/items/{item}', [CartController::class, 'destroyItem']) ->name('api.v1.customer.cart.items.destroy');
+    Route::delete('/cart/items/{item}', [CartController::class, 'destroyItem'])->name('api.v1.customer.cart.items.destroy');
 
     Route::delete('/cart', [CartController::class, 'clear'])->name('api.v1.customer.cart.clear');
 

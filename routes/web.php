@@ -3,22 +3,23 @@
 use App\Livewire\Customer\Addresses\Create;
 use App\Livewire\Customer\Addresses\Edit;
 use App\Livewire\Customer\Addresses\Index;
+use App\Livewire\Customer\Cart;
 use App\Livewire\Customer\Dashboard;
 use Illuminate\Support\Facades\Route;
-use App\Livewire\Customer\Cart;
+
 Route::middleware(['auth'])->group(function () {
 
-    /*Dashboard*/
-    Route::get('/customer', Dashboard::class )->name('customer.dashboard');
+    /* Dashboard */
+    Route::get('/customer', Dashboard::class)->name('customer.dashboard');
 
-    /*Addresses*/
-    Route::get('/customer/addresses',Index::class)->name('customer.addresses.index');
+    /* Addresses */
+    Route::get('/customer/addresses', Index::class)->name('customer.addresses.index');
 
-    Route::get('/customer/addresses/create',Create::class)->name('customer.addresses.create');
+    Route::get('/customer/addresses/create', Create::class)->name('customer.addresses.create');
 
-    Route::get('/customer/addresses/{address}/edit',Edit::class )->name('customer.addresses.edit');
+    Route::get('/customer/addresses/{address}/edit', Edit::class)->name('customer.addresses.edit');
 
-    /*Cart*/
+    /* Cart */
     Route::get('/customer/cart', Cart::class)->name('customer.cart');
 
 });

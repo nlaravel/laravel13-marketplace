@@ -12,7 +12,7 @@ use Livewire\Component;
 #[Layout('components.customer-layout')]
 class Cart extends Component
 {
-private CartService $cartService;
+    private CartService $cartService;
 
     public function boot(CartService $cartService): void
     {

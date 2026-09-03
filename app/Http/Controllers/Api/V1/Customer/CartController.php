@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Customer\AddCartItemRequest;
+use App\Http\Requests\Api\V1\Customer\BulkAddCartItemsRequest;
 use App\Http\Requests\Api\V1\Customer\UpdateCartItemRequest;
 use App\Http\Resources\Api\Customer\CartResource;
 use App\Models\CartItem;
@@ -11,7 +12,6 @@ use App\Models\ProductVariant;
 use App\Services\Cart\CartService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\Api\Customer\BulkAddCartItemsRequest;
 
 class CartController extends Controller
 {
@@ -108,16 +108,16 @@ class CartController extends Controller
         ]);
     }
 
-public function addItems(
-    BulkAddCartItemsRequest $request,
-): JsonResponse {
-    $cart = $this->cartService->addItems(
-        $request->user(),
-        $request->validated('items'),
-    );
+    public function addItems(
+        BulkAddCartItemsRequest $request,
+    ): JsonResponse {
+        $cart = $this->cartService->addItems(
+            $request->user(),
+            $request->validated('items'),
+        );
 
-    return response()->json([
-        'data' => new CartResource($cart),
-    ]);
-}
+        return response()->json([
+            'data' => new CartResource($cart),
+        ]);
+    }
 }
