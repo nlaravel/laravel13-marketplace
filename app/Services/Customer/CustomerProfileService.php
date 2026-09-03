@@ -15,10 +15,9 @@ class CustomerProfileService
         ]);
     }
 
-    public function updateProfile(
-        User $user,
-        array $data
-    ): CustomerProfile {
+    public function updateProfile(User $user, array $data): CustomerProfile
+    {
+
         return DB::transaction(function () use ($user, $data) {
 
             if (isset($data['name'])) {
@@ -29,11 +28,14 @@ class CustomerProfileService
 
             $profile = $this->getProfile($user);
 
-            $profile->update(
-                collect($data)
-                    ->except('name')
-                    ->toArray()
-            );
+            $profileData = collect($data)
+                ->except('name')
+                ->map(function ($value) {
+                    return $value === '' ? null : $value;
+                })
+                ->toArray();
+
+            $profile->update($profileData);
 
             return $profile->fresh();
         });
