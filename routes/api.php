@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Customer\AddressController;
+use App\Http\Controllers\Api\V1\Customer\CartController;
 use App\Http\Controllers\Api\V1\Customer\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\V1\Customer\CartController;
+
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
@@ -55,21 +56,17 @@ Route::prefix('v1/customer')->middleware('auth:sanctum')->group(function () {
         'setDefault',
     ]);
 
-
     // Cart
-    Route::get('/cart', [CartController::class, 'show'])
-        ->name('api.v1.customer.cart.show');
+    Route::get('/cart', [CartController::class, 'show']) ->name('api.v1.customer.cart.show');
 
-    Route::post('/cart/items', [CartController::class, 'store'])
-        ->name('api.v1.customer.cart.items.store');
+    Route::post('/cart/items', [CartController::class, 'store'])->name('api.v1.customer.cart.items.store');
 
-    Route::put('/cart/items/{item}', [CartController::class, 'update'])
-        ->name('api.v1.customer.cart.items.update');
+    Route::put('/cart/items/{item}', [CartController::class, 'update']) ->name('api.v1.customer.cart.items.update');
 
-    Route::delete('/cart/items/{item}', [CartController::class, 'destroyItem'])
-        ->name('api.v1.customer.cart.items.destroy');
+    Route::delete('/cart/items/{item}', [CartController::class, 'destroyItem']) ->name('api.v1.customer.cart.items.destroy');
 
-    Route::delete('/cart', [CartController::class, 'clear'])
-        ->name('api.v1.customer.cart.clear');
+    Route::delete('/cart', [CartController::class, 'clear'])->name('api.v1.customer.cart.clear');
+
+    Route::post('/cart/items/bulk', [CartController::class, 'addItems'])->name('api.v1.customer.cart.addItems');
 
 });

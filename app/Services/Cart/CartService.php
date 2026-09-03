@@ -4,12 +4,13 @@ namespace App\Services\Cart;
 
 use App\Enums\CartStatus;
 use App\Enums\ProductStatus;
+use App\Exceptions\CartException;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use App\Exceptions\CartException;
+
 class CartService
 {
     public function getActiveCart(User $user): Cart
@@ -37,49 +38,43 @@ class CartService
             $user,
             $variant,
             $quantity
-        ) {
-            $inventory = $variant->inventory()
-                ->lockForUpdate()
-                ->first();
+        ): CartItem {
+            return $this->addItemWithoutTransaction(
+                $user,
+                $variant,
+                $quantity
+            );
+        });
+    }
 
-            if (! $inventory) {
-                throw new CartException(
-                    'Inventory not found.'
+    public function addItems(
+        User $user,
+        array $items
+    ): Cart {
+        return DB::transaction(function () use (
+            $user,
+            $items
+        ): Cart {
+            foreach ($items as $item) {
+                $variant = ProductVariant::query()
+                    ->findOrFail($item['product_variant_id']);
+
+                if ($item['quantity'] <= 0) {
+                    throw new CartException(
+                        'Quantity must be greater than zero.'
+                    );
+                }
+
+                $this->validateVariant($variant);
+
+                $this->addItemWithoutTransaction(
+                    $user,
+                    $variant,
+                    $item['quantity']
                 );
             }
 
-            $availableQuantity =
-                $inventory->quantity - $inventory->reserved_quantity;
-
-            $cart = $this->getActiveCart($user);
-
-            $item = $cart->items()
-                ->where('product_variant_id', $variant->id)
-                ->lockForUpdate()
-                ->first();
-
-            $newQuantity = $item
-                ? $item->quantity + $quantity
-                : $quantity;
-
-            if ($newQuantity > $availableQuantity) {
-                throw new CartException(
-                    'Insufficient stock.'
-                );
-            }
-
-            if ($item) {
-                $item->update([
-                    'quantity' => $newQuantity,
-                ]);
-
-                return $item->refresh();
-            }
-
-            return $cart->items()->create([
-                'product_variant_id' => $variant->id,
-                'quantity' => $quantity,
-            ]);
+            return $this->getCartForUser($user);
         });
     }
 
@@ -99,7 +94,7 @@ class CartService
         return DB::transaction(function () use (
             $item,
             $quantity
-        ) {
+        ): CartItem {
             $inventory = $item->productVariant
                 ->inventory()
                 ->lockForUpdate()
@@ -142,6 +137,64 @@ class CartService
         $cart = $this->getActiveCart($user);
 
         $cart->items()->delete();
+    }
+
+    public function getCartForUser(User $user): Cart
+    {
+        return $this->getActiveCart($user)
+            ->load([
+                'items.productVariant.product',
+                'items.productVariant.inventory',
+            ]);
+    }
+
+    private function addItemWithoutTransaction(
+        User $user,
+        ProductVariant $variant,
+        int $quantity
+    ): CartItem {
+        $inventory = $variant->inventory()
+            ->lockForUpdate()
+            ->first();
+
+        if (! $inventory) {
+            throw new CartException(
+                'Inventory not found.'
+            );
+        }
+
+        $availableQuantity =
+            $inventory->quantity - $inventory->reserved_quantity;
+
+        $cart = $this->getActiveCart($user);
+
+        $item = $cart->items()
+            ->where('product_variant_id', $variant->id)
+            ->lockForUpdate()
+            ->first();
+
+        $newQuantity = $item
+            ? $item->quantity + $quantity
+            : $quantity;
+
+        if ($newQuantity > $availableQuantity) {
+            throw new CartException(
+                'Insufficient stock.'
+            );
+        }
+
+        if ($item) {
+            $item->update([
+                'quantity' => $newQuantity,
+            ]);
+
+            return $item->refresh();
+        }
+
+        return $cart->items()->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => $quantity,
+        ]);
     }
 
     private function validateVariant(
