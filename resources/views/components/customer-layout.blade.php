@@ -614,7 +614,7 @@
                     ================================================== --}}
                     @php
                         $cart = auth()->user()->carts()->with([
-                            'items.product'
+                           'items.productVariant.product'
                         ])->first();
 
                         $cartItems = $cart?->items ?? collect();
