@@ -21,11 +21,8 @@ class CartService
         ]);
     }
 
-    public function addItem(
-        User $user,
-        ProductVariant $variant,
-        int $quantity
-    ): CartItem {
+    public function addItem(User $user, ProductVariant $variant, int $quantity): CartItem
+    {
         if ($quantity <= 0) {
             throw new CartException(
                 'Quantity must be greater than zero.'
@@ -47,10 +44,8 @@ class CartService
         });
     }
 
-    public function addItems(
-        User $user,
-        array $items
-    ): Cart {
+    public function addItems(User $user, array $items): Cart
+    {
         return DB::transaction(function () use (
             $user,
             $items
@@ -78,11 +73,8 @@ class CartService
         });
     }
 
-    public function updateQuantity(
-        User $user,
-        CartItem $item,
-        int $quantity
-    ): CartItem {
+    public function updateQuantity(User $user, CartItem $item, int $quantity): CartItem
+    {
         if ($quantity < 1) {
             throw new CartException(
                 'Quantity must be at least 1.'
@@ -123,10 +115,8 @@ class CartService
         });
     }
 
-    public function removeItem(
-        User $user,
-        CartItem $item
-    ): void {
+    public function removeItem(User $user, CartItem $item): void
+    {
         $this->ensureCartOwnership($user, $item);
 
         $item->delete();
@@ -148,11 +138,8 @@ class CartService
             ]);
     }
 
-    private function addItemWithoutTransaction(
-        User $user,
-        ProductVariant $variant,
-        int $quantity
-    ): CartItem {
+    private function addItemWithoutTransaction(User $user, ProductVariant $variant, int $quantity): CartItem
+    {
         $inventory = $variant->inventory()
             ->lockForUpdate()
             ->first();
@@ -197,9 +184,8 @@ class CartService
         ]);
     }
 
-    private function validateVariant(
-        ProductVariant $variant
-    ): void {
+    private function validateVariant(ProductVariant $variant): void
+    {
         $variant->loadMissing('product');
 
         if (! $variant->is_active) {
@@ -221,10 +207,8 @@ class CartService
         }
     }
 
-    private function ensureCartOwnership(
-        User $user,
-        CartItem $item
-    ): void {
+    private function ensureCartOwnership(User $user, CartItem $item): void
+    {
         $item->loadMissing('cart');
 
         if (! $item->cart) {

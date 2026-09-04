@@ -13,32 +13,28 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class AddressController extends Controller
 {
-    public function __construct(
-        private readonly AddressService $addressService
-    ) {}
+    public function __construct(private readonly AddressService $addressService) {}
 
-    public function index(
-        Request $request
-    ): AnonymousResourceCollection {
-        $addresses = $this->addressService->getAddresses(
-            $request->user()
-        );
+public function index(Request $request): AnonymousResourceCollection
+{
+    $addresses = $this->addressService->getAddresses(
+        $request->user()
+    );
 
-        return AddressResource::collection($addresses);
-    }
+    return AddressResource::collection($addresses);
+}
 
-    public function store(
-        AddressRequest $request
-    ): AddressResource {
-        $address = $this->addressService->createAddress(
-            $request->user(),
-            $request->validated()
-        );
+public function store(AddressRequest $request): AddressResource
+{
+    $address = $this->addressService->createAddress(
+        $request->user(),
+        $request->validated()
+    );
 
-        return new AddressResource($address);
-    }
+    return new AddressResource($address);
+}
 
-    public function show(Request $request, int $address): AddressResource|JsonResponse
+public function show(Request $request, int $address): AddressResource|JsonResponse
     {
         $address = $request->user()
             ->addresses()
@@ -55,7 +51,6 @@ class AddressController extends Controller
 
     public function update(AddressRequest $request, int $address): AddressResource|JsonResponse
     {
-
         $addressModel = $request->user()
             ->addresses()
             ->find($address);
@@ -75,34 +70,30 @@ class AddressController extends Controller
         return new AddressResource($addressModel);
     }
 
-    public function destroy(
-        Request $request,
-        int $address
-    ): JsonResponse {
-        $addressModel = $request->user()
-            ->addresses()
-            ->find($address);
+    public function destroy(Request $request, int $address): JsonResponse
+{
+    $addressModel = $request->user()
+        ->addresses()
+        ->find($address);
 
-        if (! $addressModel) {
-            return response()->json([
-                'message' => 'Address not found.',
-            ], 404);
-        }
-
-        $this->addressService->deleteAddress(
-            $request->user(),
-            $addressModel
-        );
-
+    if (! $addressModel) {
         return response()->json([
-            'message' => 'Address deleted successfully.',
-        ]);
+            'message' => 'Address not found.',
+        ], 404);
     }
 
-    public function setDefault(
-        Request $request,
-        int $address
-    ): AddressResource|JsonResponse {
+    $this->addressService->deleteAddress(
+        $request->user(),
+        $addressModel
+    );
+
+    return response()->json([
+        'message' => 'Address deleted successfully.',
+    ]);
+}
+
+    public function setDefault(Request $request, int $address): AddressResource|JsonResponse
+    {
         $addressModel = $request->user()
             ->addresses()
             ->find($address);
@@ -122,10 +113,10 @@ class AddressController extends Controller
     }
 
     private function authorizeAddress(Request $request, Address $address): void
-    {
-        abort_unless(
-            $address->user_id === $request->user()->id,
-            404
-        );
-    }
+{
+    abort_unless(
+        $address->user_id === $request->user()->id,
+        404
+    );
+}
 }

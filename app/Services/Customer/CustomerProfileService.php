@@ -17,9 +17,7 @@ class CustomerProfileService
 
     public function updateProfile(User $user, array $data): CustomerProfile
     {
-
         return DB::transaction(function () use ($user, $data) {
-
             if (isset($data['name'])) {
                 $user->update([
                     'name' => $data['name'],

@@ -13,11 +13,8 @@ class AuthService
     /**
      * Register a new user and issue an API token.
      */
-    public function register(
-        string $name,
-        string $email,
-        string $password
-    ): array {
+    public function register(string $name, string $email, string $password): array
+    {
         $user = User::create([
             'name' => $name,
             'email' => $email,
@@ -35,10 +32,8 @@ class AuthService
     /**
      * Authenticate a user and issue an API token.
      */
-    public function login(
-        string $email,
-        string $password
-    ): array {
+    public function login(string $email, string $password): array
+    {
         $user = User::where('email', $email)->first();
 
         if (! $user || ! Hash::check($password, $user->password)) {
@@ -78,11 +73,8 @@ class AuthService
         return __($status);
     }
 
-    public function resetPassword(
-        string $email,
-        string $password,
-        string $token
-    ): void {
+    public function resetPassword(string $email, string $password, string $token): void
+    {
         $status = Password::reset(
             [
                 'email' => $email,
