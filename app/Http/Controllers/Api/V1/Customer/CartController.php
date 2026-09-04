@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\V1\Customer;
 
 use App\Http\Controllers\Controller;
@@ -19,9 +21,7 @@ class CartController extends Controller
 
     public function show(Request $request): CartResource
     {
-        $cart = $this->cartService->getActiveCart(
-            $request->user()
-        );
+        $cart = $this->cartService->getActiveCart($request->user());
 
         $cart->load([
             'items.productVariant.product',
@@ -33,19 +33,11 @@ class CartController extends Controller
     public function store(AddCartItemRequest $request): CartResource
     {
         $variant = ProductVariant::query()
-            ->findOrFail(
-                $request->integer('product_variant_id')
-            );
+            ->findOrFail($request->integer('product_variant_id'));
 
-        $this->cartService->addItem(
-            $request->user(),
-            $variant,
-            $request->integer('quantity')
-        );
+        $this->cartService->addItem($request->user(), $variant, $request->integer('quantity'));
 
-        $cart = $this->cartService->getActiveCart(
-            $request->user()
-        );
+        $cart = $this->cartService->getActiveCart($request->user());
 
         $cart->load([
             'items.productVariant.product',
@@ -54,19 +46,11 @@ class CartController extends Controller
         return new CartResource($cart);
     }
 
-    public function update(
-        UpdateCartItemRequest $request,
-        CartItem $item
-    ): CartResource {
-        $this->cartService->updateQuantity(
-            $request->user(),
-            $item,
-            $request->integer('quantity')
-        );
+    public function update(UpdateCartItemRequest $request, CartItem $item): CartResource
+    {
+        $this->cartService->updateQuantity($request->user(), $item, $request->integer('quantity'));
 
-        $cart = $this->cartService->getActiveCart(
-            $request->user()
-        );
+        $cart = $this->cartService->getActiveCart($request->user());
 
         $cart->load([
             'items.productVariant.product',
@@ -75,18 +59,11 @@ class CartController extends Controller
         return new CartResource($cart);
     }
 
-    public function destroyItem(
-        Request $request,
-        CartItem $item
-    ): CartResource {
-        $this->cartService->removeItem(
-            $request->user(),
-            $item
-        );
+    public function destroyItem(Request $request, CartItem $item): CartResource
+    {
+        $this->cartService->removeItem($request->user(), $item);
 
-        $cart = $this->cartService->getActiveCart(
-            $request->user()
-        );
+        $cart = $this->cartService->getActiveCart($request->user());
 
         $cart->load([
             'items.productVariant.product',
@@ -97,9 +74,7 @@ class CartController extends Controller
 
     public function clear(Request $request): JsonResponse
     {
-        $this->cartService->clear(
-            $request->user()
-        );
+        $this->cartService->clear($request->user());
 
         return response()->json([
             'message' => 'Cart cleared successfully.',
@@ -108,10 +83,7 @@ class CartController extends Controller
 
     public function addItems(BulkAddCartItemsRequest $request): JsonResponse
     {
-        $cart = $this->cartService->addItems(
-            $request->user(),
-            $request->validated('items'),
-        );
+        $cart = $this->cartService->addItems($request->user(), $request->validated('items'), );
 
         return response()->json([
             'data' => new CartResource($cart),

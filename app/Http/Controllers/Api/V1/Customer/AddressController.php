@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\V1\Customer;
 
 use App\Http\Controllers\Controller;
@@ -17,19 +19,14 @@ class AddressController extends Controller
 
     public function index(Request $request): AnonymousResourceCollection
     {
-        $addresses = $this->addressService->getAddresses(
-            $request->user()
-        );
+        $addresses = $this->addressService->getAddresses($request->user());
 
         return AddressResource::collection($addresses);
     }
 
     public function store(AddressRequest $request): AddressResource
     {
-        $address = $this->addressService->createAddress(
-            $request->user(),
-            $request->validated()
-        );
+        $address = $this->addressService->createAddress($request->user(), $request->validated());
 
         return new AddressResource($address);
     }
@@ -61,11 +58,7 @@ class AddressController extends Controller
             ], 404);
         }
 
-        $addressModel = $this->addressService->updateAddress(
-            $request->user(),
-            $addressModel,
-            $request->validated()
-        );
+        $addressModel = $this->addressService->updateAddress($request->user(), $addressModel, $request->validated());
 
         return new AddressResource($addressModel);
     }
@@ -82,10 +75,7 @@ class AddressController extends Controller
             ], 404);
         }
 
-        $this->addressService->deleteAddress(
-            $request->user(),
-            $addressModel
-        );
+        $this->addressService->deleteAddress($request->user(), $addressModel);
 
         return response()->json([
             'message' => 'Address deleted successfully.',
@@ -104,19 +94,13 @@ class AddressController extends Controller
             ], 404);
         }
 
-        $addressModel = $this->addressService->setDefaultAddress(
-            $request->user(),
-            $addressModel
-        );
+        $addressModel = $this->addressService->setDefaultAddress($request->user(), $addressModel);
 
         return new AddressResource($addressModel);
     }
 
     private function authorizeAddress(Request $request, Address $address): void
     {
-        abort_unless(
-            $address->user_id === $request->user()->id,
-            404
-        );
+        abort_unless($address->user_id === $request->user()->id, 404);
     }
 }

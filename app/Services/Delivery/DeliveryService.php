@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Delivery;
 
 use App\Enums\DeliveryStatus;
@@ -10,21 +12,15 @@ use InvalidArgumentException;
 
 class DeliveryService
 {
-    public function __construct(
-        private SellerOrderStatusService $sellerOrderStatusService
-    ) {}
+    public function __construct(private SellerOrderStatusService $sellerOrderStatusService) {}
 
-    public function assign(
-        Delivery $delivery,
-        int $deliveryProfileId
-    ): Delivery {
+    public function assign(Delivery $delivery, int $deliveryProfileId): Delivery
+    {
         return DB::transaction(function () use ($delivery, $deliveryProfileId) {
             $delivery->refresh();
 
             if ($delivery->status !== DeliveryStatus::PENDING) {
-                throw new InvalidArgumentException(
-                    'Only pending deliveries can be assigned.'
-                );
+                throw new InvalidArgumentException('Only pending deliveries can be assigned.');
             }
 
             $delivery->update([
@@ -39,23 +35,14 @@ class DeliveryService
 
     public function pickUp(Delivery $delivery): Delivery
     {
-        return $this->transition(
-            $delivery,
-            DeliveryStatus::ASSIGNED,
-            DeliveryStatus::PICKED_UP,
-            [
-                'picked_up_at' => now(),
-            ]
-        );
+        return $this->transition($delivery, DeliveryStatus::ASSIGNED, DeliveryStatus::PICKED_UP, [
+            'picked_up_at' => now(),
+        ]);
     }
 
     public function startTransit(Delivery $delivery): Delivery
     {
-        return $this->transition(
-            $delivery,
-            DeliveryStatus::PICKED_UP,
-            DeliveryStatus::IN_TRANSIT
-        );
+        return $this->transition($delivery, DeliveryStatus::PICKED_UP, DeliveryStatus::IN_TRANSIT);
     }
 
     public function deliver(Delivery $delivery): Delivery
@@ -64,9 +51,7 @@ class DeliveryService
             $delivery->refresh();
 
             if ($delivery->status !== DeliveryStatus::IN_TRANSIT) {
-                throw new InvalidArgumentException(
-                    'Only in-transit deliveries can be delivered.'
-                );
+                throw new InvalidArgumentException('Only in-transit deliveries can be delivered.');
             }
 
             $delivery->update([
@@ -93,9 +78,7 @@ class DeliveryService
                 DeliveryStatus::DELIVERED,
                 DeliveryStatus::CANCELLED,
             ], true)) {
-                throw new InvalidArgumentException(
-                    'Delivered or cancelled deliveries cannot be failed.'
-                );
+                throw new InvalidArgumentException('Delivered or cancelled deliveries cannot be failed.');
             }
 
             $delivery->update([
@@ -117,9 +100,7 @@ class DeliveryService
                 DeliveryStatus::DELIVERED,
                 DeliveryStatus::CANCELLED,
             ], true)) {
-                throw new InvalidArgumentException(
-                    'Delivered or already cancelled deliveries cannot be cancelled.'
-                );
+                throw new InvalidArgumentException('Delivered or already cancelled deliveries cannot be cancelled.');
             }
 
             $delivery->update([
@@ -131,24 +112,13 @@ class DeliveryService
         });
     }
 
-    private function transition(
-        Delivery $delivery,
-        DeliveryStatus $from,
-        DeliveryStatus $to,
-        array $attributes = []
-    ): Delivery {
-        return DB::transaction(function () use (
-            $delivery,
-            $from,
-            $to,
-            $attributes
-        ) {
+    private function transition(Delivery $delivery, DeliveryStatus $from, DeliveryStatus $to, array $attributes = []): Delivery
+    {
+        return DB::transaction(function () use ($delivery, $from, $to, $attributes) {
             $delivery->refresh();
 
             if ($delivery->status !== $from) {
-                throw new InvalidArgumentException(
-                    "Invalid delivery transition from {$delivery->status->value} to {$to->value}."
-                );
+                throw new InvalidArgumentException("Invalid delivery transition from {$delivery->status->value} to {$to->value}.");
             }
 
             $delivery->update([

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Orders;
 
 use App\Enums\OrderStatus;
@@ -13,10 +15,7 @@ use InvalidArgumentException;
 
 class OrderCancellationService
 {
-    public function __construct(
-        private readonly InventoryReservationService $inventoryReservationService,
-        private readonly PaymentService $paymentService,
-    ) {}
+    public function __construct(private readonly InventoryReservationService $inventoryReservationService, private readonly PaymentService $paymentService, ) {}
 
     public function cancel(Order $order): Order
     {
@@ -26,9 +25,7 @@ class OrderCancellationService
                 ->findOrFail($order->id);
 
             if (! $this->canCancel($order)) {
-                throw new InvalidArgumentException(
-                    "Order {$order->id} cannot be cancelled."
-                );
+                throw new InvalidArgumentException("Order {$order->id} cannot be cancelled.");
             }
 
             $payment = $order->payments()
@@ -57,13 +54,9 @@ class OrderCancellationService
 
     private function canCancel(Order $order): bool
     {
-        return in_array(
-            $order->status,
-            [
-                OrderStatus::PENDING,
-                OrderStatus::CONFIRMED,
-            ],
-            true
-        );
+        return in_array($order->status, [
+            OrderStatus::PENDING,
+            OrderStatus::CONFIRMED,
+        ], true);
     }
 }

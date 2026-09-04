@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Livewire\Customer\Addresses\Create;
 use App\Livewire\Customer\Addresses\Edit;
 use App\Livewire\Customer\Addresses\Index;
@@ -8,7 +10,7 @@ use App\Livewire\Customer\Dashboard;
 use App\Livewire\Customer\Profile;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth'])->group(function (): void {
 
     /* Dashboard */
     Route::get('/customer', Dashboard::class)->name('customer.dashboard');

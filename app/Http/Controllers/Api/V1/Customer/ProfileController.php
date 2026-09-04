@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\V1\Customer;
 
 use App\Http\Controllers\Controller;
@@ -14,24 +16,15 @@ class ProfileController extends Controller
 
     public function show(Request $request): CustomerProfileResource
     {
-        $profile = $this->profileService->getProfile(
-            $request->user()
-        );
+        $profile = $this->profileService->getProfile($request->user());
 
-        return new CustomerProfileResource(
-            $profile->load('user')
-        );
+        return new CustomerProfileResource($profile->load('user'));
     }
 
     public function update(UpdateProfileRequest $request): CustomerProfileResource
     {
-        $profile = $this->profileService->updateProfile(
-            $request->user(),
-            $request->validated()
-        );
+        $profile = $this->profileService->updateProfile($request->user(), $request->validated());
 
-        return new CustomerProfileResource(
-            $profile->load('user')
-        );
+        return new CustomerProfileResource($profile->load('user'));
     }
 }

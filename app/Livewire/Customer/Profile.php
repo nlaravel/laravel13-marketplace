@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Customer;
 
 use App\Services\Customer\CustomerProfileService;
@@ -17,17 +19,14 @@ class Profile extends Component
 
     public string $phone = '';
 
-    public function boot(
-        CustomerProfileService $profileService
-    ): void {
+    public function boot(CustomerProfileService $profileService): void
+    {
         $this->profileService = $profileService;
     }
 
     public function mount(): void
     {
-        $profile = $this->profileService->getProfile(
-            auth()->user()
-        );
+        $profile = $this->profileService->getProfile(auth()->user());
 
         $this->name = $profile->user->name;
         $this->phone = $profile->phone ?? '';
@@ -55,20 +54,11 @@ class Profile extends Component
         $validated = $this->validate();
 
         try {
-            $this->profileService->updateProfile(
-                auth()->user(),
-                $validated
-            );
+            $this->profileService->updateProfile(auth()->user(), $validated);
 
-            $this->dispatch(
-                'show-success',
-                message: 'Your profile has been updated successfully.'
-            );
+            $this->dispatch('show-success', message: 'Your profile has been updated successfully.');
         } catch (Throwable) {
-            $this->dispatch(
-                'show-error',
-                message: 'Something went wrong. Please try again.'
-            );
+            $this->dispatch('show-error', message: 'Something went wrong. Please try again.');
         }
     }
 

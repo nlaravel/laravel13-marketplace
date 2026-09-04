@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -34,9 +36,6 @@ class Inventory extends Model
 
     public function getAvailableQuantityAttribute(): int
     {
-        return max(
-            0,
-            $this->quantity - $this->reserved_quantity
-        );
+        return max(0, $this->quantity - $this->reserved_quantity);
     }
 }

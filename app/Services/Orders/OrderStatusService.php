@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Orders;
 
 use App\Enums\OrderStatus;
@@ -20,9 +22,7 @@ class OrderStatusService
         }
 
         if (! $this->canTransition($currentStatus, $newStatus)) {
-            throw new InvalidArgumentException(
-                "Cannot change order status from {$currentStatus->value} to {$newStatus->value}."
-            );
+            throw new InvalidArgumentException("Cannot change order status from {$currentStatus->value} to {$newStatus->value}.");
         }
 
         $order->status = $newStatus;
@@ -35,15 +35,9 @@ class OrderStatusService
     /**
      * Determine whether a status transition is allowed.
      */
-    public function canTransition(
-        OrderStatus $from,
-        OrderStatus $to
-    ): bool {
-        return in_array(
-            $to,
-            $this->allowedTransitions($from),
-            true
-        );
+    public function canTransition(OrderStatus $from, OrderStatus $to): bool
+    {
+        return in_array($to, $this->allowedTransitions($from), true);
     }
 
     /**
@@ -93,10 +87,8 @@ class OrderStatusService
         };
     }
 
-    private function updateTimestamps(
-        Order $order,
-        OrderStatus $status
-    ): void {
+    private function updateTimestamps(Order $order, OrderStatus $status): void
+    {
         match ($status) {
             OrderStatus::CONFIRMED => $order->confirmed_at = now(),
 

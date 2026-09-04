@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Customer\Addresses;
 
 use App\Models\Address;
@@ -48,10 +50,7 @@ class Edit extends Component
 
     public function mount(Address $address): void
     {
-        abort_unless(
-            (int) $address->user_id === (int) auth()->id(),
-            404
-        );
+        abort_unless((int) $address->user_id === (int) auth()->id(), 404);
 
         $this->address = $address;
 
@@ -162,26 +161,15 @@ class Edit extends Component
     {
         $validated = $this->validate();
 
-        $this->addressService->updateAddress(
-            auth()->user(),
-            $this->address,
-            $validated
-        );
+        $this->addressService->updateAddress(auth()->user(), $this->address, $validated);
 
-        session()->flash(
-            'success',
-            'Address updated successfully.'
-        );
+        session()->flash('success', 'Address updated successfully.');
 
-        $this->redirectRoute(
-            'customer.addresses.index'
-        );
+        $this->redirectRoute('customer.addresses.index');
     }
 
     public function render(): View
     {
-        return view(
-            'livewire.customer.addresses.edit'
-        );
+        return view('livewire.customer.addresses.edit');
     }
 }

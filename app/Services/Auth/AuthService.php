@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Auth;
 
 use App\Models\User;
@@ -75,25 +77,20 @@ class AuthService
 
     public function resetPassword(string $email, string $password, string $token): void
     {
-        $status = Password::reset(
-            [
-                'email' => $email,
-                'password' => $password,
-                'password_confirmation' => $password,
-                'token' => $token,
-            ],
-            function (User $user, string $password) {
-                $user->password = $password;
+        $status = Password::reset([
+            'email' => $email,
+            'password' => $password,
+            'password_confirmation' => $password,
+            'token' => $token,
+        ], function (User $user, string $password): void {
+            $user->password = $password;
 
-                $user->setRememberToken(
-                    Str::random(60)
-                );
+            $user->setRememberToken(Str::random(60));
 
-                $user->save();
+            $user->save();
 
-                $user->tokens()->delete();
-            }
-        );
+            $user->tokens()->delete();
+        });
 
         if ($status !== Password::PASSWORD_RESET) {
             throw ValidationException::withMessages([

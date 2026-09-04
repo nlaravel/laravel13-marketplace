@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Customer\Addresses;
 
 use App\Models\Address;
@@ -23,9 +25,7 @@ class Index extends Component
     #[Computed]
     public function addresses(): Collection
     {
-        return $this->addressService->getAddresses(
-            auth()->user()
-        );
+        return $this->addressService->getAddresses(auth()->user());
     }
 
     /*
@@ -38,22 +38,13 @@ class Index extends Component
     {
         $user = auth()->user();
 
-        $address = $this->addressService->findAddress(
-            $user,
-            $addressId
-        );
+        $address = $this->addressService->findAddress($user, $addressId);
 
-        $this->addressService->deleteAddress(
-            $user,
-            $address
-        );
+        $this->addressService->deleteAddress($user, $address);
 
         unset($this->addresses);
 
-        $this->dispatch(
-            'show-success',
-            message: 'Address deleted successfully.'
-        );
+        $this->dispatch('show-success', message: 'Address deleted successfully.');
     }
 
     /*
@@ -66,28 +57,17 @@ class Index extends Component
     {
         $user = auth()->user();
 
-        $address = $this->addressService->findAddress(
-            $user,
-            $addressId
-        );
+        $address = $this->addressService->findAddress($user, $addressId);
 
-        $this->addressService->setDefaultAddress(
-            $user,
-            $address
-        );
+        $this->addressService->setDefaultAddress($user, $address);
 
         unset($this->addresses);
 
-        $this->dispatch(
-            'show-success',
-            message: 'Default address updated successfully.'
-        );
+        $this->dispatch('show-success', message: 'Default address updated successfully.');
     }
 
     public function render(): View
     {
-        return view(
-            'livewire.customer.addresses.index'
-        );
+        return view('livewire.customer.addresses.index');
     }
 }

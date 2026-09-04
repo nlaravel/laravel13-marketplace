@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Customer;
 
 use App\Livewire\Customer\Profile;
@@ -51,10 +53,7 @@ class ProfileTest extends TestCase
             ->set('phone', '0566000000')
             ->call('updateProfile')
             ->assertHasNoErrors()
-            ->assertDispatched(
-                'show-success',
-                message: 'Your profile has been updated successfully.'
-            );
+            ->assertDispatched('show-success', message: 'Your profile has been updated successfully.');
 
         // Assert
         $this->assertDatabaseHas('users', [

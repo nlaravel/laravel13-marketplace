@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -119,9 +121,7 @@ class RolePermissionSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
 
-        $admin->syncPermissions(
-            Permission::all()
-        );
+        $admin->syncPermissions(Permission::all());
 
         /*
         |--------------------------------------------------------------------------

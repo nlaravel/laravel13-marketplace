@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Customer;
 
 use App\Models\CustomerProfile;
@@ -30,15 +32,9 @@ class CustomerProfileServiceTest extends TestCase
         $profile = $this->profileService->getProfile($user);
 
         // Assert
-        $this->assertInstanceOf(
-            CustomerProfile::class,
-            $profile
-        );
+        $this->assertInstanceOf(CustomerProfile::class, $profile);
 
-        $this->assertSame(
-            $user->id,
-            $profile->user_id
-        );
+        $this->assertSame($user->id, $profile->user_id);
 
         $this->assertDatabaseHas('customer_profiles', [
             'user_id' => $user->id,
@@ -59,15 +55,9 @@ class CustomerProfileServiceTest extends TestCase
         $profile = $this->profileService->getProfile($user);
 
         // Assert
-        $this->assertSame(
-            $existingProfile->id,
-            $profile->id
-        );
+        $this->assertSame($existingProfile->id, $profile->id);
 
-        $this->assertSame(
-            '0599000000',
-            $profile->phone
-        );
+        $this->assertSame('0599000000', $profile->phone);
     }
 
     public function test_update_profile_updates_user_name_and_phone(): void
@@ -83,19 +73,13 @@ class CustomerProfileServiceTest extends TestCase
         ]);
 
         // Act
-        $profile = $this->profileService->updateProfile(
-            $user,
-            [
-                'name' => 'New Name',
-                'phone' => '0566000000',
-            ]
-        );
+        $profile = $this->profileService->updateProfile($user, [
+            'name' => 'New Name',
+            'phone' => '0566000000',
+        ]);
 
         // Assert
-        $this->assertSame(
-            '0566000000',
-            $profile->phone
-        );
+        $this->assertSame('0566000000', $profile->phone);
 
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
@@ -119,13 +103,10 @@ class CustomerProfileServiceTest extends TestCase
         ]);
 
         // Act
-        $profile = $this->profileService->updateProfile(
-            $user,
-            [
-                'name' => 'Noor Abed',
-                'phone' => '',
-            ]
-        );
+        $profile = $this->profileService->updateProfile($user, [
+            'name' => 'Noor Abed',
+            'phone' => '',
+        ]);
 
         // Assert
         $this->assertNull($profile->phone);
@@ -142,13 +123,10 @@ class CustomerProfileServiceTest extends TestCase
         $user = User::factory()->create();
 
         // Act
-        $profile = $this->profileService->updateProfile(
-            $user,
-            [
-                'name' => 'Noor Abed',
-                'phone' => '0599000000',
-            ]
-        );
+        $profile = $this->profileService->updateProfile($user, [
+            'name' => 'Noor Abed',
+            'phone' => '0599000000',
+        ]);
 
         // Assert
         $this->assertDatabaseHas('customer_profiles', [
@@ -156,9 +134,6 @@ class CustomerProfileServiceTest extends TestCase
             'phone' => '0599000000',
         ]);
 
-        $this->assertSame(
-            '0599000000',
-            $profile->phone
-        );
+        $this->assertSame('0599000000', $profile->phone);
     }
 }

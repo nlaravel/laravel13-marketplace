@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Customer;
 
 use App\Models\CustomerProfile;
@@ -28,9 +30,7 @@ class CustomerProfileService
 
             $profileData = collect($data)
                 ->except('name')
-                ->map(function ($value) {
-                    return $value === '' ? null : $value;
-                })
+                ->map(fn($value) => $value === '' ? null : $value)
                 ->toArray();
 
             $profile->update($profileData);

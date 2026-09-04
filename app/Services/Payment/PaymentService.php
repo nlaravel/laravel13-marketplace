@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Payment;
 
 use App\Enums\OrderStatus;
@@ -15,16 +17,12 @@ use RuntimeException;
 
 class PaymentService
 {
-    public function __construct(
-        private readonly PaymentGateway $gateway,
-    ) {}
+    public function __construct(private readonly PaymentGateway $gateway, ) {}
 
     public function create(Order $order, PaymentMethod $method): Payment
     {
         if ($order->status !== OrderStatus::PENDING) {
-            throw new RuntimeException(
-                'Payment can only be created for a pending order.'
-            );
+            throw new RuntimeException('Payment can only be created for a pending order.');
         }
 
         $existingPayment = $order->payments()
@@ -42,7 +40,7 @@ class PaymentService
 
         return DB::transaction(function () use ($order, $method) {
             $payment = $order->payments()->create([
-                'payment_number' => 'PAY-'.now()->format('YmdHis').'-'.Str::upper(Str::random(4)),
+                'payment_number' => 'PAY-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(4)),
                 'provider' => 'fake',
                 'method' => $method,
                 'status' => PaymentStatus::PENDING,
@@ -62,14 +60,10 @@ class PaymentService
     public function refund(Payment $payment): Payment
     {
         if ($payment->status !== PaymentStatus::SUCCEEDED) {
-            throw new RuntimeException(
-                'Only successful payments can be refunded.'
-            );
+            throw new RuntimeException('Only successful payments can be refunded.');
         }
 
-        return DB::transaction(function () use ($payment) {
-            return $this->gateway->refund($payment);
-        });
+        return DB::transaction(fn() => $this->gateway->refund($payment));
     }
 
     public function confirmOrderFromPayment(Payment $payment): Order
@@ -78,17 +72,13 @@ class PaymentService
             $payment->refresh();
 
             if ($payment->status !== PaymentStatus::SUCCEEDED) {
-                throw new RuntimeException(
-                    'Only successful payments can confirm an order.'
-                );
+                throw new RuntimeException('Only successful payments can confirm an order.');
             }
 
             $order = $payment->order()->lockForUpdate()->firstOrFail();
 
             if ($order->status !== OrderStatus::PENDING) {
-                throw new RuntimeException(
-                    'Only pending orders can be confirmed.'
-                );
+                throw new RuntimeException('Only pending orders can be confirmed.');
             }
 
             $order->update([

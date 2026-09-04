@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Customer\Addresses;
 
 use App\Livewire\Customer\Addresses\Create;
@@ -120,9 +122,7 @@ class CreateTest extends TestCase
             ->set('is_default', true)
             ->call('save');
 
-        $this->assertFalse(
-            $oldDefault->fresh()->is_default
-        );
+        $this->assertFalse($oldDefault->fresh()->is_default);
 
         $this->assertDatabaseHas('addresses', [
             'user_id' => $user->id,

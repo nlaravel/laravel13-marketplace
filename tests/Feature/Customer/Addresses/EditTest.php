@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Customer\Addresses;
 
 use App\Livewire\Customer\Addresses\Edit;

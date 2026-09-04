@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\app",
+    "\\app\\Http",
+    "\\app\\Http\\Requests\\Api",
+    "\\app\\Http\\Requests\\Api\\V1",
+    "\\app\\Http\\Requests\\Api\\V1\\Customer",
+    "\\app\\Services",
+    "\\app\\Services\\Customer"
+  ],
+  "SelectedNode": "\\app\\Services\\Customer\\AddressService.php",
+  "PreviewInSolutionExplorer": false
+}

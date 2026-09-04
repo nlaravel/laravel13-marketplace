@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Customer\Addresses;
 
 use App\Services\Customer\AddressService;
@@ -128,25 +130,15 @@ class Create extends Component
     {
         $validated = $this->validate();
 
-        $this->addressService->createAddress(
-            auth()->user(),
-            $validated
-        );
+        $this->addressService->createAddress(auth()->user(), $validated);
 
-        session()->flash(
-            'success',
-            'Address created successfully.'
-        );
+        session()->flash('success', 'Address created successfully.');
 
-        $this->redirectRoute(
-            'customer.addresses.index'
-        );
+        $this->redirectRoute('customer.addresses.index');
     }
 
     public function render(): View
     {
-        return view(
-            'livewire.customer.addresses.create'
-        );
+        return view('livewire.customer.addresses.create');
     }
 }

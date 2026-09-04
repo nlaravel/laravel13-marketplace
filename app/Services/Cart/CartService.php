@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Cart;
 
 use App\Enums\CartStatus;
@@ -24,49 +26,28 @@ class CartService
     public function addItem(User $user, ProductVariant $variant, int $quantity): CartItem
     {
         if ($quantity <= 0) {
-            throw new CartException(
-                'Quantity must be greater than zero.'
-            );
+            throw new CartException('Quantity must be greater than zero.');
         }
 
         $this->validateVariant($variant);
 
-        return DB::transaction(function () use (
-            $user,
-            $variant,
-            $quantity
-        ): CartItem {
-            return $this->addItemWithoutTransaction(
-                $user,
-                $variant,
-                $quantity
-            );
-        });
+        return DB::transaction(fn(): CartItem => $this->addItemWithoutTransaction($user, $variant, $quantity));
     }
 
     public function addItems(User $user, array $items): Cart
     {
-        return DB::transaction(function () use (
-            $user,
-            $items
-        ): Cart {
+        return DB::transaction(function () use ($user, $items): Cart {
             foreach ($items as $item) {
                 $variant = ProductVariant::query()
                     ->findOrFail($item['product_variant_id']);
 
                 if ($item['quantity'] <= 0) {
-                    throw new CartException(
-                        'Quantity must be greater than zero.'
-                    );
+                    throw new CartException('Quantity must be greater than zero.');
                 }
 
                 $this->validateVariant($variant);
 
-                $this->addItemWithoutTransaction(
-                    $user,
-                    $variant,
-                    $item['quantity']
-                );
+                $this->addItemWithoutTransaction($user, $variant, $item['quantity']);
             }
 
             return $this->getCartForUser($user);
@@ -76,35 +57,26 @@ class CartService
     public function updateQuantity(User $user, CartItem $item, int $quantity): CartItem
     {
         if ($quantity < 1) {
-            throw new CartException(
-                'Quantity must be at least 1.'
-            );
+            throw new CartException('Quantity must be at least 1.');
         }
 
         $this->ensureCartOwnership($user, $item);
 
-        return DB::transaction(function () use (
-            $item,
-            $quantity
-        ): CartItem {
+        return DB::transaction(function () use ($item, $quantity): CartItem {
             $inventory = $item->productVariant
                 ->inventory()
                 ->lockForUpdate()
                 ->first();
 
             if (! $inventory) {
-                throw new CartException(
-                    'Inventory not found.'
-                );
+                throw new CartException('Inventory not found.');
             }
 
-            $availableQuantity =
-                $inventory->quantity - $inventory->reserved_quantity;
+            $availableQuantity
+                = $inventory->quantity - $inventory->reserved_quantity;
 
             if ($quantity > $availableQuantity) {
-                throw new CartException(
-                    'Insufficient stock.'
-                );
+                throw new CartException('Insufficient stock.');
             }
 
             $item->update([
@@ -145,13 +117,11 @@ class CartService
             ->first();
 
         if (! $inventory) {
-            throw new CartException(
-                'Inventory not found.'
-            );
+            throw new CartException('Inventory not found.');
         }
 
-        $availableQuantity =
-            $inventory->quantity - $inventory->reserved_quantity;
+        $availableQuantity
+            = $inventory->quantity - $inventory->reserved_quantity;
 
         $cart = $this->getActiveCart($user);
 
@@ -165,9 +135,7 @@ class CartService
             : $quantity;
 
         if ($newQuantity > $availableQuantity) {
-            throw new CartException(
-                'Insufficient stock.'
-            );
+            throw new CartException('Insufficient stock.');
         }
 
         if ($item) {
@@ -189,21 +157,15 @@ class CartService
         $variant->loadMissing('product');
 
         if (! $variant->is_active) {
-            throw new CartException(
-                'This product variant is not available.'
-            );
+            throw new CartException('This product variant is not available.');
         }
 
         if (! $variant->product) {
-            throw new CartException(
-                'The product does not exist.'
-            );
+            throw new CartException('The product does not exist.');
         }
 
         if ($variant->product->status !== ProductStatus::ACTIVE) {
-            throw new CartException(
-                'This product is not available.'
-            );
+            throw new CartException('This product is not available.');
         }
     }
 
@@ -212,21 +174,15 @@ class CartService
         $item->loadMissing('cart');
 
         if (! $item->cart) {
-            throw new CartException(
-                'Cart not found.'
-            );
+            throw new CartException('Cart not found.');
         }
 
         if ($item->cart->user_id !== $user->id) {
-            throw new CartException(
-                'This cart item does not belong to the user.'
-            );
+            throw new CartException('This cart item does not belong to the user.');
         }
 
         if ($item->cart->status !== CartStatus::ACTIVE) {
-            throw new CartException(
-                'This cart is not active.'
-            );
+            throw new CartException('This cart is not active.');
         }
     }
 }

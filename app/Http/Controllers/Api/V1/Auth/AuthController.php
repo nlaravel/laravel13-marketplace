@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
@@ -18,11 +20,7 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request): JsonResponse
     {
-        $result = $this->authService->register(
-            $request->string('name')->toString(),
-            $request->string('email')->toString(),
-            $request->string('password')->toString(),
-        );
+        $result = $this->authService->register($request->string('name')->toString(), $request->string('email')->toString(), $request->string('password')->toString(), );
 
         return response()->json([
             'message' => 'Registration successful.',
@@ -35,10 +33,7 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        $result = $this->authService->login(
-            $request->string('email')->toString(),
-            $request->string('password')->toString(),
-        );
+        $result = $this->authService->login($request->string('email')->toString(), $request->string('password')->toString(), );
 
         return response()->json([
             'message' => 'Login successful.',
@@ -65,9 +60,7 @@ class AuthController extends Controller
 
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
-        $message = $this->authService->sendResetLink(
-            $request->string('email')->toString()
-        );
+        $message = $this->authService->sendResetLink($request->string('email')->toString());
 
         return response()->json([
             'message' => $message,
@@ -76,11 +69,7 @@ class AuthController extends Controller
 
     public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
-        $this->authService->resetPassword(
-            $request->string('email')->toString(),
-            $request->string('password')->toString(),
-            $request->string('token')->toString(),
-        );
+        $this->authService->resetPassword($request->string('email')->toString(), $request->string('password')->toString(), $request->string('token')->toString(), );
 
         return response()->json([
             'message' => 'Password reset successfully.',

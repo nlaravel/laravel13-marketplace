@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Customer;
 
 use App\Models\Address;
@@ -47,23 +49,13 @@ class AddressService
     {
         $this->ensureOwnership($user, $address);
 
-        return DB::transaction(function () use (
-            $user,
-            $address,
-            $data
-        ) {
-            $isDefault = array_key_exists(
-                'is_default',
-                $data
-            )
+        return DB::transaction(function () use ($user, $address, $data) {
+            $isDefault = array_key_exists('is_default', $data)
                 ? (bool) $data['is_default']
                 : (bool) $address->is_default;
 
             if ($isDefault) {
-                $this->clearDefaultAddress(
-                    $user,
-                    $address->id
-                );
+                $this->clearDefaultAddress($user, $address->id);
             }
 
             $updateData = [
@@ -89,13 +81,11 @@ class AddressService
         });
     }
 
-    public function deleteAddress(
-        User $user,
-        Address $address
-    ): void {
+    public function deleteAddress(User $user, Address $address): void
+    {
         $this->ensureOwnership($user, $address);
 
-        DB::transaction(function () use ($user, $address) {
+        DB::transaction(function () use ($user, $address): void {
             $wasDefault = (bool) $address->is_default;
 
             $address->delete();
@@ -106,20 +96,12 @@ class AddressService
         });
     }
 
-    public function setDefaultAddress(
-        User $user,
-        Address $address
-    ): Address {
+    public function setDefaultAddress(User $user, Address $address): Address
+    {
         $this->ensureOwnership($user, $address);
 
-        return DB::transaction(function () use (
-            $user,
-            $address
-        ) {
-            $this->clearDefaultAddress(
-                $user,
-                $address->id
-            );
+        return DB::transaction(function () use ($user, $address) {
+            $this->clearDefaultAddress($user, $address->id);
 
             $address->update([
                 'is_default' => true,
@@ -129,20 +111,13 @@ class AddressService
         });
     }
 
-    private function ensureOwnership(
-        User $user,
-        Address $address
-    ): void {
-        abort_unless(
-            (int) $address->user_id === (int) $user->id,
-            404
-        );
+    private function ensureOwnership(User $user, Address $address): void
+    {
+        abort_unless((int) $address->user_id === (int) $user->id, 404);
     }
 
-    private function clearDefaultAddress(
-        User $user,
-        ?int $exceptAddressId = null
-    ): void {
+    private function clearDefaultAddress(User $user, ?int $exceptAddressId = null): void
+    {
         $query = $user->addresses()
             ->where('is_default', true);
 
@@ -155,9 +130,8 @@ class AddressService
         ]);
     }
 
-    private function makeLatestAddressDefault(
-        User $user
-    ): void {
+    private function makeLatestAddressDefault(User $user): void
+    {
         $address = $user->addresses()
             ->latest('id')
             ->first();

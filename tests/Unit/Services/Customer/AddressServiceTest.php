@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Customer;
 
 use App\Models\Address;
@@ -52,20 +54,11 @@ class AddressServiceTest extends TestCase
 
         $this->assertCount(3, $addresses);
 
-        $this->assertSame(
-            $defaultAddress->id,
-            $addresses->first()->id
-        );
+        $this->assertSame($defaultAddress->id, $addresses->first()->id);
 
-        $this->assertSame(
-            $newAddress->id,
-            $addresses->get(1)->id
-        );
+        $this->assertSame($newAddress->id, $addresses->get(1)->id);
 
-        $this->assertSame(
-            $oldAddress->id,
-            $addresses->get(2)->id
-        );
+        $this->assertSame($oldAddress->id, $addresses->get(2)->id);
     }
 
     /*
@@ -82,15 +75,9 @@ class AddressServiceTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $result = $this->addressService->findAddress(
-            $user,
-            $address->id
-        );
+        $result = $this->addressService->findAddress($user, $address->id);
 
-        $this->assertSame(
-            $address->id,
-            $result->id
-        );
+        $this->assertSame($address->id, $result->id);
     }
 
     public function test_find_address_cannot_find_another_users_address(): void
@@ -102,14 +89,9 @@ class AddressServiceTest extends TestCase
             'user_id' => $otherUser->id,
         ]);
 
-        $this->expectException(
-            ModelNotFoundException::class
-        );
+        $this->expectException(ModelNotFoundException::class);
 
-        $this->addressService->findAddress(
-            $user,
-            $address->id
-        );
+        $this->addressService->findAddress($user, $address->id);
     }
 
     /*
@@ -197,24 +179,14 @@ class AddressServiceTest extends TestCase
             'is_default' => false,
         ]);
 
-        $updatedAddress = $this->addressService->updateAddress(
-            $user,
-            $address,
-            [
-                'label' => 'Updated Home',
-                'city' => 'Ramallah',
-            ]
-        );
+        $updatedAddress = $this->addressService->updateAddress($user, $address, [
+            'label' => 'Updated Home',
+            'city' => 'Ramallah',
+        ]);
 
-        $this->assertSame(
-            'Updated Home',
-            $updatedAddress->label
-        );
+        $this->assertSame('Updated Home', $updatedAddress->label);
 
-        $this->assertSame(
-            'Ramallah',
-            $updatedAddress->city
-        );
+        $this->assertSame('Ramallah', $updatedAddress->city);
 
         $this->assertDatabaseHas('addresses', [
             'id' => $address->id,
@@ -237,13 +209,9 @@ class AddressServiceTest extends TestCase
             'is_default' => false,
         ]);
 
-        $this->addressService->updateAddress(
-            $user,
-            $address,
-            [
-                'is_default' => true,
-            ]
-        );
+        $this->addressService->updateAddress($user, $address, [
+            'is_default' => true,
+        ]);
 
         $this->assertDatabaseHas('addresses', [
             'id' => $address->id,
@@ -265,13 +233,9 @@ class AddressServiceTest extends TestCase
             'is_default' => true,
         ]);
 
-        $this->addressService->updateAddress(
-            $user,
-            $address,
-            [
-                'label' => 'Updated Home',
-            ]
-        );
+        $this->addressService->updateAddress($user, $address, [
+            'label' => 'Updated Home',
+        ]);
 
         $this->assertDatabaseHas('addresses', [
             'id' => $address->id,
@@ -295,10 +259,7 @@ class AddressServiceTest extends TestCase
             'is_default' => false,
         ]);
 
-        $this->addressService->deleteAddress(
-            $user,
-            $address
-        );
+        $this->addressService->deleteAddress($user, $address);
 
         $this->assertDatabaseMissing('addresses', [
             'id' => $address->id,
@@ -324,10 +285,7 @@ class AddressServiceTest extends TestCase
             'is_default' => true,
         ]);
 
-        $this->addressService->deleteAddress(
-            $user,
-            $defaultAddress
-        );
+        $this->addressService->deleteAddress($user, $defaultAddress);
 
         $this->assertDatabaseMissing('addresses', [
             'id' => $defaultAddress->id,
@@ -353,19 +311,13 @@ class AddressServiceTest extends TestCase
             'is_default' => true,
         ]);
 
-        $this->addressService->deleteAddress(
-            $user,
-            $address
-        );
+        $this->addressService->deleteAddress($user, $address);
 
         $this->assertDatabaseMissing('addresses', [
             'id' => $address->id,
         ]);
 
-        $this->assertSame(
-            0,
-            $user->addresses()->count()
-        );
+        $this->assertSame(0, $user->addresses()->count());
     }
 
     public function test_delete_non_default_address_keeps_existing_default(): void
@@ -382,10 +334,7 @@ class AddressServiceTest extends TestCase
             'is_default' => false,
         ]);
 
-        $this->addressService->deleteAddress(
-            $user,
-            $address
-        );
+        $this->addressService->deleteAddress($user, $address);
 
         $this->assertDatabaseMissing('addresses', [
             'id' => $address->id,
@@ -417,15 +366,9 @@ class AddressServiceTest extends TestCase
             'is_default' => false,
         ]);
 
-        $result = $this->addressService->setDefaultAddress(
-            $user,
-            $address
-        );
+        $result = $this->addressService->setDefaultAddress($user, $address);
 
-        $this->assertSame(
-            $address->id,
-            $result->id
-        );
+        $this->assertSame($address->id, $result->id);
 
         $this->assertDatabaseHas('addresses', [
             'id' => $address->id,
@@ -455,17 +398,11 @@ class AddressServiceTest extends TestCase
         ]);
 
         try {
-            $this->addressService->updateAddress(
-                $user,
-                $address,
-                [
-                    'label' => 'Hacked',
-                ]
-            );
+            $this->addressService->updateAddress($user, $address, [
+                'label' => 'Hacked',
+            ]);
 
-            $this->fail(
-                'Expected NotFoundHttpException was not thrown.'
-            );
+            $this->fail('Expected NotFoundHttpException was not thrown.');
         } catch (NotFoundHttpException) {
             // Expected exception. Continue to verify database state.
         }
@@ -489,14 +426,9 @@ class AddressServiceTest extends TestCase
         ]);
 
         try {
-            $this->addressService->deleteAddress(
-                $user,
-                $address
-            );
+            $this->addressService->deleteAddress($user, $address);
 
-            $this->fail(
-                'Expected NotFoundHttpException was not thrown.'
-            );
+            $this->fail('Expected NotFoundHttpException was not thrown.');
         } catch (NotFoundHttpException) {
             // Expected exception. Continue to verify database state.
         }
@@ -520,14 +452,9 @@ class AddressServiceTest extends TestCase
         ]);
 
         try {
-            $this->addressService->setDefaultAddress(
-                $user,
-                $address
-            );
+            $this->addressService->setDefaultAddress($user, $address);
 
-            $this->fail(
-                'Expected NotFoundHttpException was not thrown.'
-            );
+            $this->fail('Expected NotFoundHttpException was not thrown.');
         } catch (NotFoundHttpException) {
             // Expected exception. Continue to verify database state.
         }

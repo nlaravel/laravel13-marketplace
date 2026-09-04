@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Customer\Addresses;
 
 use App\Livewire\Customer\Addresses\Index;
@@ -47,16 +49,9 @@ class IndexTest extends TestCase
 
         $this->assertCount(1, $addresses);
 
-        $this->assertSame(
-            $ownAddress->id,
-            $addresses->first()->id
-        );
+        $this->assertSame($ownAddress->id, $addresses->first()->id);
 
-        $this->assertFalse(
-            $addresses->contains(
-                fn (Address $address): bool => $address->id === $otherAddress->id
-            )
-        );
+        $this->assertFalse($addresses->contains(fn(Address $address): bool => $address->id === $otherAddress->id));
     }
 
     public function test_customer_can_delete_own_address(): void
@@ -125,9 +120,7 @@ class IndexTest extends TestCase
                 ->test(Index::class)
                 ->call('delete', $address->id);
 
-            $this->fail(
-                'Expected ModelNotFoundException was not thrown.'
-            );
+            $this->fail('Expected ModelNotFoundException was not thrown.');
         } catch (ModelNotFoundException) {
             // Expected exception. Continue to verify database state.
         }
@@ -155,9 +148,7 @@ class IndexTest extends TestCase
                 ->test(Index::class)
                 ->call('setDefault', $address->id);
 
-            $this->fail(
-                'Expected ModelNotFoundException was not thrown.'
-            );
+            $this->fail('Expected ModelNotFoundException was not thrown.');
         } catch (ModelNotFoundException) {
             // Expected exception. Continue to verify database state.
         }

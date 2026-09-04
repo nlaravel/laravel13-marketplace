@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Customer;
 
 use App\Exceptions\CartException;
@@ -25,17 +27,12 @@ class Cart extends Component
     #[Computed]
     public function cart(): CartModel
     {
-        return $this->cartService->getCartForUser(
-            auth()->user()
-        );
+        return $this->cartService->getCartForUser(auth()->user());
     }
 
     public function increment(CartItem $item): void
     {
-        $this->changeQuantity(
-            $item,
-            $item->quantity + 1
-        );
+        $this->changeQuantity($item, $item->quantity + 1);
     }
 
     public function decrement(CartItem $item): void
@@ -44,10 +41,7 @@ class Cart extends Component
             return;
         }
 
-        $this->changeQuantity(
-            $item,
-            $item->quantity - 1
-        );
+        $this->changeQuantity($item, $item->quantity - 1);
     }
 
     public function remove(int $itemId): void
@@ -55,79 +49,47 @@ class Cart extends Component
         try {
             $item = CartItem::query()->findOrFail($itemId);
 
-            $this->cartService->removeItem(
-                auth()->user(),
-                $item
-            );
+            $this->cartService->removeItem(auth()->user(), $item);
 
             unset($this->cart);
 
             $this->dispatch('cart-updated');
 
-            $this->dispatch(
-                'success',
-                message: 'Item removed from your cart.'
-            );
+            $this->dispatch('success', message: 'Item removed from your cart.');
         } catch (CartException $exception) {
-            $this->dispatch(
-                'error',
-                message: $exception->getMessage()
-            );
+            $this->dispatch('error', message: $exception->getMessage());
         } catch (Throwable) {
-            $this->dispatch(
-                'error',
-                message: 'Something went wrong. Please try again.'
-            );
+            $this->dispatch('error', message: 'Something went wrong. Please try again.');
         }
     }
 
     public function clearCart(): void
     {
         try {
-            $this->cartService->clear(
-                auth()->user()
-            );
+            $this->cartService->clear(auth()->user());
 
             unset($this->cart);
 
             $this->dispatch('cart-updated');
 
-            $this->dispatch(
-                'success',
-                message: 'Your cart has been cleared.'
-            );
+            $this->dispatch('success', message: 'Your cart has been cleared.');
         } catch (Throwable) {
-            $this->dispatch(
-                'error',
-                message: 'Something went wrong. Please try again.'
-            );
+            $this->dispatch('error', message: 'Something went wrong. Please try again.');
         }
     }
 
-    private function changeQuantity(
-        CartItem $item,
-        int $quantity
-    ): void {
+    private function changeQuantity(CartItem $item, int $quantity): void
+    {
         try {
-            $this->cartService->updateQuantity(
-                auth()->user(),
-                $item,
-                $quantity
-            );
+            $this->cartService->updateQuantity(auth()->user(), $item, $quantity);
 
             unset($this->cart);
 
             $this->dispatch('cart-updated');
         } catch (CartException $exception) {
-            $this->dispatch(
-                'error',
-                message: $exception->getMessage()
-            );
+            $this->dispatch('error', message: $exception->getMessage());
         } catch (Throwable) {
-            $this->dispatch(
-                'error',
-                message: 'Something went wrong. Please try again.'
-            );
+            $this->dispatch('error', message: 'Something went wrong. Please try again.');
         }
     }
 

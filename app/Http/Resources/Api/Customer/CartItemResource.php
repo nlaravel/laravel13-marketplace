@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources\Api\Customer;
 
 use Illuminate\Http\Request;
@@ -21,22 +23,12 @@ class CartItemResource extends JsonResource
             'id' => $this->id,
             'quantity' => $quantity,
             'unit_price' => number_format($unitPrice, 2, '.', ''),
-            'subtotal' => number_format(
-                $unitPrice * $quantity,
-                2,
-                '.',
-                ''
-            ),
+            'subtotal' => number_format($unitPrice * $quantity, 2, '.', ''),
 
             'product_variant' => [
                 'id' => $this->productVariant->id,
                 'sku' => $this->productVariant->sku,
-                'price' => number_format(
-                    $unitPrice,
-                    2,
-                    '.',
-                    ''
-                ),
+                'price' => number_format($unitPrice, 2, '.', ''),
 
                 'product' => [
                     'id' => $this->productVariant->product->id,

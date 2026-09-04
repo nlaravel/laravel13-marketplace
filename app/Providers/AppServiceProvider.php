@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Services\Payment\Contracts\PaymentGateway;
@@ -13,10 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(
-            PaymentGateway::class,
-            FakePaymentGateway::class
-        );
+        $this->app->bind(PaymentGateway::class, FakePaymentGateway::class);
     }
 
     /**

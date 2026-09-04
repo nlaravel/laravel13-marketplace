@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Checkout;
 
 use App\Enums\CartStatus;
@@ -47,9 +49,7 @@ class CheckoutService
             ->first();
 
         if (! $cart) {
-            throw new InvalidArgumentException(
-                'Active cart not found.'
-            );
+            throw new InvalidArgumentException('Active cart not found.');
         }
 
         return $cart;
@@ -58,61 +58,45 @@ class CheckoutService
     private function validateCart(Cart $cart): void
     {
         if ($cart->items->isEmpty()) {
-            throw new InvalidArgumentException(
-                'Cart is empty.'
-            );
+            throw new InvalidArgumentException('Cart is empty.');
         }
 
         foreach ($cart->items as $item) {
             $variant = $item->productVariant;
 
             if (! $variant) {
-                throw new InvalidArgumentException(
-                    'Product variant not found.'
-                );
+                throw new InvalidArgumentException('Product variant not found.');
             }
 
             if (! $variant->is_active) {
-                throw new InvalidArgumentException(
-                    "Product variant {$variant->id} is inactive."
-                );
+                throw new InvalidArgumentException("Product variant {$variant->id} is inactive.");
             }
 
             $product = $variant->product;
 
             if (! $product) {
-                throw new InvalidArgumentException(
-                    'Product not found.'
-                );
+                throw new InvalidArgumentException('Product not found.');
             }
 
             if (! $product->store) {
-                throw new InvalidArgumentException(
-                    'Store not found.'
-                );
+                throw new InvalidArgumentException('Store not found.');
             }
 
             $inventory = $variant->inventory;
 
             if (! $inventory) {
-                throw new InvalidArgumentException(
-                    "Inventory not found for variant {$variant->id}."
-                );
+                throw new InvalidArgumentException("Inventory not found for variant {$variant->id}.");
             }
 
             if ($item->quantity > $inventory->available_quantity) {
-                throw new InvalidArgumentException(
-                    "Insufficient stock for variant {$variant->id}."
-                );
+                throw new InvalidArgumentException("Insufficient stock for variant {$variant->id}.");
             }
         }
     }
 
     private function createOrder(User $customer, Cart $cart): Order
     {
-        $subtotal = $cart->items->sum(function ($item) {
-            return $item->productVariant->price * $item->quantity;
-        });
+        $subtotal = $cart->items->sum(fn($item) => $item->productVariant->price * $item->quantity);
 
         return Order::create([
             'customer_id' => $customer->id,
@@ -129,14 +113,10 @@ class CheckoutService
 
     private function createSellerOrders(Order $order, Cart $cart): void
     {
-        $groups = $cart->items->groupBy(function ($item) {
-            return $item->productVariant->product->store_id;
-        });
+        $groups = $cart->items->groupBy(fn($item) => $item->productVariant->product->store_id);
 
         foreach ($groups as $storeId => $items) {
-            $subtotal = $items->sum(function ($item) {
-                return $item->productVariant->price * $item->quantity;
-            });
+            $subtotal = $items->sum(fn($item) => $item->productVariant->price * $item->quantity);
 
             $sellerOrder = $order->sellerOrders()->create([
                 'store_id' => $storeId,
@@ -185,9 +165,7 @@ class CheckoutService
             ->first();
 
         if (! $address) {
-            throw new InvalidArgumentException(
-                'Default address not found.'
-            );
+            throw new InvalidArgumentException('Default address not found.');
         }
 
         $order->addresses()->create([
@@ -213,6 +191,6 @@ class CheckoutService
 
     private function generateOrderNumber(): string
     {
-        return 'ORD-'.now()->format('YmdHis').'-'.random_int(1000, 9999);
+        return 'ORD-' . now()->format('YmdHis') . '-' . random_int(1000, 9999);
     }
 }
