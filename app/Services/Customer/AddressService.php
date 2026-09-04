@@ -24,7 +24,7 @@ class AddressService
     public function createAddress(User $user, array $data): Address
     {
         return DB::transaction(function () use ($user, $data) {
-            $isDefault = (bool)($data['is_default'] ?? false);
+            $isDefault = (bool) ($data['is_default'] ?? false);
 
             if ($isDefault) {
                 $this->clearDefaultAddress($user);
@@ -56,8 +56,8 @@ class AddressService
                 'is_default',
                 $data
             )
-                ? (bool)$data['is_default']
-                : (bool)$address->is_default;
+                ? (bool) $data['is_default']
+                : (bool) $address->is_default;
 
             if ($isDefault) {
                 $this->clearDefaultAddress(
@@ -92,12 +92,11 @@ class AddressService
     public function deleteAddress(
         User $user,
         Address $address
-    ): void
-    {
+    ): void {
         $this->ensureOwnership($user, $address);
 
         DB::transaction(function () use ($user, $address) {
-            $wasDefault = (bool)$address->is_default;
+            $wasDefault = (bool) $address->is_default;
 
             $address->delete();
 
@@ -110,8 +109,7 @@ class AddressService
     public function setDefaultAddress(
         User $user,
         Address $address
-    ): Address
-    {
+    ): Address {
         $this->ensureOwnership($user, $address);
 
         return DB::transaction(function () use (
@@ -134,10 +132,9 @@ class AddressService
     private function ensureOwnership(
         User $user,
         Address $address
-    ): void
-    {
+    ): void {
         abort_unless(
-            (int)$address->user_id === (int)$user->id,
+            (int) $address->user_id === (int) $user->id,
             404
         );
     }
@@ -145,8 +142,7 @@ class AddressService
     private function clearDefaultAddress(
         User $user,
         ?int $exceptAddressId = null
-    ): void
-    {
+    ): void {
         $query = $user->addresses()
             ->where('is_default', true);
 
@@ -161,8 +157,7 @@ class AddressService
 
     private function makeLatestAddressDefault(
         User $user
-    ): void
-    {
+    ): void {
         $address = $user->addresses()
             ->latest('id')
             ->first();

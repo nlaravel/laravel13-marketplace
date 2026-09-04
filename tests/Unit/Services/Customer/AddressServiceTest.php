@@ -14,7 +14,7 @@ class AddressServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-private AddressService $addressService;
+    private AddressService $addressService;
 
     protected function setUp(): void
     {
