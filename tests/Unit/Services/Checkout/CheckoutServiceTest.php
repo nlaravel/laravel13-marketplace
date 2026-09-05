@@ -145,9 +145,11 @@ class CheckoutServiceTest extends TestCase
         $this->expectException(DomainException::class);
         $this->expectExceptionMessage('Cart is empty.');
 
-        $service->checkout($customer);
-
-        $this->assertDatabaseCount('orders', 0);
+        try {
+            $service->checkout($customer);
+        } finally {
+            $this->assertDatabaseCount('orders', 0);
+        }
     }
 
     public function test_it_rejects_checkout_when_stock_is_insufficient(): void
