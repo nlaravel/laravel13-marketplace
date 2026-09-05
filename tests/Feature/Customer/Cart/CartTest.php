@@ -194,6 +194,79 @@ class CartTest extends TestCase
         ]);
     }
 
+
+    public function test_increment_rejects_item_belonging_to_another_user(): void
+    {
+        $owner = User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $variant = ProductVariant::factory()->create();
+
+        Inventory::factory()->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 10,
+            'reserved_quantity' => 0,
+        ]);
+
+        $cart = $owner->carts()->create([
+            'status' => CartStatus::ACTIVE,
+        ]);
+
+        $item = $cart->items()->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 2,
+        ]);
+
+        $this->actingAs($otherUser);
+
+        Livewire::test(Cart::class)
+            ->call('increment', $item)
+            ->assertDispatched('error', message: 'This cart item does not belong to the user.')
+            ->assertNotDispatched('cart-updated');
+
+        $this->assertDatabaseHas('cart_items', [
+            'id' => $item->id,
+            'quantity' => 2,
+        ]);
+    }
+
+    public function test_decrement_rejects_item_belonging_to_another_user(): void
+    {
+        $owner = User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $variant = ProductVariant::factory()->create();
+
+        Inventory::factory()->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 10,
+            'reserved_quantity' => 0,
+        ]);
+
+        $cart = $owner->carts()->create([
+            'status' => CartStatus::ACTIVE,
+        ]);
+
+        $item = $cart->items()->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 3,
+        ]);
+
+        $this->actingAs($otherUser);
+
+        Livewire::test(Cart::class)
+            ->call('decrement', $item)
+            ->assertDispatched('error', message: 'This cart item does not belong to the user.')
+            ->assertNotDispatched('cart-updated');
+
+        $this->assertDatabaseHas('cart_items', [
+            'id' => $item->id,
+            'quantity' => 3,
+        ]);
+    }
+
+
+
     public function test_remove_deletes_item_and_dispatches_events(): void
     {
         $user = User::factory()->create();
