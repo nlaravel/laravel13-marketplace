@@ -57,6 +57,7 @@ class CartTest extends TestCase
 
         Livewire::test(Cart::class)
             ->assertSee('Your cart is empty');
+        // TODO: uncomment once the "browse products" link is implemented on the empty-cart state
         // ->assertSee("You haven't added any products to your cart yet.");
     }
 
