@@ -8,7 +8,7 @@ use App\Enums\DeliveryStatus;
 use App\Models\Delivery;
 use App\Services\Orders\SellerOrderStatusService;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
+use App\Exceptions\DomainException;
 
 class DeliveryService
 {
@@ -20,7 +20,7 @@ class DeliveryService
             $delivery->refresh();
 
             if ($delivery->status !== DeliveryStatus::PENDING) {
-                throw new InvalidArgumentException('Only pending deliveries can be assigned.');
+                throw new DomainException('Only pending deliveries can be assigned.');
             }
 
             $delivery->update([
@@ -51,7 +51,7 @@ class DeliveryService
             $delivery->refresh();
 
             if ($delivery->status !== DeliveryStatus::IN_TRANSIT) {
-                throw new InvalidArgumentException('Only in-transit deliveries can be delivered.');
+                throw new DomainException('Only in-transit deliveries can be delivered.');
             }
 
             $delivery->update([
@@ -78,7 +78,7 @@ class DeliveryService
                 DeliveryStatus::DELIVERED,
                 DeliveryStatus::CANCELLED,
             ], true)) {
-                throw new InvalidArgumentException('Delivered or cancelled deliveries cannot be failed.');
+                throw new DomainException('Delivered or cancelled deliveries cannot be failed.');
             }
 
             $delivery->update([
@@ -100,7 +100,7 @@ class DeliveryService
                 DeliveryStatus::DELIVERED,
                 DeliveryStatus::CANCELLED,
             ], true)) {
-                throw new InvalidArgumentException('Delivered or already cancelled deliveries cannot be cancelled.');
+                throw new DomainException('Delivered or already cancelled deliveries cannot be cancelled.');
             }
 
             $delivery->update([
@@ -118,7 +118,7 @@ class DeliveryService
             $delivery->refresh();
 
             if ($delivery->status !== $from) {
-                throw new InvalidArgumentException("Invalid delivery transition from {$delivery->status->value} to {$to->value}.");
+                throw new DomainException("Invalid delivery transition from {$delivery->status->value} to {$to->value}.");
             }
 
             $delivery->update([

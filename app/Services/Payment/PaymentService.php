@@ -13,7 +13,7 @@ use App\Models\Payment;
 use App\Services\Payment\Contracts\PaymentGateway;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use RuntimeException;
+use App\Exceptions\DomainException;
 
 class PaymentService
 {
@@ -22,7 +22,7 @@ class PaymentService
     public function create(Order $order, PaymentMethod $method): Payment
     {
         if ($order->status !== OrderStatus::PENDING) {
-            throw new RuntimeException('Payment can only be created for a pending order.');
+            throw new DomainException('Payment can only be created for a pending order.');
         }
 
         $existingPayment = $order->payments()
@@ -60,7 +60,7 @@ class PaymentService
     public function refund(Payment $payment): Payment
     {
         if ($payment->status !== PaymentStatus::SUCCEEDED) {
-            throw new RuntimeException('Only successful payments can be refunded.');
+            throw new DomainException('Only successful payments can be refunded.');
         }
 
         return DB::transaction(fn() => $this->gateway->refund($payment));
@@ -72,13 +72,13 @@ class PaymentService
             $payment->refresh();
 
             if ($payment->status !== PaymentStatus::SUCCEEDED) {
-                throw new RuntimeException('Only successful payments can confirm an order.');
+                throw new DomainException('Only successful payments can confirm an order.');
             }
 
             $order = $payment->order()->lockForUpdate()->firstOrFail();
 
             if ($order->status !== OrderStatus::PENDING) {
-                throw new RuntimeException('Only pending orders can be confirmed.');
+                throw new DomainException('Only pending orders can be confirmed.');
             }
 
             $order->update([
