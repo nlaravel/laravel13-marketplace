@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Exceptions\CartException;
+use App\Exceptions\DomainException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -18,7 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'message' => 'Resource not found.',
         ], 404));
 
-        $exceptions->render(fn(CartException $exception) => response()->json([
+        $exceptions->render(fn(DomainException $exception) => response()->json([
             'message' => $exception->getMessage(),
         ], 422));
     })
