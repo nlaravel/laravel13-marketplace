@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace App\Services\Inventory;
 
 use App\Enums\InventoryTransactionType;
+use App\Exceptions\DomainException;
 use App\Models\Cart;
 use App\Models\Inventory;
 use App\Models\Order;
-use App\Exceptions\DomainException;
 
 class InventoryReservationService
 {
     public function reserve(Cart $cart, Order $order): void
     {
         foreach ($cart->items as $item) {
+            // Lock the inventory row because reservation checks the available
+            // quantity and then increments reserved_quantity in the same transaction.
             $inventory = Inventory::where('product_variant_id', $item->product_variant_id)
                 ->lockForUpdate()
                 ->first();
@@ -23,8 +25,8 @@ class InventoryReservationService
                 throw new DomainException("Inventory not found for variant {$item->product_variant_id}.");
             }
 
-            $availableQuantity
-                = $inventory->quantity - $inventory->reserved_quantity;
+            $availableQuantity = $inventory->quantity
+                - $inventory->reserved_quantity;
 
             if ($item->quantity > $availableQuantity) {
                 throw new DomainException("Insufficient stock for variant {$item->product_variant_id}.");
@@ -66,6 +68,8 @@ class InventoryReservationService
                 continue;
             }
 
+            // Lock the inventory row so concurrent releases/reservations cannot
+            // modify reserved_quantity based on the same previous value.
             $inventory = Inventory::where('product_variant_id', $item->product_variant_id)
                 ->lockForUpdate()
                 ->first();

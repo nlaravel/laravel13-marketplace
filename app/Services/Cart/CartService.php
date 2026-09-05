@@ -63,6 +63,8 @@ class CartService
         $this->ensureCartOwnership($user, $item);
 
         return DB::transaction(function () use ($item, $quantity): CartItem {
+            // Lock the inventory row so concurrent cart updates cannot make
+            // stock decisions using the same stale quantity.
             $inventory = $item->productVariant
                 ->inventory()
                 ->lockForUpdate()
@@ -72,8 +74,8 @@ class CartService
                 throw new CartException('Inventory not found.');
             }
 
-            $availableQuantity
-                = $inventory->quantity - $inventory->reserved_quantity;
+            $availableQuantity = $inventory->quantity
+                - $inventory->reserved_quantity;
 
             if ($quantity > $availableQuantity) {
                 throw new CartException('Insufficient stock.');
@@ -112,6 +114,8 @@ class CartService
 
     private function addItemWithoutTransaction(User $user, ProductVariant $variant, int $quantity): CartItem
     {
+        // Lock the inventory row because the available stock is checked
+        // and then used to determine whether the cart quantity can increase.
         $inventory = $variant->inventory()
             ->lockForUpdate()
             ->first();
@@ -120,11 +124,13 @@ class CartService
             throw new CartException('Inventory not found.');
         }
 
-        $availableQuantity
-            = $inventory->quantity - $inventory->reserved_quantity;
+        $availableQuantity = $inventory->quantity
+            - $inventory->reserved_quantity;
 
         $cart = $this->getActiveCart($user);
 
+        // Lock the existing cart item so concurrent requests cannot
+        // update its quantity based on the same previous value.
         $item = $cart->items()
             ->where('product_variant_id', $variant->id)
             ->lockForUpdate()
