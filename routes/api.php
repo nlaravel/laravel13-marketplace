@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\V1\Customer\AddressController;
 use App\Http\Controllers\Api\V1\Customer\CartController;
 use App\Http\Controllers\Api\V1\Customer\ProfileController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Api\V1\Customer\CheckoutController;
 Route::prefix('v1')->group(function (): void {
     Route::prefix('auth')->group(function (): void {
         Route::post('register', [AuthController::class, 'register']);
@@ -70,5 +70,10 @@ Route::prefix('v1/customer')->middleware('auth:sanctum')->group(function (): voi
     Route::delete('/cart', [CartController::class, 'clear'])->name('api.v1.customer.cart.clear');
 
     Route::post('/cart/items/bulk', [CartController::class, 'addItems'])->name('api.v1.customer.cart.addItems');
+
+
+    // checkout
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('api.v1.customer.checkout.store');
+
 
 });

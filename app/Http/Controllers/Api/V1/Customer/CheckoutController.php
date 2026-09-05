@@ -11,12 +11,20 @@ use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
 {
-    public function __construct(private readonly CheckoutService $checkoutService) {}
+    public function __construct(
+        private readonly CheckoutService $checkoutService
+    ) {}
 
-    public function store(Request $request): OrderResource
-    {
-        $order = $this->checkoutService->checkout($request->user());
+public function store(Request $request): OrderResource
+{
+    $order = $this->checkoutService->checkout($request->user());
 
-        return new OrderResource($order);
-    }
+    $order->load([
+        'items',
+        'sellerOrders.items',
+        'addresses',
+    ]);
+
+    return new OrderResource($order);
+}
 }
