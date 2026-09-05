@@ -161,7 +161,8 @@
 
 
             <a
-                    href="{{ route('customer.products.index') }}"
+                    href="#"
+                    {{--href="{{ route('customer.products.index') }}"--}}
                     wire:navigate
                     class="mt-6 inline-flex items-center justify-center gap-2
                        rounded-xl bg-indigo-600 px-4 py-2.5
