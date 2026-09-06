@@ -113,7 +113,7 @@
 
 
                 {{-- Orders --}}
-                <a href="#"
+                <a href="{{ route('customer.orders.index') }}"
                    class="group flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white">
 
                     <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500 transition group-hover:bg-white dark:bg-slate-800 dark:text-slate-400 dark:group-hover:bg-slate-700">
@@ -398,7 +398,7 @@
 
                         </a>
 
-                        <a href="#"
+                        <a href="{{ route('customer.orders.index') }}"
                            class="mt-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
 
                             My Orders

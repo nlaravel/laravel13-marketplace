@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Livewire\Customer\Addresses\Create;
 use App\Livewire\Customer\Addresses\Edit;
 use App\Livewire\Customer\Addresses\Index;
+use App\Livewire\Customer\Orders\Index as OrdersIndex;
 use App\Livewire\Customer\Cart;
 use App\Livewire\Customer\Dashboard;
 use App\Livewire\Customer\Profile;
@@ -25,5 +26,7 @@ Route::middleware(['auth'])->group(function (): void {
 
     /* Cart */
     Route::get('/customer/cart', Cart::class)->name('customer.cart');
+
+    Route::get('/customer/orders', OrdersIndex::class)->name('customer.orders.index');
 
 });
