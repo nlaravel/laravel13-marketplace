@@ -9,7 +9,7 @@ use App\Enums\InventoryTransactionType;
 use App\Enums\OrderAddressType;
 use App\Enums\OrderStatus;
 use App\Enums\SellerOrderStatus;
-use App\Exceptions\DomainException;
+use App\Exceptions\CheckoutException;
 use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Inventory;
@@ -142,7 +142,7 @@ class CheckoutServiceTest extends TestCase
 
         $service = new CheckoutService(new InventoryReservationService());
 
-        $this->expectException(DomainException::class);
+        $this->expectException(CheckoutException::class);
         $this->expectExceptionMessage('Cart is empty.');
 
         try {
@@ -190,7 +190,7 @@ class CheckoutServiceTest extends TestCase
 
         $service = new CheckoutService(new InventoryReservationService());
 
-        $this->expectException(DomainException::class);
+        $this->expectException(CheckoutException::class);
         $this->expectExceptionMessage("Insufficient stock for variant {$variant->id}.");
 
         try {
@@ -251,7 +251,7 @@ class CheckoutServiceTest extends TestCase
 
         $service = new CheckoutService(new InventoryReservationService());
 
-        $this->expectException(DomainException::class);
+        $this->expectException(CheckoutException::class);
         $this->expectExceptionMessage('Default address not found.');
 
         try {
