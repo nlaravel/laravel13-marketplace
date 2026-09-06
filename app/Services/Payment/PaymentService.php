@@ -8,7 +8,7 @@ use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Enums\SellerOrderStatus;
-use App\Exceptions\DomainException;
+use App\Exceptions\PaymentException;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Services\Payment\Contracts\PaymentGateway;
@@ -22,7 +22,7 @@ class PaymentService
     public function create(Order $order, PaymentMethod $method): Payment
     {
         if ($order->status !== OrderStatus::PENDING) {
-            throw new DomainException('Payment can only be created for a pending order.');
+            throw new PaymentException('Payment can only be created for a pending order.');
         }
 
         $existingPayment = $order->payments()
@@ -63,7 +63,7 @@ class PaymentService
     public function refund(Payment $payment): Payment
     {
         if ($payment->status !== PaymentStatus::SUCCEEDED) {
-            throw new DomainException('Only successful payments can be refunded.');
+            throw new PaymentException('Only successful payments can be refunded.');
         }
 
         return DB::transaction(fn(): Payment => $this->gateway->refund($payment));
@@ -75,7 +75,7 @@ class PaymentService
             $payment->refresh();
 
             if ($payment->status !== PaymentStatus::SUCCEEDED) {
-                throw new DomainException('Only successful payments can confirm an order.');
+                throw new PaymentException('Only successful payments can confirm an order.');
             }
 
             // Lock the order row so concurrent payment confirmations cannot
@@ -85,7 +85,7 @@ class PaymentService
                 ->firstOrFail();
 
             if ($order->status !== OrderStatus::PENDING) {
-                throw new DomainException('Only pending orders can be confirmed.');
+                throw new PaymentException('Only pending orders can be confirmed.');
             }
 
             $order->update([

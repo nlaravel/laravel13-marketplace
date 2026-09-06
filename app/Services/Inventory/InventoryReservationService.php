@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Inventory;
 
 use App\Enums\InventoryTransactionType;
-use App\Exceptions\DomainException;
+use App\Exceptions\InventoryException;
 use App\Models\Cart;
 use App\Models\Inventory;
 use App\Models\Order;
@@ -22,14 +22,14 @@ class InventoryReservationService
                 ->first();
 
             if (! $inventory) {
-                throw new DomainException("Inventory not found for variant {$item->product_variant_id}.");
+                throw new InventoryException("Inventory not found for variant {$item->product_variant_id}.");
             }
 
             $availableQuantity = $inventory->quantity
                 - $inventory->reserved_quantity;
 
             if ($item->quantity > $availableQuantity) {
-                throw new DomainException("Insufficient stock for variant {$item->product_variant_id}.");
+                throw new InventoryException("Insufficient stock for variant {$item->product_variant_id}.");
             }
 
             $quantityBefore = $inventory->reserved_quantity;
@@ -75,11 +75,11 @@ class InventoryReservationService
                 ->first();
 
             if (! $inventory) {
-                throw new DomainException("Inventory not found for variant {$item->product_variant_id}.");
+                throw new InventoryException("Inventory not found for variant {$item->product_variant_id}.");
             }
 
             if ($inventory->reserved_quantity < $item->quantity) {
-                throw new DomainException("Insufficient reserved quantity for variant {$item->product_variant_id}.");
+                throw new InventoryException("Insufficient reserved quantity for variant {$item->product_variant_id}.");
             }
 
             $quantityBefore = $inventory->reserved_quantity;

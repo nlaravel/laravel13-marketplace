@@ -8,7 +8,7 @@ use App\Enums\CartStatus;
 use App\Enums\OrderAddressType;
 use App\Enums\OrderStatus;
 use App\Enums\SellerOrderStatus;
-use App\Exceptions\DomainException;
+use App\Exceptions\CheckoutException;
 use App\Models\Cart;
 use App\Models\Inventory;
 use App\Models\Order;
@@ -50,7 +50,7 @@ class CheckoutService
             ->first();
 
         if (! $cart) {
-            throw new DomainException('Active cart not found.');
+            throw new CheckoutException('Active cart not found.');
         }
 
         return $cart;
@@ -59,38 +59,38 @@ class CheckoutService
     private function validateCart(Cart $cart): void
     {
         if ($cart->items->isEmpty()) {
-            throw new DomainException('Cart is empty.');
+            throw new CheckoutException('Cart is empty.');
         }
 
         foreach ($cart->items as $item) {
             $variant = $item->productVariant;
 
             if (! $variant) {
-                throw new DomainException('Product variant not found.');
+                throw new CheckoutException('Product variant not found.');
             }
 
             if (! $variant->is_active) {
-                throw new DomainException("Product variant {$variant->id} is inactive.");
+                throw new CheckoutException("Product variant {$variant->id} is inactive.");
             }
 
             $product = $variant->product;
 
             if (! $product) {
-                throw new DomainException('Product not found.');
+                throw new CheckoutException('Product not found.');
             }
 
             if (! $product->store) {
-                throw new DomainException('Store not found.');
+                throw new CheckoutException('Store not found.');
             }
 
             $inventory = $variant->inventory;
 
             if (! $inventory) {
-                throw new DomainException("Inventory not found for variant {$variant->id}.");
+                throw new CheckoutException("Inventory not found for variant {$variant->id}.");
             }
 
             if ($item->quantity > $this->getAvailableQuantity($inventory)) {
-                throw new DomainException("Insufficient stock for variant {$variant->id}.");
+                throw new CheckoutException("Insufficient stock for variant {$variant->id}.");
             }
         }
     }
@@ -171,7 +171,7 @@ class CheckoutService
             ->first();
 
         if (! $address) {
-            throw new DomainException('Default address not found.');
+            throw new CheckoutException('Default address not found.');
         }
 
         $order->addresses()->create([

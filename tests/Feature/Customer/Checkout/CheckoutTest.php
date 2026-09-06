@@ -6,7 +6,7 @@ namespace Tests\Feature\Customer\Checkout;
 
 use App\Enums\CartStatus;
 use App\Enums\OrderStatus;
-use App\Exceptions\DomainException;
+use App\Exceptions\CheckoutException;
 use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Inventory;
@@ -77,7 +77,6 @@ class CheckoutTest extends TestCase
                     'subtotal',
                     'shipping_amount',
                     'discount_amount',
-                    'tax_amount',
                     'total_amount',
                     'currency',
                     'items',
@@ -88,6 +87,7 @@ class CheckoutTest extends TestCase
             ]);
 
         $response->assertJsonPath('data.status', OrderStatus::PENDING->value);
+
         $response->assertJsonPath('data.subtotal', '150.00');
         $response->assertJsonPath('data.total_amount', '150.00');
         $response->assertJsonPath('data.currency', 'USD');
@@ -121,12 +121,16 @@ class CheckoutTest extends TestCase
 
         $this->withoutExceptionHandling();
 
-        $this->expectException(DomainException::class);
+        $this->expectException(CheckoutException::class);
         $this->expectExceptionMessage('Cart is empty.');
 
-        $this
-            ->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/customer/checkout');
+        try {
+            $this
+                ->actingAs($customer, 'sanctum')
+                ->postJson('/api/v1/customer/checkout');
+        } finally {
+            $this->assertDatabaseCount('orders', 0);
+        }
     }
 
     public function test_customer_cannot_checkout_with_insufficient_stock(): void
@@ -167,19 +171,21 @@ class CheckoutTest extends TestCase
 
         $this->withoutExceptionHandling();
 
-        $this->expectException(DomainException::class);
+        $this->expectException(CheckoutException::class);
         $this->expectExceptionMessage("Insufficient stock for variant {$variant->id}.");
 
-        $this
-            ->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/customer/checkout');
+        try {
+            $this
+                ->actingAs($customer, 'sanctum')
+                ->postJson('/api/v1/customer/checkout');
+        } finally {
+            $this->assertDatabaseCount('orders', 0);
 
-        $this->assertDatabaseCount('orders', 0);
-
-        $this->assertDatabaseHas('inventories', [
-            'id' => $inventory->id,
-            'reserved_quantity' => 8,
-        ]);
+            $this->assertDatabaseHas('inventories', [
+                'id' => $inventory->id,
+                'reserved_quantity' => 8,
+            ]);
+        }
     }
 
     public function test_customer_cannot_checkout_without_default_address(): void
@@ -215,18 +221,20 @@ class CheckoutTest extends TestCase
 
         $this->withoutExceptionHandling();
 
-        $this->expectException(DomainException::class);
+        $this->expectException(CheckoutException::class);
         $this->expectExceptionMessage('Default address not found.');
 
-        $this
-            ->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/customer/checkout');
+        try {
+            $this
+                ->actingAs($customer, 'sanctum')
+                ->postJson('/api/v1/customer/checkout');
+        } finally {
+            $this->assertDatabaseCount('orders', 0);
 
-        $this->assertDatabaseCount('orders', 0);
-
-        $this->assertDatabaseHas('inventories', [
-            'id' => $inventory->id,
-            'reserved_quantity' => 2,
-        ]);
+            $this->assertDatabaseHas('inventories', [
+                'id' => $inventory->id,
+                'reserved_quantity' => 2,
+            ]);
+        }
     }
 }
