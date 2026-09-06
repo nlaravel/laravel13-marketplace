@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
-    public function __construct(private readonly InventoryReservationService $inventoryReservationService, ) {}
+    public function __construct(private readonly InventoryReservationService $inventoryReservationService) {}
 
     public function getCustomerOrders(User $customer): LengthAwarePaginator
     {

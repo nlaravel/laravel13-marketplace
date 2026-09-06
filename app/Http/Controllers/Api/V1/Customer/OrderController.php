@@ -30,7 +30,7 @@ class OrderController extends Controller
 
     public function cancel(Request $request, int $order): OrderResource
     {
-        $orderModel = $this->orderService->cancelCustomerOrder($request->user(), $order, );
+        $orderModel = $this->orderService->cancelCustomerOrder($request->user(), $order);
 
         return new OrderResource($orderModel);
     }
