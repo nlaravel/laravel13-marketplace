@@ -27,17 +27,11 @@ class OrderResource extends JsonResource
             'total_amount' => $this->total_amount,
             'currency' => $this->currency,
 
-            'items' => OrderItemResource::collection(
-                $this->whenLoaded('items')
-            ),
+            'items' => OrderItemResource::collection($this->whenLoaded('items')),
 
-            'seller_orders' => SellerOrderResource::collection(
-                $this->whenLoaded('sellerOrders')
-            ),
+            'seller_orders' => SellerOrderResource::collection($this->whenLoaded('sellerOrders')),
 
-            'addresses' => OrderAddressResource::collection(
-                $this->whenLoaded('addresses')
-            ),
+            'addresses' => OrderAddressResource::collection($this->whenLoaded('addresses')),
 
             'created_at' => $this->created_at?->toISOString(),
         ];

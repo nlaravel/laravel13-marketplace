@@ -27,9 +27,7 @@ class SellerOrderResource extends JsonResource
             'commission_amount' => $this->commission_amount,
             'total_amount' => $this->total_amount,
 
-            'items' => OrderItemResource::collection(
-                $this->whenLoaded('items')
-            ),
+            'items' => OrderItemResource::collection($this->whenLoaded('items')),
         ];
     }
 }

@@ -168,9 +168,7 @@ class CheckoutTest extends TestCase
         $this->withoutExceptionHandling();
 
         $this->expectException(DomainException::class);
-        $this->expectExceptionMessage(
-            "Insufficient stock for variant {$variant->id}."
-        );
+        $this->expectExceptionMessage("Insufficient stock for variant {$variant->id}.");
 
         $this
             ->actingAs($customer, 'sanctum')
