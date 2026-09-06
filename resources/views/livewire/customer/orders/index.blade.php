@@ -376,24 +376,27 @@
                         </div>
 
 
-                        {{-- Show route will be wired when the Customer Order Show page is ready --}}
-                        <button
-                                type="button"
-                                disabled
-                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-400 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-500"
+                        <a
+                                href="{{ route('customer.orders.show', $order->id) }}"
+                                wire:navigate
+                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
-                            View Order
+                            <span>View Order</span>
 
-                            <svg class="h-4 w-4"
-                                 fill="none"
-                                 stroke="currentColor"
-                                 viewBox="0 0 24 24">
-                                <path stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="1.7"
-                                      d="M5 12h14m-6-6 6 6-6 6"/>
+                            <svg
+                                    class="h-4 w-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                            >
+                                <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="1.8"
+                                        d="M9 5l7 7-7 7"
+                                />
                             </svg>
-                        </button>
+                        </a>
 
                     </div>
 

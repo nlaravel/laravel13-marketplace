@@ -35,6 +35,7 @@ class OrderService
             ->where('customer_id', $customer->id)
             ->with([
                 'items',
+                'items.productVariant',
                 'sellerOrders.items',
                 'addresses',
             ])

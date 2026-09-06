@@ -28,5 +28,6 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('/customer/cart', Cart::class)->name('customer.cart');
 
     Route::get('/customer/orders', OrdersIndex::class)->name('customer.orders.index');
+    Route::get('/customer/orders/{order}', \App\Livewire\Customer\Orders\Show::class)->name('customer.orders.show');
 
 });
