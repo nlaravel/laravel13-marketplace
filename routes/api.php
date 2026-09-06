@@ -68,6 +68,7 @@ Route::prefix('v1/customer')->middleware('auth:sanctum')->group(function (): voi
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('api.v1.customer.checkout.store');
     Route::get('/orders', [OrderController::class, 'index'])->name('api.v1.customer.orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('api.v1.customer.orders.show');
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('api.v1.customer.orders.cancel');
 
 
 });
