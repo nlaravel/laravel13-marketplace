@@ -1,28 +1,65 @@
-# Marketplace API
+# 🛒 Laravel Marketplace
 
-A modern and scalable marketplace backend built with **Laravel 13**, designed to demonstrate production-ready backend architecture, authentication, APIs, real-time communication, background jobs, payments, delivery, caching, testing, CI/CD, and AI-powered search.
+A production-oriented marketplace backend built with **Laravel 13**, focused on clean architecture, maintainable business logic, automated testing, authentication, authorization, e-commerce workflows, and modern Laravel development practices.
 
-The project is being developed incrementally with a focus on clean architecture, security, scalability, and maintainability.
+The project is being developed as a **portfolio-quality application** with an incremental roadmap toward a scalable marketplace platform.
 
 ---
 
-## 🚀 Project Overview
+## 🚀 Overview
 
-Marketplace is a full-featured e-commerce/marketplace backend where users will be able to:
+Laravel Marketplace is a multi-vendor marketplace application designed to demonstrate real-world backend engineering practices.
 
-* Create and manage accounts
-* Browse products
-* Manage inventory
-* Add products to a shopping cart
-* Place orders
-* Complete payments
-* Track delivery
-* Receive notifications
-* Communicate with real-time services
-* Search products using AI-powered search
-* Manage marketplace operations through role-based permissions
+The platform is being built around the following core concepts:
 
-The project is designed as a **portfolio-quality Laravel application** and follows a progressive development roadmap.
+* Customer accounts and authentication
+* Role-based access control
+* Products and product variants
+* Inventory management
+* Shopping cart
+* Checkout
+* Orders and order lifecycle
+* Addresses
+* Seller orders
+* Payments
+* Notifications
+* Background jobs
+* Real-time communication
+* Redis and caching
+* RESTful APIs
+* Automated testing
+* Docker
+* CI/CD
+* API documentation
+* AI-powered product search
+
+The project emphasizes **clean code, separation of concerns, testability, scalability, and maintainability**.
+
+---
+
+## 🎯 Project Goals
+
+The main goal is to build a realistic Laravel marketplace while demonstrating practical experience with:
+
+* Modern Laravel architecture
+* PHP 8.5+
+* Laravel 13
+* Service Layer architecture
+* Dependency Injection
+* Livewire
+* REST APIs
+* MySQL
+* Authentication and authorization
+* Database design
+* E-commerce workflows
+* Inventory reservation
+* Order management
+* Automated testing
+* GitHub Actions
+* Docker
+* Redis
+* Real-time applications
+* AI-assisted search
 
 ---
 
@@ -33,13 +70,13 @@ The project is designed as a **portfolio-quality Laravel application** and follo
 * PHP 8.5+
 * Laravel 13
 * Laravel Fortify
-* Laravel Livewire
+* Laravel Livewire 4
 * MySQL
 * Redis
 * Laravel Reverb
-* Laravel Queue / Jobs
-* Laravel Events & Listeners
-* Laravel Notifications
+* Laravel Queues / Jobs
+* Events & Listeners
+* Notifications
 
 ## Frontend
 
@@ -49,26 +86,27 @@ The project is designed as a **portfolio-quality Laravel application** and follo
 * Vite
 * JavaScript
 
-## Development Tools
+## Development
 
 * Git
 * GitHub
-* Laragon
-* Mailpit
 * Composer
 * npm
+* Laragon
+* Mailpit
 
 ## Testing
 
 * PHPUnit
 * Laravel Feature Tests
 * Laravel Unit Tests
+* Database Testing
 
 ## DevOps
 
-* Docker
 * GitHub Actions
 * CI/CD
+* Docker
 
 ## API
 
@@ -78,62 +116,115 @@ The project is designed as a **portfolio-quality Laravel application** and follo
 
 ## AI
 
-* AI-powered product search
+* Natural-language product search
 * Semantic search
-* Search optimization
+* Search ranking
+* AI-assisted marketplace features
 
 ---
 
-# 📋 Current Project Status
+# 📌 Project Status
 
-The project is currently under active development.
+The project is under active development.
 
-### Authentication
+### ✅ Implemented
 
-* [x] User Registration
-* [x] User Login
-* [x] User Logout
-* [x] Forgot Password
-* [x] Reset Password
-* [x] Password Reset Email
-* [x] Two-Factor Authentication
-* [x] Passkeys
-* [x] Login Rate Limiting
-* [x] Password Confirmation
-* [ ] Email Verification
+* Laravel 13 application
+* MySQL database
+* Authentication with Laravel Fortify
+* User registration
+* Login / Logout
+* Password reset flow
+* Role & permission infrastructure
+* Customer dashboard
+* Addresses
+* Products foundation
+* Product variants
+* Inventory foundation
+* Inventory reservation / release
+* Shopping cart
+* Checkout workflow
+* Orders
+* Order items
+* Seller orders
+* Order addresses
+* Order status management
+* Customer order listing
+* Customer order details
+* Order cancellation
+* Dashboard statistics
+* Livewire components
+* Service Layer architecture
+* Automated tests
+* Laravel Pint
+* GitHub Actions CI
+* MySQL service in CI
+* Automated test execution in GitHub Actions
 
-### Marketplace
+### 🚧 Planned / In Progress
 
-* [ ] Roles & Permissions
-* [ ] Products
-* [ ] Categories
-* [ ] Product Images
-* [ ] Inventory
-* [ ] Shopping Cart
-* [ ] Checkout
-* [ ] Orders
-* [ ] Payments
-* [ ] Delivery
-* [ ] Notifications
-* [ ] Real-time Tracking
+* Advanced seller management
+* Payment gateway integration
+* Payment webhooks
+* Advanced delivery management
+* Real-time delivery tracking
+* Laravel Reverb integration
+* Redis caching
+* Queue workers
+* Advanced notifications
+* Docker environment
+* API documentation
+* AI-powered product search
+* Semantic search and ranking
+* Production deployment
 
-### Infrastructure
+---
 
-* [ ] Redis
-* [ ] Queue Workers
-* [ ] Events & Listeners
-* [ ] Laravel Reverb
-* [ ] Automated Tests
-* [ ] Docker
-* [ ] CI/CD
-* [ ] API Documentation
+# 🏗 Architecture
 
-### AI
+The project follows a layered approach where business logic is separated from presentation and framework-specific concerns.
 
-* [ ] AI Product Search
-* [ ] Semantic Search
-* [ ] Search Ranking
-* [ ] AI-assisted Marketplace Features
+### Main principles
+
+* Thin controllers
+* Thin Livewire components
+* Service Layer for business logic
+* Dependency Injection
+* Explicit return types
+* Form/request validation
+* Eloquent models for domain relationships
+* Database transactions for critical workflows
+* Reusable business services
+* Automated tests around business logic
+
+### Example architecture
+
+```text
+Livewire / Controller
+        │
+        ▼
+   Service Layer
+        │
+        ├── Validation
+        ├── Business Rules
+        ├── Transactions
+        └── Domain Operations
+        │
+        ▼
+     Eloquent
+        │
+        ▼
+      MySQL
+```
+
+This approach keeps application logic reusable between:
+
+* Web interfaces
+* Livewire components
+* REST APIs
+* Console commands
+* Jobs
+* Future integrations
 
 ---
 
@@ -141,354 +232,26 @@ The project is currently under active development.
 
 Authentication is implemented using **Laravel Fortify**.
 
-Current authentication features include:
+Current authentication functionality includes:
 
 * Registration
 * Login
 * Logout
 * Password reset
 * Password reset email
-* Two-factor authentication
-* Passkeys
 * Password confirmation
-* Rate limiting
+* Login rate limiting
+* Authentication security
 
-Password reset emails are currently tested locally using **Mailpit**.
-
----
-
-# 📧 Local Email Testing
-
-During development, the project uses **Mailpit** to capture outgoing emails locally.
-
-Mailpit SMTP:
-
-```text
-Host: 127.0.0.1
-Port: 1025
-```
-
-Mailpit Web Interface:
-
-```text
-http://localhost:8025
-```
-
-This allows password reset emails and other application emails to be tested without sending real emails.
+Additional Fortify capabilities can be enabled as the project evolves.
 
 ---
 
-# 💻 Requirements
+# 👥 Roles & Permissions
 
-Before running the project, make sure you have:
+The marketplace is designed around role-based access control.
 
-* PHP 8.5+
-* Composer
-* Node.js 20.19+ or 22.12+
-* npm
-* MySQL
-* Git
-
-For local development, **Laragon** can be used.
-
----
-
-# 📥 Installation
-
-## 1. Clone the repository
-
-```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-```
-
-Move into the project:
-
-```bash
-cd marketplace-api
-```
-
----
-
-## 2. Install PHP dependencies
-
-```bash
-composer install
-```
-
----
-
-## 3. Install JavaScript dependencies
-
-```bash
-npm install
-```
-
----
-
-## 4. Create environment file
-
-Copy:
-
-```text
-.env.example
-```
-
-to:
-
-```text
-.env
-```
-
-On Windows:
-
-```bash
-copy .env.example .env
-```
-
----
-
-## 5. Generate application key
-
-```bash
-php artisan key:generate
-```
-
----
-
-# 🗄 Database Configuration
-
-Create a MySQL database for the project.
-
-Example:
-
-```text
-Database Name:
-marketplace
-```
-
-Update `.env`:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=marketplace
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-Adjust the username and password according to your local MySQL installation.
-
----
-
-# 🧱 Run Migrations
-
-Run:
-
-```bash
-php artisan migrate
-```
-
-To recreate the database during development:
-
-```bash
-php artisan migrate:fresh
-```
-
-> ⚠️ `migrate:fresh` deletes existing database tables. Do not use it on production data.
-
----
-
-# 📧 Mailpit Configuration
-
-Configure local email delivery in `.env`:
-
-```env
-MAIL_MAILER=smtp
-MAIL_SCHEME=null
-MAIL_HOST=127.0.0.1
-MAIL_PORT=1025
-MAIL_USERNAME=null
-MAIL_PASSWORD=null
-MAIL_FROM_ADDRESS="no-reply@marketplace.test"
-MAIL_FROM_NAME="Marketplace"
-```
-
-Clear Laravel configuration cache:
-
-```bash
-php artisan optimize:clear
-```
-
-Start Mailpit and open:
-
-```text
-http://localhost:8025
-```
-
----
-
-# 🎨 Frontend Assets
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-For development:
-
-```bash
-npm run dev
-```
-
-For production:
-
-```bash
-npm run build
-```
-
----
-
-# ▶️ Running the Application
-
-Start Laravel:
-
-```bash
-php artisan serve
-```
-
-Or use Laragon's local domain.
-
-Example:
-
-```text
-http://marketplace-api.test
-```
-
----
-
-# 🔑 Authentication Routes
-
-Current authentication routes include:
-
-```text
-/register
-/login
-/logout
-/forgot-password
-/reset-password/{token}
-```
-
-Additional security routes are provided by Laravel Fortify.
-
----
-
-# 📦 Project Structure
-
-```text
-marketplace-api/
-│
-├── app/
-│   ├── Actions/
-│   │   └── Fortify/
-│   │
-│   ├── Http/
-│   │   └── Controllers/
-│   │
-│   ├── Models/
-│   │
-│   └── Providers/
-│
-├── bootstrap/
-│
-├── config/
-│
-├── database/
-│   ├── factories/
-│   ├── migrations/
-│   └── seeders/
-│
-├── public/
-│
-├── resources/
-│   ├── css/
-│   ├── js/
-│   └── views/
-│
-├── routes/
-│
-├── storage/
-│
-├── tests/
-│   ├── Feature/
-│   └── Unit/
-│
-├── .env.example
-├── composer.json
-├── package.json
-└── vite.config.js
-```
-
----
-
-# 🏗 Development Roadmap
-
-The project follows the following development plan:
-
-```text
-1. Laravel 13
-        ↓
-2. GitHub
-        ↓
-3. Database Design
-        ↓
-4. Authentication
-        ↓
-5. Roles & Permissions
-        ↓
-6. Products
-        ↓
-7. Inventory
-        ↓
-8. Cart
-        ↓
-9. Checkout
-        ↓
-10. Orders
-        ↓
-11. Payments
-        ↓
-12. Events & Jobs
-        ↓
-13. Notifications
-        ↓
-14. Delivery
-        ↓
-15. Laravel Reverb / Real-time
-        ↓
-16. Redis / Caching
-        ↓
-17. Tests
-        ↓
-18. Docker
-        ↓
-19. CI/CD
-        ↓
-20. API Documentation
-        ↓
-21. README
-        ↓
-22. AI Search
-```
-
----
-
-# 👥 Planned Roles
-
-The marketplace will support role-based access control.
-
-Planned roles:
+Planned roles include:
 
 ```text
 Admin
@@ -497,67 +260,136 @@ Customer
 Delivery
 ```
 
-Each role will have different permissions and responsibilities.
+Permissions are handled using a dedicated authorization layer.
+
+The goal is to allow each role to access only the operations relevant to its responsibilities.
 
 ---
 
-# 🛒 Planned Marketplace Features
+# 🛍 Marketplace
 
 ## Products
 
-The product system will support:
+The product system is designed to support:
 
 * Product creation
 * Product updates
 * Product deletion
-* Product categories
+* Categories
 * Product images
 * Product pricing
+* Product variants
 * Product status
 * Product availability
 
 ---
 
-## Inventory
+# 📦 Inventory
 
-The inventory system will handle:
+Inventory management is designed around reliable stock handling.
+
+Current architecture includes inventory reservation and release workflows.
+
+Planned functionality includes:
 
 * Stock quantities
 * Stock updates
 * Stock reservations
+* Stock release
 * Low-stock detection
 * Inventory history
+* Concurrent stock protection
+
+Example checkout flow:
+
+```text
+Cart
+  │
+  ▼
+Validate Items
+  │
+  ▼
+Validate Stock
+  │
+  ▼
+Reserve Inventory
+  │
+  ▼
+Create Order
+  │
+  ▼
+Payment
+```
 
 ---
 
-## Cart
+# 🛒 Shopping Cart
 
-Users will be able to:
+The cart system supports the core shopping workflow.
+
+Features include:
 
 * Add products
 * Remove products
 * Update quantities
 * View cart
-* Calculate totals
+* Calculate subtotal
+* Track cart items
+* Validate cart during checkout
 
 ---
 
-## Checkout
+# 💳 Checkout
 
-Checkout will handle:
+Checkout coordinates several business operations.
 
-* Customer information
-* Address selection
-* Cart validation
-* Stock validation
-* Order creation
-* Payment processing
+The checkout workflow is designed around:
+
+```text
+Customer
+   │
+   ▼
+Cart Validation
+   │
+   ▼
+Address Validation
+   │
+   ▼
+Inventory Validation
+   │
+   ▼
+Inventory Reservation
+   │
+   ▼
+Order Creation
+   │
+   ▼
+Payment
+```
+
+Critical operations are handled using database transactions to help preserve data consistency.
 
 ---
 
 # 📦 Orders
 
-Orders will have a lifecycle such as:
+Orders are one of the core domain areas of the application.
+
+The order system includes:
+
+* Orders
+* Order items
+* Seller orders
+* Order addresses
+* Customer ownership
+* Order totals
+* Order status
+* Cancellation
+* Inventory release
+
+## Order lifecycle
+
+The planned order lifecycle is:
 
 ```text
 Pending
@@ -573,7 +405,7 @@ Out for Delivery
 Delivered
 ```
 
-Orders may also be:
+Orders may also enter terminal states such as:
 
 ```text
 Cancelled
@@ -581,28 +413,524 @@ Refunded
 Failed
 ```
 
+Customers can:
+
+* View their orders
+* Open order details
+* View order items
+* View order addresses
+* Cancel eligible orders
+
+---
+
+# 📊 Customer Dashboard
+
+The customer dashboard provides an overview of account activity.
+
+Current dashboard functionality includes:
+
+* Total orders
+* Total addresses
+* Cart items
+* Recent orders
+* Default address
+* Orders by month
+* Orders by status
+* Order activity charts
+
+The dashboard uses dedicated services for business/data retrieval while keeping the Livewire component focused on presentation.
+
+---
+
+# ⚡ Livewire Architecture
+
+Livewire is used for interactive server-rendered application functionality.
+
+The project follows a **Traditional Livewire component structure**.
+
+Example:
+
+```text
+app/
+└── Livewire/
+    └── Customer/
+        ├── Dashboard.php
+        └── Orders/
+            ├── Index.php
+            └── Show.php
+```
+
+The components are intentionally kept thin.
+
+Business logic is delegated to dedicated services.
+
+Example:
+
+```php
+public function boot(OrderService $orderService): void
+{
+    $this->orderService = $orderService;
+}
+```
+
+Computed properties are used where appropriate:
+
+```php
+#[Computed]
+public function orders(): LengthAwarePaginator
+{
+    return $this->orderService->getCustomerOrders(
+        auth()->user()
+    );
+}
+```
+
+---
+
+# 🧩 Service Layer
+
+Business logic is organized into dedicated services.
+
+Example:
+
+```text
+app/
+└── Services/
+    ├── Cart/
+    ├── Checkout/
+    ├── Inventory/
+    ├── Orders/
+    └── Customer/
+```
+
+This provides:
+
+* Reusable business logic
+* Easier testing
+* Cleaner controllers
+* Cleaner Livewire components
+* Better separation of concerns
+* Easier future API integration
+
+---
+
+# 🧪 Testing
+
+The project uses PHPUnit and Laravel's testing tools.
+
+Tests cover critical application behavior including:
+
+* Authentication
+* Authorization
+* Cart
+* Checkout
+* Inventory
+* Orders
+* Services
+* Database operations
+
+Run the test suite with:
+
+```bash
+php artisan test
+```
+
+---
+
+# 🎨 Code Quality
+
+Laravel Pint is used to maintain consistent PHP formatting.
+
+Run Pint locally:
+
+```bash
+php vendor/bin/pint
+```
+
+Check formatting without modifying files:
+
+```bash
+php vendor/bin/pint --test
+```
+
+The CI pipeline uses:
+
+```bash
+vendor/bin/pint --test
+```
+
+This ensures that improperly formatted code does not pass CI.
+
+---
+
+# 🔄 CI/CD
+
+GitHub Actions is used for continuous integration.
+
+The CI pipeline currently performs:
+
+```text
+Push / Pull Request
+        │
+        ▼
+Checkout Repository
+        │
+        ▼
+Setup PHP
+        │
+        ▼
+Install Composer Dependencies
+        │
+        ▼
+Validate Composer
+        │
+        ▼
+Prepare Environment
+        │
+        ▼
+Run Laravel Pint
+        │
+        ▼
+Start MySQL Service
+        │
+        ▼
+Run Automated Tests
+```
+
+The CI environment uses a MySQL service container so database-dependent tests can run automatically.
+
+This helps ensure that every change is validated before being merged.
+
+---
+
+# 🗄 Database
+
+The project uses MySQL as the primary relational database.
+
+Local example:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=marketplace
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+For testing, CI uses a dedicated database:
+
+```text
+marketplace_testing
+```
+
+---
+
+# 📧 Local Email Testing
+
+Mailpit is used during local development to capture outgoing emails.
+
+Example configuration:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=127.0.0.1
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_FROM_ADDRESS="no-reply@marketplace.test"
+MAIL_FROM_NAME="Marketplace"
+```
+
+Mailpit web interface:
+
+```text
+http://localhost:8025
+```
+
+This allows password reset and application emails to be tested without sending real emails.
+
+---
+
+# 💻 Requirements
+
+Before running the project locally, install:
+
+* PHP 8.5+
+* Composer
+* Node.js 20.19+ or 22.12+
+* npm
+* MySQL 8+
+* Git
+
+Recommended local development environment:
+
+* Laragon
+* PhpStorm
+* Mailpit
+
+---
+
+# 📥 Installation
+
+## 1. Clone the repository
+
+```bash
+git clone https://github.com/nlaravel/laravel13-marketplace.git
+```
+
+```bash
+cd laravel13-marketplace
+```
+
+## 2. Install PHP dependencies
+
+```bash
+composer install
+```
+
+## 3. Install JavaScript dependencies
+
+```bash
+npm install
+```
+
+## 4. Create the environment file
+
+### Windows
+
+```cmd
+copy .env.example .env
+```
+
+### Linux / macOS
+
+```bash
+cp .env.example .env
+```
+
+## 5. Generate application key
+
+```bash
+php artisan key:generate
+```
+
+## 6. Configure MySQL
+
+Create a database named:
+
+```text
+marketplace
+```
+
+Then configure `.env`:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=marketplace
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Adjust the credentials according to your local MySQL installation.
+
+## 7. Run migrations
+
+```bash
+php artisan migrate
+```
+
+For development only:
+
+```bash
+php artisan migrate:fresh
+```
+
+> ⚠️ `migrate:fresh` deletes existing database tables. Never use it against production data.
+
+## 8. Clear Laravel caches
+
+```bash
+php artisan optimize:clear
+```
+
+---
+
+# 🎨 Frontend
+
+Start Vite during development:
+
+```bash
+npm run dev
+```
+
+Build production assets:
+
+```bash
+npm run build
+```
+
+---
+
+# ▶️ Running the Application
+
+Start Laravel:
+
+```bash
+php artisan serve
+```
+
+Or use Laragon's local virtual host.
+
+Example:
+
+```text
+http://marketplace-api.test
+```
+
+---
+
+# 🔑 Authentication Routes
+
+Main authentication routes include:
+
+```text
+/register
+/login
+/logout
+/forgot-password
+/reset-password/{token}
+```
+
+Additional authentication functionality is provided through Laravel Fortify.
+
+---
+
+# 🧱 Project Structure
+
+```text
+laravel13-marketplace/
+│
+├── app/
+│   ├── Actions/
+│   │   └── Fortify/
+│   │
+│   ├── Enums/
+│   │
+│   ├── Exceptions/
+│   │
+│   ├── Http/
+│   │   └── Controllers/
+│   │
+│   ├── Livewire/
+│   │
+│   ├── Models/
+│   │
+│   ├── Providers/
+│   │
+│   └── Services/
+│
+├── bootstrap/
+│
+├── config/
+│
+├── database/
+│   ├── factories/
+│   ├── migrations/
+│   └── seeders/
+│
+├── resources/
+│   ├── css/
+│   ├── js/
+│   └── views/
+│
+├── routes/
+│
+├── tests/
+│   ├── Feature/
+│   └── Unit/
+│
+├── .github/
+│   └── workflows/
+│
+├── .env.example
+├── composer.json
+├── package.json
+├── phpunit.xml
+├── vite.config.js
+└── README.md
+```
+
+---
+
+# 🗺️ Development Roadmap
+
+The project is being developed incrementally.
+
+```text
+Laravel 13
+    ↓
+Database Design
+    ↓
+Authentication
+    ↓
+Roles & Permissions
+    ↓
+Products
+    ↓
+Inventory
+    ↓
+Cart
+    ↓
+Checkout
+    ↓
+Orders
+    ↓
+Payments
+    ↓
+Events & Jobs
+    ↓
+Notifications
+    ↓
+Delivery
+    ↓
+Laravel Reverb
+    ↓
+Redis / Caching
+    ↓
+Testing
+    ↓
+Docker
+    ↓
+CI/CD
+    ↓
+API Documentation
+    ↓
+AI Search
+```
+
 ---
 
 # 💳 Payments
 
-The payment system will be designed to support:
+The payment architecture is designed to support:
 
 * Payment creation
-* Payment status tracking
+* Payment status
 * Payment confirmation
 * Failed payments
 * Refunds
 * Payment webhooks
 
-The exact payment provider will be integrated later in the development process.
+A specific payment provider will be integrated during the payment implementation stage.
 
 ---
 
 # 🚚 Delivery
 
-Delivery is a core part of the Marketplace architecture.
-
-Planned functionality:
+The delivery module is planned to support:
 
 * Delivery assignment
 * Delivery status
@@ -614,44 +942,49 @@ Planned functionality:
 
 ---
 
-# ⚡ Real-Time Features
+# ⚡ Real-Time Communication
 
-The project will use **Laravel Reverb** for real-time communication.
+Laravel Reverb is planned for real-time communication.
 
-Planned features include:
+Potential use cases:
 
-* Real-time order status
+* Order status updates
 * Delivery tracking
 * Live location updates
-* Notifications
+* Real-time notifications
 * Seller/customer updates
 
-Example architecture:
+Architecture:
 
 ```text
 Customer
-    ↓
-Laravel API
-    ↓
+   │
+   ▼
+Laravel Application
+   │
+   ▼
 Event
-    ↓
+   │
+   ▼
 Laravel Reverb
-    ↓
-Customer / Seller / Delivery
+   │
+   ├── Customer
+   ├── Seller
+   └── Delivery
 ```
 
 ---
 
-# ⚙️ Events & Jobs
+# ⚙️ Events & Queues
 
-Background processing will be handled using Laravel Jobs and Queues.
+Laravel Jobs, Queues, Events, and Listeners will be used for background processing.
 
-Planned jobs include:
+Potential jobs include:
 
-* Send emails
-* Process notifications
-* Update order status
-* Process payments
+* Sending emails
+* Processing notifications
+* Updating order status
+* Payment processing
 * Inventory operations
 * Delivery updates
 
@@ -659,13 +992,13 @@ Planned jobs include:
 
 # 🔔 Notifications
 
-The notification system will support:
+The notification architecture is designed to support:
 
 * Database notifications
 * Email notifications
 * Real-time notifications
 
-Examples:
+Example events:
 
 ```text
 Order Created
@@ -688,38 +1021,13 @@ Redis will be introduced for:
 * Rate limiting
 * Frequently accessed data
 
-The goal is to improve application performance and scalability.
-
----
-
-# 🧪 Testing
-
-The project will include automated tests for critical business logic.
-
-Testing areas include:
-
-* Authentication
-* Permissions
-* Products
-* Inventory
-* Cart
-* Checkout
-* Orders
-* Payments
-* Delivery
-* APIs
-
-Run tests:
-
-```bash
-php artisan test
-```
+The goal is to improve performance and scalability.
 
 ---
 
 # 🐳 Docker
 
-Docker support will be added to provide a consistent development and deployment environment.
+Docker support is planned to provide a consistent development and deployment environment.
 
 Planned services:
 
@@ -734,77 +1042,71 @@ Queue Worker
 
 ---
 
-# 🔄 CI/CD
-
-GitHub Actions will be used for automated workflows.
-
-Planned pipeline:
-
-```text
-Push / Pull Request
-        ↓
-Install Dependencies
-        ↓
-Run Code Checks
-        ↓
-Run Tests
-        ↓
-Build Assets
-        ↓
-Deployment
-```
-
----
-
 # 📚 API Documentation
 
-The project will provide API documentation for external clients such as:
+The application is designed to expose RESTful APIs for:
 
 * Web applications
 * Mobile applications
 * Third-party integrations
 
-API documentation will include:
+API documentation will cover:
 
 * Authentication
 * Endpoints
 * Request parameters
+* Validation
 * Responses
-* Validation errors
 * HTTP status codes
+* Error handling
 * Examples
 
 ---
 
-# 🤖 AI Search
+# 🤖 AI Product Search
 
 The final stage of the project will introduce AI-powered product search.
 
-Planned functionality:
+Planned architecture:
 
 ```text
 User Query
     ↓
-Search Processing
+Query Processing
     ↓
 Semantic Understanding
     ↓
 Product Retrieval
     ↓
-Ranking
+Search Ranking
     ↓
 Relevant Products
 ```
 
-The goal is to allow users to search for products using natural language instead of relying only on exact keywords.
+The goal is to allow users to search using natural language rather than relying only on exact keyword matching.
+
+Example:
+
+```text
+"comfortable black running shoes under $100"
+```
+
+The system can eventually understand:
+
+* Product type
+* Attributes
+* Color
+* Price
+* User intent
+* Relevance
 
 ---
 
 # 🔒 Security
 
-Security is a major part of the project.
+Security is considered throughout the application architecture.
 
-The application will include:
+The project includes or plans to include:
 
 * Authentication
 * Authorization
@@ -812,18 +1114,12 @@ The application will include:
 * Rate limiting
 * Input validation
 * CSRF protection
-* Secure API authentication
 * Permission checks
+* Secure API authentication
 * Secure payment handling
 * Environment-based secrets
 
-Sensitive configuration must never be committed to GitHub.
-
-The `.env` file is intentionally excluded from Git.
-
----
-
-# 🌱 Environment Variables
+### Environment security
 
 Never commit:
 
@@ -831,65 +1127,73 @@ Never commit:
 .env
 ```
 
-Only:
+Only commit:
 
 ```text
 .env.example
 ```
 
-should be included in the repository.
-
-Before deploying the application, configure environment variables appropriate for the target environment.
+Sensitive credentials must always remain outside the repository.
 
 ---
 
 # 🤝 Contributing
 
-Contributions are welcome.
+Contributions and suggestions are welcome.
 
-1. Fork the repository.
-2. Create a feature branch.
+## 1. Fork the repository
+
+## 2. Create a feature branch
 
 ```bash
 git checkout -b feature/your-feature
 ```
 
-3. Make your changes.
-4. Run tests.
+## 3. Make your changes
+
+## 4. Run code formatting
+
+```bash
+php vendor/bin/pint
+```
+
+## 5. Run tests
 
 ```bash
 php artisan test
 ```
 
-5. Commit your changes.
+## 6. Commit your changes
 
 ```bash
 git commit -m "Add your feature"
 ```
 
-6. Push your branch.
+## 7. Push your branch
 
 ```bash
 git push origin feature/your-feature
 ```
 
-7. Open a Pull Request.
+## 8. Open a Pull Request
+
+GitHub Actions will automatically validate the changes.
 
 ---
 
 # 📄 License
 
-This project is currently developed as a portfolio and learning project.
+This project is currently developed as a **portfolio and learning project**.
 
-License information will be added as the project approaches its production-ready stage.
+License information will be added when the project reaches its intended production-ready stage.
 
 ---
 
 # 👨‍💻 Author
 
-**Noor Abed**
+## Noor Abed
 
-Senior PHP & Laravel Developer
+**Senior PHP & Laravel Developer**
 
 Specialized in:
 
@@ -900,34 +1204,72 @@ Specialized in:
 * MySQL
 * Laravel Livewire
 * Web Applications
+* Clean Architecture
+* Automated Testing
 
 ---
 
-# ⭐ Project Goals
+# ⭐ Why This Project?
 
-The main goals of this project are to demonstrate practical experience with:
+This project demonstrates practical experience in building a modern Laravel application beyond simple CRUD functionality.
 
-* Modern Laravel development
-* Backend architecture
+It focuses on real-world engineering concerns such as:
+
+* Business logic separation
+* Service-oriented architecture
+* Database transactions
+* Inventory reservation
+* Order lifecycle management
 * Authentication and authorization
-* Database design
-* REST APIs
-* E-commerce workflows
-* Payment integration
-* Delivery systems
-* Real-time applications
-* Queues and background processing
-* Redis
 * Automated testing
-* Docker
+* Code quality
 * CI/CD
-* API documentation
+* Scalability
+* Real-time communication
+* Background processing
+* API design
 * AI-powered search
 
 ---
 
-## 📌 Status
+## 📊 Engineering Focus
 
-🚧 **Currently in development**
+```text
+Clean Architecture
+        +
+Laravel 13
+        +
+Service Layer
+        +
+Livewire
+        +
+MySQL
+        +
+Automated Testing
+        +
+GitHub Actions
+        +
+Docker
+        +
+Redis
+        +
+Real-Time Communication
+        +
+AI Search
+```
 
-The project is being built incrementally, and features marked as incomplete will be implemented throughout the development roadmap.
+---
+
+## 📌 Repository
+
+GitHub:
+
+https://github.com/nlaravel/laravel13-marketplace
+
+---
+
+## 🚧 Current Status
+
+**Active Development**
+
+The application is being developed incrementally, with a focus on production-quality architecture, testing, maintainability, and scalability.
