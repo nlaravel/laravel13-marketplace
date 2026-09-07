@@ -51,17 +51,15 @@ jobs:
         cp .env.example .env
         php artisan key:generate
 
-    - name: Configure testing database
-      run: |
-        echo "DB_CONNECTION=mysql" >> .env
-        echo "DB_HOST=127.0.0.1" >> .env
-        echo "DB_PORT=3306" >> .env
-        echo "DB_DATABASE=marketplace_testing" >> .env
-        echo "DB_USERNAME=root" >> .env
-        echo "DB_PASSWORD=root" >> .env
-
     - name: Run Pint
       run: vendor/bin/pint --test
 
     - name: Run tests
+      env:
+        DB_CONNECTION: mysql
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        DB_DATABASE: marketplace_testing
+        DB_USERNAME: root
+        DB_PASSWORD: root
       run: php artisan test
