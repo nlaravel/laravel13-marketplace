@@ -47,7 +47,6 @@ class ShowTest extends TestCase
     public function test_customer_cannot_view_another_users_order(): void
     {
         $customer = User::factory()->create();
-
         $anotherCustomer = User::factory()->create();
 
         $order = Order::factory()->create([
@@ -77,11 +76,14 @@ class ShowTest extends TestCase
                 'order' => $order->id,
             ])
             ->call('cancel')
-            ->assertDispatched('show-success', message: 'Order cancelled successfully.', );
+            ->assertDispatched(
+                'show-success',
+                message: 'Order cancelled successfully.',
+            );
 
         $this->assertDatabaseHas('orders', [
             'id' => $order->id,
-            'status' => OrderStatus::CANCELLED,
+            'status' => OrderStatus::CANCELLED->value,
         ]);
     }
 
@@ -96,11 +98,18 @@ class ShowTest extends TestCase
 
         $this->expectException(OrderException::class);
 
-        Livewire::actingAs($customer)
-            ->test(Show::class, [
-                'order' => $order->id,
-            ])
-            ->call('cancel');
+        try {
+            Livewire::actingAs($customer)
+                ->test(Show::class, [
+                    'order' => $order->id,
+                ])
+                ->call('cancel');
+        } finally {
+            $this->assertDatabaseHas('orders', [
+                'id' => $order->id,
+                'status' => OrderStatus::PROCESSING->value,
+            ]);
+        }
     }
 
     public function test_customer_cannot_cancel_delivered_order(): void
@@ -114,10 +123,17 @@ class ShowTest extends TestCase
 
         $this->expectException(OrderException::class);
 
-        Livewire::actingAs($customer)
-            ->test(Show::class, [
-                'order' => $order->id,
-            ])
-            ->call('cancel');
+        try {
+            Livewire::actingAs($customer)
+                ->test(Show::class, [
+                    'order' => $order->id,
+                ])
+                ->call('cancel');
+        } finally {
+            $this->assertDatabaseHas('orders', [
+                'id' => $order->id,
+                'status' => OrderStatus::DELIVERED->value,
+            ]);
+        }
     }
 }
