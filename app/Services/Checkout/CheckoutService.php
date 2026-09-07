@@ -21,9 +21,9 @@ class CheckoutService
 {
     public function __construct(private InventoryReservationService $inventoryReservationService) {}
 
-    public function checkout(User $customer): Order
+    public function checkout(User $customer, ?int $addressId = null): Order
     {
-        return DB::transaction(function () use ($customer): Order {
+        return DB::transaction(function () use ($customer, $addressId): Order {
             $cart = $this->getActiveCart($customer);
 
             $this->validateCart($cart);
@@ -31,7 +31,7 @@ class CheckoutService
             $order = $this->createOrder($customer, $cart);
 
             $this->createSellerOrders($order, $cart);
-            $this->createOrderAddresses($order, $customer);
+            $this->createOrderAddresses($order, $customer, $addressId);
             $this->inventoryReservationService->reserve($cart, $order);
             $this->clearCart($cart);
 
@@ -164,14 +164,16 @@ class CheckoutService
         }
     }
 
-    private function createOrderAddresses(Order $order, User $customer): void
+    private function createOrderAddresses(Order $order, User $customer, ?int $addressId = null): void
     {
-        $address = $customer->addresses()
-            ->where('is_default', true)
-            ->first();
+        $address = $addressId !== null
+            ? $customer->addresses()->find($addressId)
+            : $customer->addresses()
+                ->where('is_default', true)
+                ->first();
 
         if (! $address) {
-            throw new CheckoutException('Default address not found.');
+            throw new CheckoutException('A valid delivery address is required.');
         }
 
         $order->addresses()->create([

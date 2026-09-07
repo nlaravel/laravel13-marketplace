@@ -14,8 +14,6 @@ use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Inventory;
 use App\Models\Order;
-use App\Models\OrderAddress;
-use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\SellerOrder;
@@ -218,7 +216,7 @@ class CheckoutServiceTest extends TestCase
         }
     }
 
-    public function test_it_rolls_back_checkout_when_default_address_is_missing(): void
+    public function test_it_rolls_back_checkout_when_delivery_address_is_missing(): void
     {
         $customer = User::factory()->create();
 
@@ -252,7 +250,7 @@ class CheckoutServiceTest extends TestCase
         $service = new CheckoutService(new InventoryReservationService());
 
         $this->expectException(CheckoutException::class);
-        $this->expectExceptionMessage('Default address not found.');
+        $this->expectExceptionMessage('A valid delivery address is required.');
 
         try {
             $service->checkout($customer);

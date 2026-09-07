@@ -819,14 +819,14 @@
 
                                     <div class="grid grid-cols-2 gap-2">
 
-                                        <a href="#"
+                                        <a href="{{ route('customer.cart') }}"
                                            class="flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
 
                                             View Cart
 
                                         </a>
 
-                                        <a href="#"
+                                        <a href="{{ route('customer.checkout') }}"
                                            class="flex items-center justify-center rounded-xl bg-slate-900 px-3 py-2.5 text-xs font-bold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100">
 
                                             Checkout

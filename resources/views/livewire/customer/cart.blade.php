@@ -746,16 +746,18 @@
 
 
                         {{-- Checkout --}}
-                        <button
-                                type="button"
-                                disabled
-                                class="mt-2 flex w-full cursor-not-allowed
-                                   items-center justify-center gap-2
-                                   rounded-xl bg-indigo-600 px-4 py-3
-                                   text-sm font-semibold text-white
-                                   opacity-60"
+                        <a
+                                href="{{ route('customer.checkout') }}"
+                                wire:navigate
+                                class="mt-2 flex w-full items-center justify-center gap-2
+               rounded-xl bg-indigo-600 px-4 py-3
+               text-sm font-semibold text-white shadow-sm
+               transition-all duration-200
+               hover:bg-indigo-700 hover:shadow-md
+               focus:outline-none focus:ring-2
+               focus:ring-indigo-500 focus:ring-offset-2
+               dark:focus:ring-offset-slate-800"
                         >
-
                             <svg
                                     class="h-4 w-4"
                                     fill="none"
@@ -771,17 +773,7 @@
                             </svg>
 
                             Checkout
-
-                        </button>
-
-
-                        <p
-                                class="text-center text-xs
-                                   text-slate-400 dark:text-slate-500"
-                        >
-                            Checkout will be available once the checkout
-                            module is ready.
-                        </p>
+                        </a>
 
                     </div>
 

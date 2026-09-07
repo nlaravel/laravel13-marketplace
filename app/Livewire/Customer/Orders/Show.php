@@ -26,6 +26,10 @@ class Show extends Component
     public function mount(int $order): void
     {
         $this->orderId = $order;
+
+        if (session()->has('checkout_success')) {
+            $this->dispatch('show-success', message: session()->pull('checkout_success'), );
+        }
     }
 
     #[Computed]
@@ -36,11 +40,9 @@ class Show extends Component
 
     public function cancel(): void
     {
-        $this->orderService->cancelCustomerOrder(auth()->user(), $this->orderId);
+        $this->orderService->cancelCustomerOrder(auth()->user(), $this->orderId, );
 
-        unset($this->order);
-
-        $this->dispatch('show-success', message: 'Order cancelled successfully.');
+        $this->dispatch('show-success', message: 'Order cancelled successfully.', );
     }
 
     public function render(): View

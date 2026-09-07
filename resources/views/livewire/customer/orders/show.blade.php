@@ -60,9 +60,9 @@
         @if ($this->order->isCancellable())
             <button
                     type="button"
-                    wire:click="cancel"
-                    wire:confirm="Are you sure you want to cancel this order?"
+                    onclick="confirmCancelOrder(this)"
                     wire:loading.attr="disabled"
+                    wire:target="cancel"
                     class="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-900/50 dark:bg-slate-900 dark:text-red-400 dark:hover:bg-red-500/10"
             >
                 <svg
@@ -422,5 +422,28 @@
         </div>
 
     </div>
+    @script
+    <script>
+        window.confirmCancelOrder = async function (button) {
+            const confirmed = await confirmDelete(
+                'This order will be cancelled.'
+            );
 
+            if (!confirmed) {
+                return;
+            }
+
+            const component = Livewire.find(
+                button.closest('[wire\\:id]').getAttribute('wire:id')
+            );
+
+            if (!component) {
+                console.error('Livewire component not found.');
+                return;
+            }
+
+            component.cancel();
+        };
+    </script>
+    @endscript
 </div>

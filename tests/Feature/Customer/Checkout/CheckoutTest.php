@@ -110,6 +110,127 @@ class CheckoutTest extends TestCase
         $this->assertDatabaseCount('cart_items', 0);
     }
 
+    public function test_customer_can_checkout_using_selected_address(): void
+    {
+        $customer = User::factory()->create();
+
+        $defaultAddress = Address::factory()->create([
+            'user_id' => $customer->id,
+            'is_default' => true,
+        ]);
+
+        $selectedAddress = Address::factory()->create([
+            'user_id' => $customer->id,
+            'is_default' => false,
+        ]);
+
+        $store = Store::factory()->create();
+
+        $product = Product::factory()->create([
+            'store_id' => $store->id,
+        ]);
+
+        $variant = ProductVariant::factory()->create([
+            'product_id' => $product->id,
+            'price' => 50,
+        ]);
+
+        Inventory::factory()->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 10,
+            'reserved_quantity' => 2,
+        ]);
+
+        $cart = Cart::factory()->create([
+            'user_id' => $customer->id,
+            'status' => CartStatus::ACTIVE,
+        ]);
+
+        $cart->items()->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 2,
+        ]);
+
+        $response = $this
+            ->actingAs($customer, 'sanctum')
+            ->postJson('/api/v1/customer/checkout', [
+                'address_id' => $selectedAddress->id,
+            ]);
+
+        $response->assertSuccessful();
+
+        $response->assertJsonPath('data.addresses.0.recipient_name', $selectedAddress->recipient_name, );
+
+        $orderId = $response->json('data.id');
+
+        $this->assertDatabaseHas('order_addresses', [
+            'order_id' => $orderId,
+            'type' => 'shipping',
+            'recipient_name' => $selectedAddress->recipient_name,
+        ]);
+
+        $this->assertNotEquals($defaultAddress->recipient_name, $selectedAddress->recipient_name);
+    }
+
+    public function test_customer_cannot_checkout_using_another_customers_address(): void
+    {
+        $customer = User::factory()->create();
+        $otherCustomer = User::factory()->create();
+
+        $address = Address::factory()->create([
+            'user_id' => $otherCustomer->id,
+            'is_default' => true,
+        ]);
+
+        $store = Store::factory()->create();
+
+        $product = Product::factory()->create([
+            'store_id' => $store->id,
+        ]);
+
+        $variant = ProductVariant::factory()->create([
+            'product_id' => $product->id,
+            'price' => 50,
+        ]);
+
+        $inventory = Inventory::factory()->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 10,
+            'reserved_quantity' => 2,
+        ]);
+
+        $cart = Cart::factory()->create([
+            'user_id' => $customer->id,
+            'status' => CartStatus::ACTIVE,
+        ]);
+
+        $cart->items()->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 2,
+        ]);
+
+        $this->withoutExceptionHandling();
+
+        $this->expectException(CheckoutException::class);
+        $this->expectExceptionMessage('A valid delivery address is required.');
+
+        try {
+            $this
+                ->actingAs($customer, 'sanctum')
+                ->postJson('/api/v1/customer/checkout', [
+                    'address_id' => $address->id,
+                ]);
+        } finally {
+            $this->assertDatabaseCount('orders', 0);
+
+            $this->assertDatabaseHas('inventories', [
+                'id' => $inventory->id,
+                'reserved_quantity' => 2,
+            ]);
+        }
+    }
+
+
     public function test_customer_cannot_checkout_with_empty_cart(): void
     {
         $customer = User::factory()->create();
@@ -222,7 +343,7 @@ class CheckoutTest extends TestCase
         $this->withoutExceptionHandling();
 
         $this->expectException(CheckoutException::class);
-        $this->expectExceptionMessage('Default address not found.');
+        $this->expectExceptionMessage('A valid delivery address is required.');
 
         try {
             $this
