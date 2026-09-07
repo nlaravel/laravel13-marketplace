@@ -43,11 +43,38 @@ class CustomerDashboardService
             ->get();
     }
 
+    public function ordersByMonth(int $customerId): array
+    {
+        return Order::query()
+            ->where('customer_id', $customerId)
+            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as total")
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->mapWithKeys(fn($order): array => [
+                $order->month => (int) $order->total,
+            ])
+        ->toArray();
+    }
+
     public function defaultAddress(int $customerId): ?Address
     {
         return Address::query()
             ->where('user_id', $customerId)
             ->where('is_default', true)
             ->first();
+    }
+
+    public function ordersByStatus(int $customerId): array
+    {
+        return Order::query()
+            ->where('customer_id', $customerId)
+            ->selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status')
+            ->mapWithKeys(fn($total, $status): array => [
+                $status instanceof \BackedEnum ? $status->value : $status => (int) $total,
+            ])
+        ->all();
     }
 }

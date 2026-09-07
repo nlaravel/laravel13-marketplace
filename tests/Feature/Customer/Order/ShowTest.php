@@ -76,10 +76,7 @@ class ShowTest extends TestCase
                 'order' => $order->id,
             ])
             ->call('cancel')
-            ->assertDispatched(
-                'show-success',
-                message: 'Order cancelled successfully.',
-            );
+            ->assertDispatched('show-success', message: 'Order cancelled successfully.', );
 
         $this->assertDatabaseHas('orders', [
             'id' => $order->id,
