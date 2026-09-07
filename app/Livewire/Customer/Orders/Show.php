@@ -31,16 +31,16 @@ class Show extends Component
     #[Computed]
     public function order(): Order
     {
-        return $this->orderService->getCustomerOrder(auth()->user(), $this->orderId, );
+        return $this->orderService->getCustomerOrder(auth()->user(), $this->orderId);
     }
 
     public function cancel(): void
     {
-        $this->orderService->cancelCustomerOrder(auth()->user(), $this->orderId, );
+        $this->orderService->cancelCustomerOrder(auth()->user(), $this->orderId);
 
         unset($this->order);
 
-        $this->dispatch('show-success', message: 'Order cancelled successfully.', );
+        $this->dispatch('show-success', message: 'Order cancelled successfully.');
     }
 
     public function render(): View

@@ -71,4 +71,12 @@ class Order extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function isCancellable(): bool
+    {
+        return in_array($this->status, [
+            OrderStatus::PENDING,
+            OrderStatus::CONFIRMED,
+        ], true);
+    }
 }

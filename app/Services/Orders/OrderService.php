@@ -42,16 +42,12 @@ class OrderService
             ->findOrFail($orderId);
     }
 
-
     public function cancelCustomerOrder(User $customer, int $orderId): Order
     {
         return DB::transaction(function () use ($customer, $orderId): Order {
             $order = $this->getCustomerOrder($customer, $orderId);
 
-            if (! in_array($order->status, [
-                OrderStatus::PENDING,
-                OrderStatus::CONFIRMED,
-            ], true)) {
+            if (! $order->isCancellable()) {
                 throw new OrderException('Order cannot be cancelled.');
             }
 

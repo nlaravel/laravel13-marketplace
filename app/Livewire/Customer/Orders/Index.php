@@ -27,7 +27,7 @@ class Index extends Component
     #[Computed]
     public function orders(): LengthAwarePaginator
     {
-        return $this->orderService->getCustomerOrders(auth()->user(), );
+        return $this->orderService->getCustomerOrders(auth()->user());
     }
 
     public function render(): View

@@ -57,7 +57,7 @@
 
         </div>
 
-        @if (in_array($this->order->status->value, ['pending', 'confirmed'], true))
+        @if ($this->order->isCancellable())
             <button
                     type="button"
                     wire:click="cancel"
