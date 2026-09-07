@@ -17,7 +17,7 @@ class Index extends Component
 {
     use WithPagination;
 
-private OrderService $orderService;
+    private OrderService $orderService;
 
     public function boot(OrderService $orderService): void
     {
@@ -27,9 +27,7 @@ private OrderService $orderService;
     #[Computed]
     public function orders(): LengthAwarePaginator
     {
-        return $this->orderService->getCustomerOrders(
-            auth()->user(),
-        );
+        return $this->orderService->getCustomerOrders(auth()->user(), );
     }
 
     public function render(): View

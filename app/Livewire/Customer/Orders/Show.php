@@ -14,9 +14,9 @@ use Livewire\Component;
 #[Layout('components.customer-layout')]
 class Show extends Component
 {
-private OrderService $orderService;
+    private OrderService $orderService;
 
-public int $orderId;
+    public int $orderId;
 
     public function boot(OrderService $orderService): void
     {
@@ -31,25 +31,16 @@ public int $orderId;
     #[Computed]
     public function order(): Order
     {
-        return $this->orderService->getCustomerOrder(
-            auth()->user(),
-            $this->orderId,
-        );
+        return $this->orderService->getCustomerOrder(auth()->user(), $this->orderId, );
     }
 
     public function cancel(): void
     {
-        $this->orderService->cancelCustomerOrder(
-            auth()->user(),
-            $this->orderId,
-        );
+        $this->orderService->cancelCustomerOrder(auth()->user(), $this->orderId, );
 
         unset($this->order);
 
-        $this->dispatch(
-            'show-success',
-            message: 'Order cancelled successfully.',
-        );
+        $this->dispatch('show-success', message: 'Order cancelled successfully.', );
     }
 
     public function render(): View
