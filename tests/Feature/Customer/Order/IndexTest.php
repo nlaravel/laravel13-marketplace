@@ -71,4 +71,17 @@ class IndexTest extends TestCase
             ->test(Index::class)
             ->assertSee(route('customer.orders.show', $order->id), false, );
     }
+
+    public function test_customer_sees_empty_state_when_they_have_no_orders(): void
+    {
+        $customer = User::factory()->create();
+
+        Livewire::actingAs($customer)
+            ->test(Index::class)
+            ->assertSee('No orders yet')
+            ->assertSee('Your orders will appear here once you complete your first purchase.')
+            ->assertSee('Start Shopping');
+    }
+
+
 }

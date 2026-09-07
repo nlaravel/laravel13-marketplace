@@ -35,7 +35,7 @@ class Show extends Component
     #[Computed]
     public function order(): Order
     {
-        return $this->orderService->getCustomerOrder(auth()->user(), $this->orderId);
+        return $this->orderService->getCustomerOrder(auth()->user(), $this->orderId, );
     }
 
     public function cancel(): void

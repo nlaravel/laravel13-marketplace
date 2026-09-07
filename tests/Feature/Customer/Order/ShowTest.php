@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Customer\Order;
 
-use App\Exceptions\OrderException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Enums\OrderStatus;
+use App\Exceptions\OrderException;
 use App\Livewire\Customer\Orders\Show;
 use App\Models\Order;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -63,6 +63,28 @@ class ShowTest extends TestCase
             ]);
     }
 
+    public function test_customer_can_cancel_own_order(): void
+    {
+        $customer = User::factory()->create();
+
+        $order = Order::factory()->create([
+            'customer_id' => $customer->id,
+            'status' => OrderStatus::PENDING,
+        ]);
+
+        Livewire::actingAs($customer)
+            ->test(Show::class, [
+                'order' => $order->id,
+            ])
+            ->call('cancel')
+            ->assertDispatched('show-success', message: 'Order cancelled successfully.', );
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => OrderStatus::CANCELLED,
+        ]);
+    }
+
     public function test_customer_cannot_cancel_processing_order(): void
     {
         $customer = User::factory()->create();
@@ -98,6 +120,4 @@ class ShowTest extends TestCase
             ])
             ->call('cancel');
     }
-
-
 }

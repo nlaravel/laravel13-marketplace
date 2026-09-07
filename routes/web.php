@@ -16,7 +16,6 @@ Route::middleware(['auth'])->group(function (): void {
     /* Dashboard */
     Route::get('/customer', Dashboard::class)->name('customer.dashboard');
     Route::get('/customer/profile', Profile::class)->name('customer.profile');
-
     /* Addresses */
     Route::get('/customer/addresses', Index::class)->name('customer.addresses.index');
 

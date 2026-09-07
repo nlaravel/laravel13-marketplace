@@ -29,26 +29,13 @@ Route::prefix('v1/customer')->middleware('auth:sanctum')->group(function (): voi
 
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::put('/profile', [ProfileController::class, 'update']);
-
-    Route::get('/addresses', [
-        AddressController::class,
-        'index',
-    ]);
-
-    Route::post('/addresses', [
-        AddressController::class,
-        'store',
-    ]);
-
-    Route::get('/addresses/{address}', [
-        AddressController::class,
-        'show',
-    ]);
-
-    Route::put('/addresses/{address}', [ AddressController::class,'update',]);
-
-    Route::delete('/addresses/{address}', [ AddressController::class,'destroy',]);
-    Route::patch('/addresses/{address}/default', [ AddressController::class, 'setDefault',]);
+    // addresses
+    Route::get('/addresses', [ AddressController::class,'index',]);
+    Route::post('/addresses', [ AddressController::class,'store']);
+    Route::get('/addresses/{address}', [AddressController::class,'show']);
+    Route::put('/addresses/{address}', [ AddressController::class,'update']);
+    Route::delete('/addresses/{address}', [ AddressController::class,'destroy']);
+    Route::patch('/addresses/{address}/default', [ AddressController::class, 'setDefault']);
 
     // Cart
     Route::get('/cart', [CartController::class, 'show'])->name('api.v1.customer.cart.show');
