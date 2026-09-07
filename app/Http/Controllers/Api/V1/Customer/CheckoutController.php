@@ -11,11 +11,11 @@ use App\Services\Checkout\CheckoutService;
 
 class CheckoutController extends Controller
 {
-    public function __construct(private readonly CheckoutService $checkoutService, ) {}
+    public function __construct(private readonly CheckoutService $checkoutService) {}
 
     public function store(CheckoutRequest $request): OrderResource
     {
-        $order = $this->checkoutService->checkout($request->user(), $request->validated('address_id'), );
+        $order = $this->checkoutService->checkout($request->user(), $request->validated('address_id'));
 
         $order->load([
             'items',

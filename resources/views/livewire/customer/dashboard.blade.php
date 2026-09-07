@@ -181,28 +181,60 @@
         </div>
 
     </div>
-    {{-- Orders Activity --}}
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
 
-        <div class="border-b border-slate-200 px-6 py-5 dark:border-slate-700">
-            <div>
-                <h2 class="font-semibold text-slate-900 dark:text-white">
-                    Orders Activity
-                </h2>
 
-                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    Your orders over time
-                </p>
+    {{-- Charts --}}
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+        {{-- Orders Activity --}}
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+
+            <div class="border-b border-slate-200 px-6 py-5 dark:border-slate-700">
+                <div>
+                    <h2 class="font-semibold text-slate-900 dark:text-white">
+                        Orders Activity
+                    </h2>
+
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        Your orders over time
+                    </p>
+                </div>
             </div>
+
+            <div class="p-6">
+                <div class="relative h-72">
+                    <canvas id="ordersActivityChart"></canvas>
+                </div>
+            </div>
+
         </div>
 
-        <div class="p-6">
-            <div class="relative h-72">
-                <canvas id="ordersActivityChart"></canvas>
+
+        {{-- Orders by Status --}}
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+
+            <div class="border-b border-slate-200 px-6 py-5 dark:border-slate-700">
+                <div>
+                    <h2 class="font-semibold text-slate-900 dark:text-white">
+                        Orders by Status
+                    </h2>
+
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        Distribution of your orders by status
+                    </p>
+                </div>
             </div>
+
+            <div class="p-6">
+                <div class="relative h-72">
+                    <canvas id="ordersStatusChart"></canvas>
+                </div>
+            </div>
+
         </div>
 
     </div>
+
 
     {{-- Main Content --}}
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -349,7 +381,7 @@
 
                         <button
                                 type="button"
-                                class="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white opacity-60 cursor-not-allowed"
+                                class="inline-flex cursor-not-allowed items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white opacity-60"
                         >
                             Start Shopping
                         </button>
@@ -531,6 +563,7 @@
 
     </div>
 
+
     @assets
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @endassets
@@ -538,25 +571,32 @@
     @script
     <script>
         const ordersByMonth = @js($this->ordersByMonth);
+        const ordersByStatus = @js($this->ordersByStatus);
 
-        const labels = Object.keys(ordersByMonth);
-        const data = Object.values(ordersByMonth);
+        /*
+         * Orders Activity Chart
+         */
+        const monthLabels = Object.keys(ordersByMonth);
+        const monthData = Object.values(ordersByMonth);
 
-        const canvas = $wire.$el.querySelector('#ordersActivityChart');
+        const ordersActivityCanvas = $wire.$el.querySelector('#ordersActivityChart');
 
-        if (canvas) {
-            new Chart(canvas, {
+        if (ordersActivityCanvas) {
+            new Chart(ordersActivityCanvas, {
                 type: 'line',
+
                 data: {
-                    labels: labels,
+                    labels: monthLabels,
+
                     datasets: [{
                         label: 'Orders',
-                        data: data,
+                        data: monthData,
                         borderWidth: 2,
                         tension: 0.4,
                         fill: true,
                     }],
                 },
+
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -570,6 +610,7 @@
                     scales: {
                         y: {
                             beginAtZero: true,
+
                             ticks: {
                                 precision: 0,
                             },
@@ -584,6 +625,44 @@
                 },
             });
         }
+
+
+        /*
+         * Orders by Status Chart
+         */
+        const statusLabels = Object.keys(ordersByStatus);
+        const statusData = Object.values(ordersByStatus);
+
+        const ordersStatusCanvas = $wire.$el.querySelector('#ordersStatusChart');
+
+        if (ordersStatusCanvas) {
+            new Chart(ordersStatusCanvas, {
+                type: 'doughnut',
+
+                data: {
+                    labels: statusLabels,
+
+                    datasets: [{
+                        data: statusData,
+                        borderWidth: 0,
+                    }],
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    cutout: '68%',
+
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                    },
+                },
+            });
+        }
     </script>
     @endscript
+
 </div>

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Delivery;
 
 use App\Enums\DeliveryStatus;
+use App\Exceptions\DeliveryException;
 use App\Models\Delivery;
 use App\Services\Orders\SellerOrderStatusService;
 use Illuminate\Support\Facades\DB;
-use App\Exceptions\DeliveryException;
 
 class DeliveryService
 {

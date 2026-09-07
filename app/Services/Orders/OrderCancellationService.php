@@ -15,7 +15,7 @@ use InvalidArgumentException;
 
 class OrderCancellationService
 {
-    public function __construct(private readonly InventoryReservationService $inventoryReservationService, private readonly PaymentService $paymentService, ) {}
+    public function __construct(private readonly InventoryReservationService $inventoryReservationService, private readonly PaymentService $paymentService) {}
 
     public function cancel(Order $order): Order
     {

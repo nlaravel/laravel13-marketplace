@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services\Cart;
 
-use App\Exceptions\CartException;
-use App\Enums\ProductStatus;
 use App\Enums\CartStatus;
-use App\Models\User;
-use App\Services\Cart\CartService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use App\Enums\ProductStatus;
+use App\Exceptions\CartException;
 use App\Models\Inventory;
 use App\Models\ProductVariant;
+use App\Models\User;
+use App\Services\Cart\CartService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class CartServiceTest extends TestCase
 {
@@ -22,7 +23,7 @@ class CartServiceTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $service = new CartService();
+        $service = new CartService;
 
         $cart = $service->getCartForUser($user);
 
@@ -44,7 +45,7 @@ class CartServiceTest extends TestCase
             'status' => CartStatus::ACTIVE,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $cart = $service->getCartForUser($user);
 
@@ -67,7 +68,7 @@ class CartServiceTest extends TestCase
             'status' => CartStatus::CONVERTED,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $cart = $service->getCartForUser($user);
 
@@ -102,7 +103,7 @@ class CartServiceTest extends TestCase
             'reserved_quantity' => 0,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $cartItem = $service->addItem($user, $variant, 3);
 
@@ -129,7 +130,7 @@ class CartServiceTest extends TestCase
             'reserved_quantity' => 0,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $firstItem = $service->addItem($user, $variant, 3);
         $secondItem = $service->addItem($user, $variant, 2);
@@ -150,7 +151,7 @@ class CartServiceTest extends TestCase
         $user = User::factory()->create();
         $variant = ProductVariant::factory()->create();
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -162,7 +163,7 @@ class CartServiceTest extends TestCase
         $user = User::factory()->create();
         $variant = ProductVariant::factory()->create();
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -180,7 +181,7 @@ class CartServiceTest extends TestCase
             'reserved_quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -198,7 +199,7 @@ class CartServiceTest extends TestCase
             'reserved_quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $item = $service->addItem($user, $variant, 8);
 
@@ -215,7 +216,7 @@ class CartServiceTest extends TestCase
         $user = User::factory()->create();
         $variant = ProductVariant::factory()->create();
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -230,7 +231,7 @@ class CartServiceTest extends TestCase
             'is_active' => false,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -247,7 +248,7 @@ class CartServiceTest extends TestCase
             'status' => ProductStatus::DRAFT,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -273,7 +274,7 @@ class CartServiceTest extends TestCase
             'reserved_quantity' => 0,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $cart = $service->addItems($user, [
             [
@@ -313,7 +314,7 @@ class CartServiceTest extends TestCase
             'reserved_quantity' => 0,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $cart = $service->addItems($user, [
             [
@@ -346,7 +347,7 @@ class CartServiceTest extends TestCase
             'reserved_quantity' => 0,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -369,7 +370,7 @@ class CartServiceTest extends TestCase
             'reserved_quantity' => 0,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -392,7 +393,7 @@ class CartServiceTest extends TestCase
             'reserved_quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -409,7 +410,7 @@ class CartServiceTest extends TestCase
         $user = User::factory()->create();
         $variant = ProductVariant::factory()->create();
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -429,7 +430,7 @@ class CartServiceTest extends TestCase
             'is_active' => false,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -451,7 +452,7 @@ class CartServiceTest extends TestCase
             'status' => ProductStatus::DRAFT,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -467,9 +468,9 @@ class CartServiceTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $service = new CartService();
+        $service = new CartService;
 
-        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
 
         $service->addItems($user, [
             [
@@ -498,7 +499,7 @@ class CartServiceTest extends TestCase
             'reserved_quantity' => 0,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -541,7 +542,7 @@ class CartServiceTest extends TestCase
             'quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $result = $service->getCartForUser($user);
 
@@ -582,7 +583,7 @@ class CartServiceTest extends TestCase
             'quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $updatedItem = $service->updateQuantity($user, $item, 5);
 
@@ -614,7 +615,7 @@ class CartServiceTest extends TestCase
             'quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -641,7 +642,7 @@ class CartServiceTest extends TestCase
             'quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -668,7 +669,7 @@ class CartServiceTest extends TestCase
             'quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $updatedItem = $service->updateQuantity($user, $item, 8);
 
@@ -702,7 +703,7 @@ class CartServiceTest extends TestCase
             'quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -729,7 +730,7 @@ class CartServiceTest extends TestCase
             'quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -750,7 +751,7 @@ class CartServiceTest extends TestCase
             'quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -771,7 +772,7 @@ class CartServiceTest extends TestCase
             'quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $service->removeItem($user, $item);
 
@@ -796,7 +797,7 @@ class CartServiceTest extends TestCase
             'quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -817,7 +818,7 @@ class CartServiceTest extends TestCase
             'quantity' => 2,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $this->expectException(CartException::class);
 
@@ -844,7 +845,7 @@ class CartServiceTest extends TestCase
             'quantity' => 3,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $service->clear($user);
 
@@ -865,7 +866,7 @@ class CartServiceTest extends TestCase
             'status' => CartStatus::ACTIVE,
         ]);
 
-        $service = new CartService();
+        $service = new CartService;
 
         $service->clear($user);
 
@@ -876,7 +877,7 @@ class CartServiceTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $service = new CartService();
+        $service = new CartService;
 
         $service->clear($user);
 
@@ -892,12 +893,4 @@ class CartServiceTest extends TestCase
         $this->assertNotNull($cart);
         $this->assertSame(0, $cart->items()->count());
     }
-
-
-
-
-
-
-
-
 }

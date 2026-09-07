@@ -115,7 +115,7 @@ class SellerOrderStatusService
 
             if ($sellerOrder->status !== $from) {
                 throw new InvalidArgumentException('Cannot change seller order status from '
-                    . "{$sellerOrder->status->value} to {$to->value}.");
+                    ."{$sellerOrder->status->value} to {$to->value}.");
             }
 
             $sellerOrder->update([
@@ -146,7 +146,7 @@ class SellerOrderStatusService
         /*
          * All seller orders are delivered.
          */
-        if ($statuses->every(fn($status) => $status === SellerOrderStatus::DELIVERED)) {
+        if ($statuses->every(fn ($status) => $status === SellerOrderStatus::DELIVERED)) {
             if ($order->status !== OrderStatus::DELIVERED) {
                 $this->orderStatusService->changeStatus($order, OrderStatus::DELIVERED);
             }
@@ -157,7 +157,7 @@ class SellerOrderStatusService
         /*
          * At least one seller order is delivered.
          */
-        if ($statuses->contains(fn($status) => $status === SellerOrderStatus::DELIVERED)) {
+        if ($statuses->contains(fn ($status) => $status === SellerOrderStatus::DELIVERED)) {
             if ($order->status !== OrderStatus::PARTIALLY_DELIVERED) {
                 $this->orderStatusService->changeStatus($order, OrderStatus::PARTIALLY_DELIVERED);
             }

@@ -7,6 +7,7 @@ namespace App\Services\Customer;
 use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Order;
+use BackedEnum;
 use Illuminate\Database\Eloquent\Collection;
 
 class CustomerDashboardService
@@ -51,10 +52,10 @@ class CustomerDashboardService
             ->groupBy('month')
             ->orderBy('month')
             ->get()
-            ->mapWithKeys(fn($order): array => [
+            ->mapWithKeys(fn ($order): array => [
                 $order->month => (int) $order->total,
             ])
-        ->toArray();
+            ->toArray();
     }
 
     public function defaultAddress(int $customerId): ?Address
@@ -72,9 +73,9 @@ class CustomerDashboardService
             ->selectRaw('status, COUNT(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status')
-            ->mapWithKeys(fn($total, $status): array => [
-                $status instanceof \BackedEnum ? $status->value : $status => (int) $total,
+            ->mapWithKeys(fn ($total, $status): array => [
+                $status instanceof BackedEnum ? $status->value : $status => (int) $total,
             ])
-        ->all();
+            ->all();
     }
 }

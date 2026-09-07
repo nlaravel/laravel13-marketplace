@@ -5,9 +5,9 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Customer\AddressController;
 use App\Http\Controllers\Api\V1\Customer\CartController;
-use App\Http\Controllers\Api\V1\Customer\ProfileController;
 use App\Http\Controllers\Api\V1\Customer\CheckoutController;
 use App\Http\Controllers\Api\V1\Customer\OrderController;
+use App\Http\Controllers\Api\V1\Customer\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
@@ -30,12 +30,12 @@ Route::prefix('v1/customer')->middleware('auth:sanctum')->group(function (): voi
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::put('/profile', [ProfileController::class, 'update']);
     // addresses
-    Route::get('/addresses', [ AddressController::class,'index',]);
-    Route::post('/addresses', [ AddressController::class,'store']);
-    Route::get('/addresses/{address}', [AddressController::class,'show']);
-    Route::put('/addresses/{address}', [ AddressController::class,'update']);
-    Route::delete('/addresses/{address}', [ AddressController::class,'destroy']);
-    Route::patch('/addresses/{address}/default', [ AddressController::class, 'setDefault']);
+    Route::get('/addresses', [AddressController::class, 'index']);
+    Route::post('/addresses', [AddressController::class, 'store']);
+    Route::get('/addresses/{address}', [AddressController::class, 'show']);
+    Route::put('/addresses/{address}', [AddressController::class, 'update']);
+    Route::delete('/addresses/{address}', [AddressController::class, 'destroy']);
+    Route::patch('/addresses/{address}/default', [AddressController::class, 'setDefault']);
 
     // Cart
     Route::get('/cart', [CartController::class, 'show'])->name('api.v1.customer.cart.show');
@@ -50,12 +50,10 @@ Route::prefix('v1/customer')->middleware('auth:sanctum')->group(function (): voi
 
     Route::post('/cart/items/bulk', [CartController::class, 'addItems'])->name('api.v1.customer.cart.addItems');
 
-
     // checkout
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('api.v1.customer.checkout.store');
     Route::get('/orders', [OrderController::class, 'index'])->name('api.v1.customer.orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('api.v1.customer.orders.show');
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('api.v1.customer.orders.cancel');
-
 
 });

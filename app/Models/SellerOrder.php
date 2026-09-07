@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class SellerOrder extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'order_id',
         'store_id',

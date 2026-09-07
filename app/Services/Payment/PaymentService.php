@@ -41,9 +41,9 @@ class PaymentService
         return DB::transaction(function () use ($order, $method): Payment {
             $payment = $order->payments()->create([
                 'payment_number' => 'PAY-'
-                    . now()->format('YmdHis')
-                    . '-'
-                    . Str::upper(Str::random(4)),
+                    .now()->format('YmdHis')
+                    .'-'
+                    .Str::upper(Str::random(4)),
                 'provider' => 'fake',
                 'method' => $method,
                 'status' => PaymentStatus::PENDING,
@@ -66,7 +66,7 @@ class PaymentService
             throw new PaymentException('Only successful payments can be refunded.');
         }
 
-        return DB::transaction(fn(): Payment => $this->gateway->refund($payment));
+        return DB::transaction(fn (): Payment => $this->gateway->refund($payment));
     }
 
     public function confirmOrderFromPayment(Payment $payment): Order

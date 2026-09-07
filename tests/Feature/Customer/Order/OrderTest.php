@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Customer\Order;
 
-use App\Exceptions\InventoryException;
 use App\Enums\InventoryTransactionType;
 use App\Enums\OrderStatus;
 use App\Models\Address;
@@ -18,8 +17,8 @@ use App\Models\SellerOrder;
 use App\Models\Store;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\TestCase;
 
 class OrderTest extends TestCase
 {
@@ -149,7 +148,7 @@ class OrderTest extends TestCase
             ->assertJsonPath('data.order_number', $order->order_number)
             ->assertJsonPath('data.status', OrderStatus::PENDING->value)
             ->assertJsonPath('data.subtotal', '150.00')
-        ->assertJsonPath('data.total_amount', '150.00');
+            ->assertJsonPath('data.total_amount', '150.00');
 
         $response->assertJsonStructure([
             'data' => [
@@ -276,9 +275,9 @@ class OrderTest extends TestCase
             ->actingAs($customer, 'sanctum')
             ->postJson("/api/v1/customer/orders/{$order->id}/cancel")
             ->assertUnprocessable()
-        ->assertJson([
-            'message' => 'Order cannot be cancelled.',
-        ]);
+            ->assertJson([
+                'message' => 'Order cannot be cancelled.',
+            ]);
     }
 
     public static function nonCancellableStatuses(): array

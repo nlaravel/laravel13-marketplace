@@ -83,7 +83,7 @@ class CartController extends Controller
 
     public function addItems(BulkAddCartItemsRequest $request): JsonResponse
     {
-        $cart = $this->cartService->addItems($request->user(), $request->validated('items'), );
+        $cart = $this->cartService->addItems($request->user(), $request->validated('items'));
 
         return response()->json([
             'data' => new CartResource($cart),

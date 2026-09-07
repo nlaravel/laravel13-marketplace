@@ -26,7 +26,7 @@ class Index extends Component
 
     private CheckoutService $checkoutService;
 
-    public function boot(CartService $cartService, AddressService $addressService, CheckoutService $checkoutService, ): void
+    public function boot(CartService $cartService, AddressService $addressService, CheckoutService $checkoutService): void
     {
         $this->cartService = $cartService;
         $this->addressService = $addressService;
@@ -57,7 +57,7 @@ class Index extends Component
     #[Computed]
     public function subtotal(): float
     {
-        return (float) $this->cart->items->sum(fn($item) => $item->quantity * $item->productVariant->price);
+        return (float) $this->cart->items->sum(fn ($item) => $item->quantity * $item->productVariant->price);
     }
 
     public function placeOrder(): void
@@ -74,11 +74,11 @@ class Index extends Component
             ]);
         }
 
-        $order = $this->checkoutService->checkout(auth()->user(), $this->addressId, );
+        $order = $this->checkoutService->checkout(auth()->user(), $this->addressId);
 
         session()->flash('checkout_success', 'Order placed successfully.');
 
-        $this->redirectRoute('customer.orders.show', ['order' => $order->id], );
+        $this->redirectRoute('customer.orders.show', ['order' => $order->id]);
     }
 
     public function render(): View

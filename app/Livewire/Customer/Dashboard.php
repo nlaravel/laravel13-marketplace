@@ -58,6 +58,12 @@ class Dashboard extends Component
         return $this->dashboardService->ordersByMonth(auth()->id());
     }
 
+    #[Computed]
+    public function ordersByStatus(): array
+    {
+        return $this->dashboardService->ordersByStatus(auth()->id());
+    }
+
     public function render(): View
     {
         return view('livewire.customer.dashboard');

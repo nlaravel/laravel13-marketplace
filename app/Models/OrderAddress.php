@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class OrderAddress extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'order_id',
         'type',

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class SellerProfile extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'user_id',
         'business_name',

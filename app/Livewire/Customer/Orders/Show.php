@@ -28,21 +28,21 @@ class Show extends Component
         $this->orderId = $order;
 
         if (session()->has('checkout_success')) {
-            $this->dispatch('show-success', message: session()->pull('checkout_success'), );
+            $this->dispatch('show-success', message: session()->pull('checkout_success'));
         }
     }
 
     #[Computed]
     public function order(): Order
     {
-        return $this->orderService->getCustomerOrder(auth()->user(), $this->orderId, );
+        return $this->orderService->getCustomerOrder(auth()->user(), $this->orderId);
     }
 
     public function cancel(): void
     {
-        $this->orderService->cancelCustomerOrder(auth()->user(), $this->orderId, );
+        $this->orderService->cancelCustomerOrder(auth()->user(), $this->orderId);
 
-        $this->dispatch('show-success', message: 'Order cancelled successfully.', );
+        $this->dispatch('show-success', message: 'Order cancelled successfully.');
     }
 
     public function render(): View

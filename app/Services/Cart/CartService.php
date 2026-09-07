@@ -31,7 +31,7 @@ class CartService
 
         $this->validateVariant($variant);
 
-        return DB::transaction(fn(): CartItem => $this->addItemWithoutTransaction($user, $variant, $quantity));
+        return DB::transaction(fn (): CartItem => $this->addItemWithoutTransaction($user, $variant, $quantity));
     }
 
     public function addItems(User $user, array $items): Cart

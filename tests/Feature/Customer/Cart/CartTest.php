@@ -195,7 +195,6 @@ class CartTest extends TestCase
         ]);
     }
 
-
     public function test_increment_rejects_item_belonging_to_another_user(): void
     {
         $owner = User::factory()->create();
@@ -265,8 +264,6 @@ class CartTest extends TestCase
             'quantity' => 3,
         ]);
     }
-
-
 
     public function test_remove_deletes_item_and_dispatches_events(): void
     {

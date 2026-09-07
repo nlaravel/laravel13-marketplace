@@ -159,7 +159,7 @@ class CheckoutTest extends TestCase
 
         $response->assertSuccessful();
 
-        $response->assertJsonPath('data.addresses.0.recipient_name', $selectedAddress->recipient_name, );
+        $response->assertJsonPath('data.addresses.0.recipient_name', $selectedAddress->recipient_name);
 
         $orderId = $response->json('data.id');
 
@@ -229,7 +229,6 @@ class CheckoutTest extends TestCase
             ]);
         }
     }
-
 
     public function test_customer_cannot_checkout_with_empty_cart(): void
     {
