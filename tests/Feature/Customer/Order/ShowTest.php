@@ -64,10 +64,7 @@ class ShowTest extends TestCase
             ])
             ->set('paymentMethod', PaymentMethod::CARD->value)
             ->call('pay')
-            ->assertDispatched(
-                'show-success',
-                message: 'Payment completed successfully.'
-            );
+            ->assertDispatched('show-success', message: 'Payment completed successfully.');
 
         $this->assertDatabaseHas('payments', [
             'order_id' => $order->id,
@@ -102,10 +99,7 @@ class ShowTest extends TestCase
                 'order' => $order->id,
             ])
             ->call('confirmPayment')
-            ->assertDispatched(
-                'show-success',
-                message: 'Order confirmed successfully.'
-            );
+            ->assertDispatched('show-success', message: 'Order confirmed successfully.');
 
         $this->assertDatabaseHas('orders', [
             'id' => $order->id,

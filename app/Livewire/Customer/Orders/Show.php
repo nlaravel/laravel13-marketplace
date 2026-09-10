@@ -25,10 +25,8 @@ class Show extends Component
 
     public string $paymentMethod = PaymentMethod::CARD->value;
 
-    public function boot(
-        OrderService $orderService,
-        PaymentService $paymentService
-    ): void {
+    public function boot(OrderService $orderService, PaymentService $paymentService): void
+    {
         $this->orderService = $orderService;
         $this->paymentService = $paymentService;
     }
@@ -38,20 +36,14 @@ class Show extends Component
         $this->orderId = $order;
 
         if (session()->has('checkout_success')) {
-            $this->dispatch(
-                'show-success',
-                message: session()->pull('checkout_success')
-            );
+            $this->dispatch('show-success', message: session()->pull('checkout_success'));
         }
     }
 
     #[Computed]
     public function order(): Order
     {
-        return $this->orderService->getCustomerOrder(
-            auth()->user(),
-            $this->orderId
-        );
+        return $this->orderService->getCustomerOrder(auth()->user(), $this->orderId);
     }
 
     #[Computed]
@@ -65,46 +57,28 @@ class Show extends Component
         $paymentMethod = PaymentMethod::tryFrom($this->paymentMethod);
 
         if ($paymentMethod === null) {
-            $this->addError(
-                'paymentMethod',
-                'Please select a valid payment method.'
-            );
+            $this->addError('paymentMethod', 'Please select a valid payment method.');
 
             return;
         }
 
-        $this->paymentService->create(
-            $this->order,
-            $paymentMethod
-        );
+        $this->paymentService->create($this->order, $paymentMethod);
 
-        $this->dispatch(
-            'show-success',
-            message: 'Payment completed successfully.'
-        );
+        $this->dispatch('show-success', message: 'Payment completed successfully.');
     }
 
     public function confirmPayment(): void
     {
         $this->paymentService->confirmOrder($this->order);
 
-        $this->dispatch(
-            'show-success',
-            message: 'Order confirmed successfully.'
-        );
+        $this->dispatch('show-success', message: 'Order confirmed successfully.');
     }
 
     public function cancel(): void
     {
-        $this->orderService->cancelCustomerOrder(
-            auth()->user(),
-            $this->orderId
-        );
+        $this->orderService->cancelCustomerOrder(auth()->user(), $this->orderId);
 
-        $this->dispatch(
-            'show-success',
-            message: 'Order cancelled successfully.'
-        );
+        $this->dispatch('show-success', message: 'Order cancelled successfully.');
     }
 
     public function render(): View

@@ -27,7 +27,7 @@ class OrderFactory extends Factory
 
         return [
             'customer_id' => User::factory(),
-            'order_number' => 'ORD-'.fake()->unique()->numerify('##########'),
+            'order_number' => 'ORD-' . fake()->unique()->numerify('##########'),
             'status' => OrderStatus::PENDING,
             'subtotal' => $subtotal,
             'shipping_amount' => 0,

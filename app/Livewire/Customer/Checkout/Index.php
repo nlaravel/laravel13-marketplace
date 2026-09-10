@@ -57,7 +57,7 @@ class Index extends Component
     #[Computed]
     public function subtotal(): float
     {
-        return (float) $this->cart->items->sum(fn ($item) => $item->quantity * $item->productVariant->price);
+        return (float) $this->cart->items->sum(fn($item) => $item->quantity * $item->productVariant->price);
     }
 
     public function placeOrder(): void

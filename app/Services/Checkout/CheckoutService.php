@@ -102,7 +102,7 @@ class CheckoutService
 
     private function createOrder(User $customer, Cart $cart): Order
     {
-        $subtotal = $cart->items->sum(fn ($item) => $item->productVariant->price * $item->quantity);
+        $subtotal = $cart->items->sum(fn($item) => $item->productVariant->price * $item->quantity);
 
         return Order::create([
             'customer_id' => $customer->id,
@@ -119,10 +119,10 @@ class CheckoutService
 
     private function createSellerOrders(Order $order, Cart $cart): void
     {
-        $groups = $cart->items->groupBy(fn ($item) => $item->productVariant->product->store_id);
+        $groups = $cart->items->groupBy(fn($item) => $item->productVariant->product->store_id);
 
         foreach ($groups as $storeId => $items) {
-            $subtotal = $items->sum(fn ($item) => $item->productVariant->price * $item->quantity);
+            $subtotal = $items->sum(fn($item) => $item->productVariant->price * $item->quantity);
 
             $sellerOrder = $order->sellerOrders()->create([
                 'store_id' => $storeId,
@@ -199,6 +199,6 @@ class CheckoutService
 
     private function generateOrderNumber(): string
     {
-        return 'ORD-'.now()->format('YmdHis').'-'.random_int(1000, 9999);
+        return 'ORD-' . now()->format('YmdHis') . '-' . random_int(1000, 9999);
     }
 }

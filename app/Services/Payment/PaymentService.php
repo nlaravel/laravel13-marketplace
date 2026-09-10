@@ -22,9 +22,7 @@ class PaymentService
     public function create(Order $order, PaymentMethod $method): Payment
     {
         if ($order->status !== OrderStatus::PENDING) {
-            throw new PaymentException(
-                'Payment can only be created for a pending order.'
-            );
+            throw new PaymentException('Payment can only be created for a pending order.');
         }
 
         $existingPayment = $order->payments()
@@ -43,9 +41,9 @@ class PaymentService
         return DB::transaction(function () use ($order, $method): Payment {
             $payment = $order->payments()->create([
                 'payment_number' => 'PAY-'
-                    .now()->format('YmdHis')
-                    .'-'
-                    .Str::upper(Str::random(4)),
+                    . now()->format('YmdHis')
+                    . '-'
+                    . Str::upper(Str::random(4)),
                 'provider' => 'fake',
                 'method' => $method,
                 'status' => PaymentStatus::PENDING,
@@ -72,14 +70,10 @@ class PaymentService
     public function refund(Payment $payment): Payment
     {
         if ($payment->status !== PaymentStatus::SUCCEEDED) {
-            throw new PaymentException(
-                'Only successful payments can be refunded.'
-            );
+            throw new PaymentException('Only successful payments can be refunded.');
         }
 
-        return DB::transaction(
-            fn (): Payment => $this->gateway->refund($payment)
-        );
+        return DB::transaction(fn(): Payment => $this->gateway->refund($payment));
     }
 
     public function confirmOrder(Order $order): Order
@@ -99,9 +93,7 @@ class PaymentService
             $payment->refresh();
 
             if ($payment->status !== PaymentStatus::SUCCEEDED) {
-                throw new PaymentException(
-                    'Only successful payments can confirm an order.'
-                );
+                throw new PaymentException('Only successful payments can confirm an order.');
             }
 
             // Lock the order row so concurrent payment confirmations cannot
@@ -111,9 +103,7 @@ class PaymentService
                 ->firstOrFail();
 
             if ($order->status !== OrderStatus::PENDING) {
-                throw new PaymentException(
-                    'Only pending orders can be confirmed.'
-                );
+                throw new PaymentException('Only pending orders can be confirmed.');
             }
 
             $order->update([
