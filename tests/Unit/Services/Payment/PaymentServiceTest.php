@@ -171,13 +171,13 @@ class PaymentServiceTest extends TestCase
                 fn (Payment $value): bool => $value->id === $payment->id,
             ))
             ->andReturnUsing(function (Payment $value): Payment {
-        $value->update([
-            'status' => PaymentStatus::REFUNDED,
-            'refunded_at' => now(),
-        ]);
+                $value->update([
+                    'status' => PaymentStatus::REFUNDED,
+                    'refunded_at' => now(),
+                ]);
 
-        return $value->refresh();
-    });
+                return $value->refresh();
+            });
 
         $service = new PaymentService($gateway);
 

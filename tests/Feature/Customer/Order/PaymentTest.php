@@ -52,7 +52,7 @@ class PaymentTest extends TestCase
             ->assertJsonPath('data.method', PaymentMethod::CARD->value)
             ->assertJsonPath('data.status', PaymentStatus::SUCCEEDED->value)
             ->assertJsonPath('data.amount', '150.00')
-        ->assertJsonPath('data.currency', 'USD');
+            ->assertJsonPath('data.currency', 'USD');
 
         $this->assertDatabaseHas('payments', [
             'order_id' => $order->id,
@@ -100,9 +100,9 @@ class PaymentTest extends TestCase
                 'method' => PaymentMethod::CARD->value,
             ])
             ->assertUnprocessable()
-        ->assertJson([
-            'message' => 'Payment can only be created for a pending order.',
-        ]);
+            ->assertJson([
+                'message' => 'Payment can only be created for a pending order.',
+            ]);
 
         $this->assertDatabaseMissing('payments', [
             'order_id' => $order->id,

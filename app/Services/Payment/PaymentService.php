@@ -69,18 +69,18 @@ class PaymentService
         return DB::transaction(fn (): Payment => $this->gateway->refund($payment));
     }
 
-public function confirmOrder(Order $order): Order
-{
-    $payment = $order->payments()
-        ->latest()
-        ->first();
+    public function confirmOrder(Order $order): Order
+    {
+        $payment = $order->payments()
+            ->latest()
+            ->first();
 
-    if (! $payment) {
-        throw new PaymentException('Payment not found.');
+        if (! $payment) {
+            throw new PaymentException('Payment not found.');
+        }
+
+        return $this->confirmOrderFromPayment($payment);
     }
-
-    return $this->confirmOrderFromPayment($payment);
-}
 
     public function confirmOrderFromPayment(Payment $payment): Order
     {
@@ -113,6 +113,4 @@ public function confirmOrder(Order $order): Order
             return $order->refresh();
         });
     }
-
-
 }
