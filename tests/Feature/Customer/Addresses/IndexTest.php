@@ -51,7 +51,7 @@ class IndexTest extends TestCase
 
         $this->assertSame($ownAddress->id, $addresses->first()->id);
 
-        $this->assertFalse($addresses->contains(fn(Address $address): bool => $address->id === $otherAddress->id));
+        $this->assertFalse($addresses->contains(fn (Address $address): bool => $address->id === $otherAddress->id));
     }
 
     public function test_customer_can_delete_own_address(): void

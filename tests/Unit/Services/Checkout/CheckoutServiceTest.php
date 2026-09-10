@@ -64,7 +64,7 @@ class CheckoutServiceTest extends TestCase
             'quantity' => 3,
         ]);
 
-        $service = new CheckoutService(new InventoryReservationService());
+        $service = new CheckoutService(new InventoryReservationService);
 
         $order = $service->checkout($customer);
 
@@ -138,7 +138,7 @@ class CheckoutServiceTest extends TestCase
             'status' => CartStatus::ACTIVE,
         ]);
 
-        $service = new CheckoutService(new InventoryReservationService());
+        $service = new CheckoutService(new InventoryReservationService);
 
         $this->expectException(CheckoutException::class);
         $this->expectExceptionMessage('Cart is empty.');
@@ -186,7 +186,7 @@ class CheckoutServiceTest extends TestCase
             'quantity' => 3,
         ]);
 
-        $service = new CheckoutService(new InventoryReservationService());
+        $service = new CheckoutService(new InventoryReservationService);
 
         $this->expectException(CheckoutException::class);
         $this->expectExceptionMessage("Insufficient stock for variant {$variant->id}.");
@@ -247,7 +247,7 @@ class CheckoutServiceTest extends TestCase
             'quantity' => 3,
         ]);
 
-        $service = new CheckoutService(new InventoryReservationService());
+        $service = new CheckoutService(new InventoryReservationService);
 
         $this->expectException(CheckoutException::class);
         $this->expectExceptionMessage('A valid delivery address is required.');
@@ -334,7 +334,7 @@ class CheckoutServiceTest extends TestCase
             'quantity' => 3,
         ]);
 
-        $service = new CheckoutService(new InventoryReservationService());
+        $service = new CheckoutService(new InventoryReservationService);
 
         $order = $service->checkout($customer);
 

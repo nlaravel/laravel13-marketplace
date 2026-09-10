@@ -48,7 +48,7 @@ class PaymentServiceTest extends TestCase
 
         $service = new PaymentService($gateway);
 
-        $payment = $service->create($order, PaymentMethod::CARD, );
+        $payment = $service->create($order, PaymentMethod::CARD);
 
         $this->assertDatabaseHas('payments', [
             'id' => $payment->id,
@@ -84,7 +84,7 @@ class PaymentServiceTest extends TestCase
 
         $service = new PaymentService($gateway);
 
-        $payment = $service->create($order, PaymentMethod::CARD, );
+        $payment = $service->create($order, PaymentMethod::CARD);
 
         $this->assertSame($existingPayment->id, $payment->id);
     }
@@ -103,7 +103,7 @@ class PaymentServiceTest extends TestCase
         $this->expectException(PaymentException::class);
 
         try {
-            $service->create($order, PaymentMethod::CARD, );
+            $service->create($order, PaymentMethod::CARD);
         } finally {
             $this->assertDatabaseCount('payments', 0);
         }
@@ -127,7 +127,7 @@ class PaymentServiceTest extends TestCase
 
         $gateway->shouldReceive('check')
             ->once()
-            ->with(Mockery::on(fn(Payment $value): bool => $value->id === $payment->id, ))
+            ->with(Mockery::on(fn (Payment $value): bool => $value->id === $payment->id))
             ->andReturn($payment);
 
         $service = new PaymentService($gateway);
@@ -156,7 +156,7 @@ class PaymentServiceTest extends TestCase
 
         $gateway->shouldReceive('refund')
             ->once()
-            ->with(Mockery::on(fn(Payment $value): bool => $value->id === $payment->id, ))
+            ->with(Mockery::on(fn (Payment $value): bool => $value->id === $payment->id))
             ->andReturnUsing(function (Payment $value): Payment {
                 $value->update([
                     'status' => PaymentStatus::REFUNDED,

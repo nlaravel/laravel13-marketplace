@@ -30,7 +30,7 @@ class CustomerProfileService
 
             $profileData = collect($data)
                 ->except('name')
-                ->map(fn($value) => $value === '' ? null : $value)
+                ->map(fn ($value) => $value === '' ? null : $value)
                 ->toArray();
 
             $profile->update($profileData);
