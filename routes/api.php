@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Customer\AddressController;
 use App\Http\Controllers\Api\V1\Customer\CartController;
 use App\Http\Controllers\Api\V1\Customer\CheckoutController;
 use App\Http\Controllers\Api\V1\Customer\OrderController;
+use App\Http\Controllers\Api\V1\Customer\PaymentController;
 use App\Http\Controllers\Api\V1\Customer\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -55,5 +56,8 @@ Route::prefix('v1/customer')->middleware('auth:sanctum')->group(function (): voi
     Route::get('/orders', [OrderController::class, 'index'])->name('api.v1.customer.orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('api.v1.customer.orders.show');
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('api.v1.customer.orders.cancel');
+    // payment
+    Route::post('/orders/{order}/payment', [PaymentController::class, 'store']) ->name('api.v1.customer.orders.payment');
+    Route::post('/orders/{order}/payment/confirm', [PaymentController::class, 'confirm'])->name('api.v1.customer.orders.payment.confirm');
 
 });

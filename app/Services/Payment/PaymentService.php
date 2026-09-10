@@ -69,6 +69,19 @@ class PaymentService
         return DB::transaction(fn (): Payment => $this->gateway->refund($payment));
     }
 
+public function confirmOrder(Order $order): Order
+{
+    $payment = $order->payments()
+        ->latest()
+        ->first();
+
+    if (! $payment) {
+        throw new PaymentException('Payment not found.');
+    }
+
+    return $this->confirmOrderFromPayment($payment);
+}
+
     public function confirmOrderFromPayment(Payment $payment): Order
     {
         return DB::transaction(function () use ($payment): Order {
@@ -100,4 +113,6 @@ class PaymentService
             return $order->refresh();
         });
     }
+
+
 }
