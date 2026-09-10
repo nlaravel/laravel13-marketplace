@@ -99,6 +99,7 @@ class ShowTest extends TestCase
                 'order' => $order->id,
             ])
             ->call('confirmPayment')
+            ->assertSee('Confirmed')
             ->assertDispatched('show-success', message: 'Order confirmed successfully.');
 
         $this->assertDatabaseHas('orders', [

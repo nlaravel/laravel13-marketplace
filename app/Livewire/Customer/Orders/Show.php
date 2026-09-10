@@ -64,6 +64,9 @@ class Show extends Component
 
         $this->paymentService->create($this->order, $paymentMethod);
 
+        unset($this->order);
+        unset($this->payment);
+
         $this->dispatch('show-success', message: 'Payment completed successfully.');
     }
 
@@ -71,12 +74,16 @@ class Show extends Component
     {
         $this->paymentService->confirmOrder($this->order);
 
+        unset($this->order);
+
         $this->dispatch('show-success', message: 'Order confirmed successfully.');
     }
 
     public function cancel(): void
     {
         $this->orderService->cancelCustomerOrder(auth()->user(), $this->orderId);
+
+        unset($this->order);
 
         $this->dispatch('show-success', message: 'Order cancelled successfully.');
     }
