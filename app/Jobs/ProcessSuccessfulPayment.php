@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Models\Payment;
+use App\Notifications\PaymentSucceededNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
@@ -16,11 +17,13 @@ class ProcessSuccessfulPayment implements ShouldQueue
 
     public function handle(): void
     {
-        $payment = Payment::find($this->paymentId);
+        $payment = Payment::with('order.customer')->find($this->paymentId);
 
         if ($payment === null) {
             return;
         }
+
+        $payment->order->customer->notify(new PaymentSucceededNotification($payment));
 
         logger()->info('Successful payment processed asynchronously.', [
             'payment_id' => $payment->id,

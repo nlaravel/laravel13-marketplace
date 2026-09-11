@@ -7,6 +7,7 @@ use App\Livewire\Customer\Addresses\Edit;
 use App\Livewire\Customer\Addresses\Index;
 use App\Livewire\Customer\Cart;
 use App\Livewire\Customer\Dashboard;
+use App\Livewire\Customer\Notifications\Index as NotificationsIndex;
 use App\Livewire\Customer\Orders\Index as OrdersIndex;
 use App\Livewire\Customer\Orders\Show;
 use App\Livewire\Customer\Profile;
@@ -30,5 +31,7 @@ Route::middleware(['auth'])->group(function (): void {
 
     Route::get('/customer/orders', OrdersIndex::class)->name('customer.orders.index');
     Route::get('/customer/orders/{order}', Show::class)->name('customer.orders.show');
+
+    Route::get('/notifications', NotificationsIndex::class)->name('customer.notifications.index');
 
 });
