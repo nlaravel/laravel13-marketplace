@@ -8,6 +8,7 @@ use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Enums\SellerOrderStatus;
+use App\Events\PaymentSucceeded;
 use App\Exceptions\PaymentException;
 use App\Models\Order;
 use App\Models\Payment;
@@ -15,6 +16,7 @@ use App\Models\SellerOrder;
 use App\Services\Payment\Contracts\PaymentGateway;
 use App\Services\Payment\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Mockery;
 use Tests\TestCase;
 
@@ -315,5 +317,38 @@ class PaymentServiceTest extends TestCase
                 'status' => OrderStatus::CONFIRMED->value,
             ]);
         }
+    }
+
+    public function test_successful_payment_dispatches_event(): void
+    {
+        Event::fake([
+            PaymentSucceeded::class,
+        ]);
+
+        $order = Order::factory()->create([
+            'status' => OrderStatus::PENDING,
+        ]);
+
+        $gateway = Mockery::mock(PaymentGateway::class);
+
+        $gateway->shouldReceive('create')
+            ->once()
+            ->andReturnUsing(function (Payment $payment): Payment {
+                $payment->update([
+                    'status' => PaymentStatus::SUCCEEDED,
+                    'transaction_id' => 'TEST-TRANSACTION',
+                    'provider_payment_id' => 'test_payment_id',
+                    'provider_reference' => 'TEST-REFERENCE',
+                    'paid_at' => now(),
+                ]);
+
+                return $payment->refresh();
+            });
+
+        $service = new PaymentService($gateway);
+
+        $payment = $service->create($order, PaymentMethod::CARD);
+
+        Event::assertDispatched(PaymentSucceeded::class, fn (PaymentSucceeded $event): bool => $event->payment->id === $payment->id);
     }
 }

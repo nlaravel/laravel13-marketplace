@@ -8,6 +8,7 @@ use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Enums\SellerOrderStatus;
+use App\Events\PaymentSucceeded;
 use App\Exceptions\PaymentException;
 use App\Models\Order;
 use App\Models\Payment;
@@ -51,7 +52,11 @@ class PaymentService
                 'currency' => $order->currency,
             ]);
 
-            return $this->gateway->create($payment);
+            $payment = $this->gateway->create($payment);
+
+            PaymentSucceeded::dispatch($payment);
+
+            return $payment;
         });
     }
 
