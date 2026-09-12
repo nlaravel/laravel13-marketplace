@@ -36,7 +36,7 @@ class SellerDashboardService
                 $query->where('user_id', $userId);
             })
             ->latest()
-            ->limit(10)
+            ->limit(5)
             ->get();
     }
 
