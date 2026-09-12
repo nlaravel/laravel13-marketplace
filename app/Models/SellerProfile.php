@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\StoreStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,13 +27,5 @@ class SellerProfile extends Model
     public function stores(): HasMany
     {
         return $this->hasMany(Store::class, 'seller_id');
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'status' => StoreStatus::class,
-            'approved_at' => 'datetime',
-        ];
     }
 }

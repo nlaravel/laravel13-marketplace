@@ -11,7 +11,10 @@ use App\Livewire\Customer\Notifications\Index as NotificationsIndex;
 use App\Livewire\Customer\Orders\Index as OrdersIndex;
 use App\Livewire\Customer\Orders\Show;
 use App\Livewire\Customer\Profile;
+use App\Livewire\Seller\CreateStore;
 use App\Livewire\Seller\Dashboard as SellerDashboard;
+use App\Livewire\Seller\EditStore;
+use App\Livewire\Seller\Store;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function (): void {
@@ -39,4 +42,7 @@ Route::middleware(['auth'])->group(function (): void {
 
 Route::middleware(['auth', 'role:seller'])->prefix('seller')->name('seller.')->group(function (): void {
     Route::get('/', SellerDashboard::class)->name('dashboard');
+    Route::get('/store', Store::class)->name('store');
+    Route::get('/store/create', CreateStore::class)->name('store.create');
+    Route::get('/store/{store}/edit', EditStore::class)->name('store.edit');
 });

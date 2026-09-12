@@ -112,7 +112,14 @@
 
                 <div class="space-y-1">
 
-                    <div class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 dark:text-slate-600">
+                    {{-- My Store --}}
+                    <a
+                            href="{{ route('seller.store') }}"
+                            class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition
+                            {{ request()->routeIs('seller.store')
+                                ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
+                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' }}"
+                    >
                         <svg
                                 class="h-5 w-5 shrink-0"
                                 fill="none"
@@ -128,8 +135,9 @@
                         </svg>
 
                         <span>My Store</span>
-                    </div>
+                    </a>
 
+                    {{-- Store Settings --}}
                     <div class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 dark:text-slate-600">
                         <svg
                                 class="h-5 w-5 shrink-0"
@@ -298,7 +306,7 @@
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
                                 stroke-width="1.8"
-                                d="M10.5 3h3l.7 2.2a7.5 7.5 0 012 1.2l2.2-.7 1.5 2.6-1.5 1.7a7.5 7.5 0 010 2.4l1.5 1.7-1.5 2.6-2.2-.7a7.5 7.5 0 01-2 1.2l-.7 2.2h-3l-.7-2.2a7.5 7.5 0 01-2-1.2l-2.2.7-1.5-2.6 1.5-1.7a7.5 7.5 0 010-2.4L4.1 8.3l1.5-2.6 2.2.7a7.5 7.5 0 012-1.2L10.5 3z"
+                                d="M10.5 3h3l.7 2.2a7.5 7.5 0 012 1.2l2.2-.7 1.5 2.6-1.5 1.7a7.5 7.5 0 010 2.4l1.5 1.7-1.5 2.6-2.2-.7a7.5 7.5 0 01-2 1.2l-.7 2.2h-3l-.7-2.2a7.5 7.5 0 01-2-1.2l-2.2.7-1.5-2.6 1.5-1.7a7.5 7.5 0 010-2.4l-1.5-1.7 1.5-2.6 2.2.7a7.5 7.5 0 012-1.2L10.5 3z"
                         />
                         <circle
                                 cx="12"
@@ -417,9 +425,16 @@
 
                                 <div class="space-y-1 text-sm">
 
-                                    <div class="cursor-not-allowed rounded-xl px-3 py-2.5 text-slate-400 dark:text-slate-600">
+                                    {{-- My Store --}}
+                                    <a
+                                            href="{{ route('seller.store') }}"
+                                            class="block rounded-xl px-3 py-2.5
+                                            {{ request()->routeIs('seller.store')
+                                                ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
+                                                : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800' }}"
+                                    >
                                         My Store
-                                    </div>
+                                    </a>
 
                                     <div class="cursor-not-allowed rounded-xl px-3 py-2.5 text-slate-400 dark:text-slate-600">
                                         Products
@@ -467,6 +482,78 @@
             </div>
 
             <div class="flex items-center gap-2">
+
+                {{-- Notifications --}}
+                <details class="relative">
+                    <summary
+                            class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-xl text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                            aria-label="Notifications"
+                    >
+                        <svg
+                                class="h-5 w-5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                        >
+                            <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="1.8"
+                                    d="M15 17h5l-1.5-2.5V11a6.5 6.5 0 00-13 0v3.5L4 17h5m6 0a3 3 0 01-6 0"
+                            />
+                        </svg>
+                    </summary>
+
+                    <div class="absolute right-0 top-12 z-50 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900">
+
+                        {{-- Header --}}
+                        <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-800">
+                            <div>
+                                <div class="text-sm font-semibold text-slate-900 dark:text-white">
+                                    Notifications
+                                </div>
+
+                                <div class="text-xs text-slate-500 dark:text-slate-400">
+                                    Seller updates
+                                </div>
+                            </div>
+
+                            <span class="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                                0 new
+                            </span>
+                        </div>
+
+                        {{-- Empty State --}}
+                        <div class="px-4 py-8 text-center">
+
+                            <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500">
+                                <svg
+                                        class="h-6 w-6"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                >
+                                    <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="1.8"
+                                            d="M15 17h5l-1.5-2.5V11a6.5 6.5 0 00-13 0v3.5L4 17h5m6 0a3 3 0 01-6 0"
+                                    />
+                                </svg>
+                            </div>
+
+                            <div class="text-sm font-medium text-slate-700 dark:text-slate-200">
+                                No notifications yet
+                            </div>
+
+                            <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                You will see seller updates here.
+                            </div>
+
+                        </div>
+
+                    </div>
+                </details>
 
                 {{-- Theme Toggle --}}
                 <button
@@ -639,6 +726,49 @@
 </script>
 
 @livewireScripts
+
+<script>
+    document.addEventListener('livewire:init', () => {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Livewire Success Event
+        |--------------------------------------------------------------------------
+        */
+
+        Livewire.on('show-success', (event) => {
+            showSuccess(event.message);
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Livewire Error Event
+        |--------------------------------------------------------------------------
+        */
+
+        Livewire.on('show-error', (event) => {
+            showError(event.message);
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Session Flash Messages
+        |--------------------------------------------------------------------------
+        */
+
+        @if (session('success'))
+        showSuccess(@js(session('success')));
+        @endif
+
+
+        @if (session('error'))
+        showError(@js(session('error')));
+        @endif
+
+    });
+</script>
 
 </body>
 </html>
