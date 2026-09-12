@@ -40,11 +40,23 @@ jobs:
         extensions: mbstring, dom, fileinfo, mysql, pdo_mysql
         coverage: none
 
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
     - name: Validate Composer
       run: composer validate --strict
 
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-interaction --no-progress
+
+    - name: Install Node dependencies
+      run: npm ci
+
+    - name: Build frontend assets
+      run: npm run build
 
     - name: Prepare environment
       run: |
