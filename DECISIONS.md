@@ -257,3 +257,22 @@ Store name can be updated independently
 The `updateStore()` operation updates the store name and description but does not regenerate the slug.
 
 This preserves URL stability and avoids unintentionally breaking existing references to the store.
+
+## 8. Mixed Authorization Strategy: Service-Level vs Policy-Level
+
+### Decision
+Ownership checks for Addresses, Orders, and the initial Seller Store 
+feature are implemented at the Service layer (e.g. `whereHas()`, 
+`ensureOwnership()`). Starting with Products, ownership checks move to 
+formal Laravel Policies.
+
+### Why
+Early features didn't require Policy classes because ownership logic 
+was simple (single-level relationships). As the domain grew more complex 
+(Product → Store → SellerProfile → User), Policies provide clearer, 
+more idiomatic, and more testable authorization.
+
+This is a deliberate architectural evolution, not unfinished work. 
+Earlier features are not retroactively refactored to Policies unless a 
+real bug or inconsistency is found — refactoring stable, tested code 
+purely for stylistic consistency isn't worth the risk/reward here.
