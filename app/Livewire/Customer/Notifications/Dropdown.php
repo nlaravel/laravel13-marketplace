@@ -12,8 +12,6 @@ class Dropdown extends Component
 {
     use ManagesCustomerNotifications;
 
-    public int $notificationsLimit = 5;
-
     public function mount(): void
     {
         $this->loadNotifications();

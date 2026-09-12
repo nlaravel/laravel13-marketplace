@@ -13,8 +13,6 @@ trait ManagesCustomerNotifications
 
     public int $unreadCount = 0;
 
-    public int $notificationsLimit = 5;
-
     private CustomerNotificationService $notificationService;
 
     public function bootManagesCustomerNotifications(CustomerNotificationService $notificationService): void
@@ -42,6 +40,11 @@ trait ManagesCustomerNotifications
 
         $this->unreadCount = $this->notificationService->unreadCount($user);
 
-        $this->notifications = $this->notificationService->latest($user, $this->notificationsLimit);
+        $this->notifications = $this->notificationService->latest($user, $this->notificationsLimit());
+    }
+
+    protected function notificationsLimit(): int
+    {
+        return 5;
     }
 }

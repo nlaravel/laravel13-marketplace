@@ -14,11 +14,14 @@ class Index extends Component
 {
     use ManagesCustomerNotifications;
 
-    public int $notificationsLimit = 50;
-
     public function mount(): void
     {
         $this->loadNotifications();
+    }
+
+    protected function notificationsLimit(): int
+    {
+        return 50;
     }
 
     public function render(): View
