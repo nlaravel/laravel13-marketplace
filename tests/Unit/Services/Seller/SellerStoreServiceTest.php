@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services\Seller;
 
+use App\Exceptions\SellerException;
 use App\Models\SellerProfile;
 use App\Models\Store;
 use App\Models\User;
@@ -19,6 +20,7 @@ class SellerStoreServiceTest extends TestCase
     public function test_it_returns_only_the_sellers_stores(): void
     {
         $seller = User::factory()->create();
+
         $sellerProfile = SellerProfile::factory()->create([
             'user_id' => $seller->id,
         ]);
@@ -32,6 +34,7 @@ class SellerStoreServiceTest extends TestCase
         ]);
 
         $otherSeller = User::factory()->create();
+
         $otherSellerProfile = SellerProfile::factory()->create([
             'user_id' => $otherSeller->id,
         ]);
@@ -123,15 +126,15 @@ class SellerStoreServiceTest extends TestCase
         $this->assertSame('pending', $store->status->value);
     }
 
-    public function test_it_cannot_create_a_store_without_a_seller_profile(): void
+    public function test_it_throws_seller_exception_when_seller_profile_does_not_exist(): void
     {
-        $seller = User::factory()->create();
+        $user = User::factory()->create();
 
         $service = app(SellerStoreService::class);
 
-        $this->expectException(ModelNotFoundException::class);
+        $this->expectException(SellerException::class);
 
-        $service->createStore($seller->id, [
+        $service->createStore($user->id, [
             'name' => 'My Test Store',
             'description' => 'Test store description',
         ]);
@@ -204,5 +207,29 @@ class SellerStoreServiceTest extends TestCase
                 'name' => 'Original Store',
             ]);
         }
+    }
+
+    public function test_it_generates_a_unique_slug_for_duplicate_store_names(): void
+    {
+        $user = User::factory()->create();
+
+        $sellerProfile = SellerProfile::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        Store::factory()->create([
+            'seller_id' => $sellerProfile->id,
+            'name' => 'My Store',
+            'slug' => 'my-store',
+        ]);
+
+        $service = app(SellerStoreService::class);
+
+        $store = $service->createStore($user->id, [
+            'name' => 'My Store',
+            'description' => 'Another store',
+        ]);
+
+        $this->assertSame('my-store-2', $store->slug);
     }
 }

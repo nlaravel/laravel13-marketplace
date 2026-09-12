@@ -11,40 +11,40 @@ use Illuminate\Database\Eloquent\Collection;
 
 class SellerDashboardService
 {
-    public function storesCount(int $sellerId): int
+    public function storesCount(int $userId): int
     {
         return Store::query()
-            ->whereHas('seller', function ($query) use ($sellerId): void {
-                $query->where('user_id', $sellerId);
+            ->whereHas('seller', function ($query) use ($userId): void {
+                $query->where('user_id', $userId);
             })
             ->count();
     }
 
-    public function ordersCount(int $sellerId): int
+    public function ordersCount(int $userId): int
     {
         return SellerOrder::query()
-            ->whereHas('store.seller', function ($query) use ($sellerId): void {
-                $query->where('user_id', $sellerId);
+            ->whereHas('store.seller', function ($query) use ($userId): void {
+                $query->where('user_id', $userId);
             })
             ->count();
     }
 
-    public function recentOrders(int $sellerId): Collection
+    public function recentOrders(int $userId): Collection
     {
         return SellerOrder::query()
-            ->whereHas('store.seller', function ($query) use ($sellerId): void {
-                $query->where('user_id', $sellerId);
+            ->whereHas('store.seller', function ($query) use ($userId): void {
+                $query->where('user_id', $userId);
             })
             ->latest()
-            ->limit(5)
+            ->limit(10)
             ->get();
     }
 
-    public function ordersByStatus(int $sellerId): array
+    public function ordersByStatus(int $userId): array
     {
         return SellerOrder::query()
-            ->whereHas('store.seller', function ($query) use ($sellerId): void {
-                $query->where('user_id', $sellerId);
+            ->whereHas('store.seller', function ($query) use ($userId): void {
+                $query->where('user_id', $userId);
             })
             ->selectRaw('status, COUNT(*) as total')
             ->groupBy('status')

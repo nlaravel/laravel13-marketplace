@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\Seller;
 
+use App\Exceptions\SellerException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Seller\StoreRequest;
 use App\Http\Resources\Api\Seller\StoreResource;
@@ -31,7 +32,13 @@ class SellerStoreController extends Controller
 
     public function store(StoreRequest $request): JsonResponse
     {
-        $store = $this->storeService->createStore(auth()->id(), $request->validated());
+        try {
+            $store = $this->storeService->createStore(auth()->id(), $request->validated());
+        } catch (SellerException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
 
         return (new StoreResource($store))
             ->response()

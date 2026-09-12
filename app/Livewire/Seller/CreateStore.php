@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Seller;
 
+use App\Exceptions\SellerException;
 use App\Services\Seller\SellerStoreService;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -39,7 +40,13 @@ class CreateStore extends Component
             ],
         ]);
 
-        $this->storeService->createStore(auth()->id(), $validated);
+        try {
+            $this->storeService->createStore(auth()->id(), $validated);
+        } catch (SellerException $exception) {
+            $this->dispatch('show-error', message: $exception->getMessage());
+
+            return;
+        }
 
         $this->dispatch('show-success', message: 'Store created successfully and is awaiting approval.');
 
