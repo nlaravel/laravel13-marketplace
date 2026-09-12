@@ -11,6 +11,7 @@ use App\Livewire\Customer\Notifications\Index as NotificationsIndex;
 use App\Livewire\Customer\Orders\Index as OrdersIndex;
 use App\Livewire\Customer\Orders\Show;
 use App\Livewire\Customer\Profile;
+use App\Livewire\Seller\Dashboard as SellerDashboard;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function (): void {
@@ -34,4 +35,8 @@ Route::middleware(['auth'])->group(function (): void {
 
     Route::get('/notifications', NotificationsIndex::class)->name('customer.notifications.index');
 
+});
+
+Route::middleware(['auth', 'role:seller'])->prefix('seller')->name('seller.')->group(function (): void {
+    Route::get('/', SellerDashboard::class)->name('dashboard');
 });
