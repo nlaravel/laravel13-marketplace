@@ -100,6 +100,6 @@ class SellerStoreService
 
     private function isUniqueConstraintViolation(QueryException $exception): bool
     {
-        return $exception->errorInfo[1] ?? null === 1062;
+        return ($exception->errorInfo[1] ?? null) === 1062;
     }
 }

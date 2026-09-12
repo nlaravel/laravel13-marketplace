@@ -229,3 +229,31 @@ try {
 إذا لم توجد أي assertions تحتاج إلى التنفيذ بعد الاستثناء، فلا حاجة لاستخدام `try/finally`.
 
 This convention applies to all Feature and Unit tests where `expectException()` is used.
+
+## 7. Store Slugs
+
+### Decision
+
+Store slugs are generated when a store is created and are not automatically changed when the store name is updated.
+
+### Why
+
+Store slugs are used as stable identifiers for store URLs and references.
+
+Automatically changing the slug whenever the store name changes could invalidate existing URLs, bookmarks, API references, or external links.
+
+Therefore:
+
+```text
+Store creation
+    ↓
+Generate unique slug
+    ↓
+Store slug remains stable
+    ↓
+Store name can be updated independently
+```
+
+The `updateStore()` operation updates the store name and description but does not regenerate the slug.
+
+This preserves URL stability and avoids unintentionally breaking existing references to the store.
