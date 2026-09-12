@@ -232,6 +232,4 @@ class SellerStoreServiceTest extends TestCase
 
         $this->assertSame('my-store-2', $store->slug);
     }
-
-
 }
