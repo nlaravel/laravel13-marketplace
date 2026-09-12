@@ -232,4 +232,25 @@ class SellerStoreServiceTest extends TestCase
 
         $this->assertSame('my-store-2', $store->slug);
     }
+
+    public function test_it_retries_and_succeeds_when_slug_collision_occurs(): void
+    {
+        $seller = User::factory()->create();
+
+        SellerProfile::factory()->create([
+            'user_id' => $seller->id,
+        ]);
+
+        Store::factory()->create([
+            'slug' => 'my-store',
+        ]);
+
+        $service = app(SellerStoreService::class);
+
+        $store = $service->createStore($seller->id, [
+            'name' => 'My Store',
+        ]);
+
+        $this->assertSame('my-store-2', $store->slug);
+    }
 }
