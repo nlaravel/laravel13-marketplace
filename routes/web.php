@@ -14,6 +14,9 @@ use App\Livewire\Customer\Profile;
 use App\Livewire\Seller\CreateStore;
 use App\Livewire\Seller\Dashboard as SellerDashboard;
 use App\Livewire\Seller\EditStore;
+use App\Livewire\Seller\Products\Create as CreateProduct;
+use App\Livewire\Seller\Products\Edit as EditProduct;
+use App\Livewire\Seller\Products\Index as ProductsIndex;
 use App\Livewire\Seller\Store;
 use Illuminate\Support\Facades\Route;
 
@@ -45,4 +48,10 @@ Route::middleware(['auth', 'role:seller'])->prefix('seller')->name('seller.')->g
     Route::get('/store', Store::class)->name('store');
     Route::get('/store/create', CreateStore::class)->name('store.create');
     Route::get('/store/{store}/edit', EditStore::class)->name('store.edit');
+    Route::get('/products', ProductsIndex::class)->name('product.index');
+
+    Route::get('/products/create', CreateProduct::class)->name('product.create');
+
+    Route::get('/products/{product}/edit', EditProduct::class)->name('product.edit');
+
 });

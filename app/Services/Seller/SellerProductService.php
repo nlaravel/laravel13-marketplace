@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\Seller;
 
+use App\Enums\CategoryStatus;
+use App\Enums\StoreStatus;
 use App\Exceptions\SellerException;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Store;
 use App\Services\Concerns\HandlesUniqueConstraintRetries;
@@ -42,6 +45,7 @@ class SellerProductService
     {
         $store = Store::query()
             ->whereKey($storeId)
+            ->where('status', StoreStatus::APPROVED)
             ->whereHas('seller', function ($query) use ($userId): void {
                 $query->where('user_id', $userId);
             })
@@ -49,6 +53,15 @@ class SellerProductService
 
         if ($store === null) {
             throw (new ModelNotFoundException)->setModel(Store::class, [$storeId]);
+        }
+
+        $category = Category::query()
+            ->whereKey($data['category_id'])
+            ->where('status', CategoryStatus::ACTIVE)
+            ->first();
+
+        if ($category === null) {
+            throw (new ModelNotFoundException)->setModel(Category::class, [$data['category_id']]);
         }
 
         try {
@@ -111,5 +124,25 @@ class SellerProductService
         }
 
         return $slug;
+    }
+
+    public function getApprovedStores(int $userId): Collection
+    {
+        return Store::query()
+            ->whereHas('seller', function ($query) use ($userId): void {
+                $query->where('user_id', $userId);
+            })
+            ->where('status', StoreStatus::APPROVED)
+            ->latest()
+            ->get();
+    }
+
+    public function getActiveCategories(): Collection
+    {
+        return Category::query()
+            ->where('status', CategoryStatus::ACTIVE)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
     }
 }
