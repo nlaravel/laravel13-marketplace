@@ -299,6 +299,7 @@ class SellerProductServiceTest extends TestCase
 
         $store = Store::factory()->create([
             'seller_id' => $sellerProfile->id,
+            'status' => StoreStatus::APPROVED,
         ]);
 
         $category = Category::factory()->create();
