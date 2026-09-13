@@ -96,9 +96,4 @@ class SellerStoreService
 
         return $slug;
     }
-
-    private function isUniqueConstraintViolation(QueryException $exception): bool
-    {
-        return ($exception->errorInfo[1] ?? null) === 1062;
-    }
 }

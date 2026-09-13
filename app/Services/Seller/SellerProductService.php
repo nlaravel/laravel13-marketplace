@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Seller;
 
+use App\Exceptions\SellerException;
 use App\Models\Product;
 use App\Models\Store;
 use App\Services\Concerns\HandlesUniqueConstraintRetries;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
