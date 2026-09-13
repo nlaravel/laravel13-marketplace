@@ -8,6 +8,7 @@ use App\Enums\StoreStatus;
 use App\Exceptions\SellerException;
 use App\Models\SellerProfile;
 use App\Models\Store;
+use App\Services\Concerns\HandlesUniqueConstraintRetries;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,8 @@ use Illuminate\Support\Str;
 
 class SellerStoreService
 {
+    use HandlesUniqueConstraintRetries;
+
     public function getStores(int $userId): Collection
     {
         return Store::query()
@@ -45,12 +48,8 @@ class SellerStoreService
             throw new SellerException('Please complete your seller profile before creating a store.');
         }
 
-        $attempts = 0;
-
-        while ($attempts < 3) {
-            $attempts++;
-
-            try {
+        try {
+            return $this->attemptWithRetry(function () use ($sellerProfile, $data): Store {
                 return DB::transaction(function () use ($sellerProfile, $data): Store {
                     $slug = $this->generateUniqueSlug($data['name']);
 
@@ -62,14 +61,14 @@ class SellerStoreService
                         'status' => StoreStatus::PENDING,
                     ]);
                 });
-            } catch (QueryException $exception) {
-                if (! $this->isUniqueConstraintViolation($exception)) {
-                    throw $exception;
-                }
+            });
+        } catch (QueryException $exception) {
+            if ($this->isUniqueConstraintViolation($exception)) {
+                throw new SellerException('Unable to create the store right now. Please try again.');
             }
-        }
 
-        throw new SellerException('Unable to create the store right now. Please try again.');
+            throw $exception;
+        }
     }
 
     public function updateStore(int $userId, int $storeId, array $data): Store

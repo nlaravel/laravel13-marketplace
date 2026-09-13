@@ -6,12 +6,16 @@ namespace App\Services\Seller;
 
 use App\Models\Product;
 use App\Models\Store;
+use App\Services\Concerns\HandlesUniqueConstraintRetries;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SellerProductService
 {
+    use HandlesUniqueConstraintRetries;
+
     public function getProducts(int $userId): Collection
     {
         return Product::query()
@@ -45,15 +49,27 @@ class SellerProductService
             throw (new ModelNotFoundException)->setModel(Store::class, [$storeId]);
         }
 
-        $slug = $this->generateUniqueSlug($store->id, $data['name']);
+        try {
+            return $this->attemptWithRetry(function () use ($store, $data): Product {
+                return DB::transaction(function () use ($store, $data): Product {
+                    $slug = $this->generateUniqueSlug($store->id, $data['name']);
 
-        return Product::query()->create([
-            'store_id' => $store->id,
-            'category_id' => $data['category_id'],
-            'name' => $data['name'],
-            'slug' => $slug,
-            'description' => $data['description'] ?? null,
-        ]);
+                    return Product::query()->create([
+                        'store_id' => $store->id,
+                        'category_id' => $data['category_id'],
+                        'name' => $data['name'],
+                        'slug' => $slug,
+                        'description' => $data['description'] ?? null,
+                    ]);
+                });
+            });
+        } catch (QueryException $exception) {
+            if ($this->isUniqueConstraintViolation($exception)) {
+                throw new SellerException('Unable to create the product right now. Please try again.');
+            }
+
+            throw $exception;
+        }
     }
 
     public function updateProduct(int $userId, int $productId, array $data): Product

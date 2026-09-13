@@ -320,4 +320,36 @@ class SellerProductServiceTest extends TestCase
             ]);
         }
     }
+
+    public function test_it_generates_a_unique_slug_for_duplicate_product_names(): void
+    {
+        $user = User::factory()->create();
+
+        $sellerProfile = SellerProfile::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $store = Store::factory()->create([
+            'seller_id' => $sellerProfile->id,
+        ]);
+
+        $category = Category::factory()->create();
+
+        Product::factory()->create([
+            'store_id' => $store->id,
+            'category_id' => $category->id,
+            'name' => 'My Product',
+            'slug' => 'my-product',
+        ]);
+
+        $service = app(SellerProductService::class);
+
+        $product = $service->createProduct($user->id, $store->id, [
+            'category_id' => $category->id,
+            'name' => 'My Product',
+            'description' => 'Another product',
+        ]);
+
+        $this->assertSame('my-product-2', $product->slug);
+    }
 }

@@ -276,3 +276,53 @@ This is a deliberate architectural evolution, not unfinished work.
 Earlier features are not retroactively refactored to Policies unless a 
 real bug or inconsistency is found — refactoring stable, tested code 
 purely for stylistic consistency isn't worth the risk/reward here.
+
+## 9. Product Status on Update
+
+### Decision
+
+Updating an existing product does not automatically change its status.
+
+A seller can currently update the product name, description, and category without changing its current status, including when the product is `ACTIVE`.
+
+### Why
+
+The current Products feature does not yet include the Admin Approval workflow.
+
+Automatically changing an `ACTIVE` product to `PENDING` during an update would introduce approval behavior before the corresponding Admin workflow exists.
+
+Therefore, the current implementation keeps product status unchanged when a seller updates the product.
+
+### Current Behavior
+
+```text
+Product is ACTIVE
+        ↓
+Seller updates product
+        ↓
+Name / Description / Category updated
+        ↓
+Product remains ACTIVE
+```
+
+### Future Behavior
+
+When the Admin Approval workflow is implemented, the business rule can be revisited.
+
+If product changes require reapproval, the future workflow may become:
+
+```text
+Product is ACTIVE
+        ↓
+Seller makes a significant change
+        ↓
+Product becomes PENDING
+        ↓
+Admin reviews changes
+        ↓
+Approved → ACTIVE
+Rejected → REJECTED
+```
+
+This decision is intentionally deferred until the Admin Approval workflow is implemented.
+
