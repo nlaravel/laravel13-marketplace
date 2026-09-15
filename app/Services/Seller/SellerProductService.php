@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Seller;
 
 use App\Enums\CategoryStatus;
+use App\Enums\ProductStatus;
 use App\Enums\StoreStatus;
 use App\Exceptions\SellerException;
 use App\Models\Category;
@@ -75,6 +76,7 @@ class SellerProductService
                         'name' => $data['name'],
                         'slug' => $slug,
                         'description' => $data['description'] ?? null,
+                        'status' => ProductStatus::DRAFT,
                     ]);
                 });
             });

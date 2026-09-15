@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\Customer\CheckoutController;
 use App\Http\Controllers\Api\V1\Customer\OrderController;
 use App\Http\Controllers\Api\V1\Customer\PaymentController;
 use App\Http\Controllers\Api\V1\Customer\ProfileController;
+use App\Http\Controllers\Api\V1\Seller\SellerProductController;
 use App\Http\Controllers\Api\V1\Seller\SellerStoreController;
 use Illuminate\Support\Facades\Route;
 
@@ -68,4 +69,5 @@ Route::prefix('v1/seller')->middleware(['auth:sanctum', 'role:seller'])->group(f
     Route::get('/stores/{store}', [SellerStoreController::class, 'show'])->name('api.v1.seller.stores.show');
     Route::post('/stores', [SellerStoreController::class, 'store'])->name('api.v1.seller.stores.store');
     Route::put('/stores/{store}', [SellerStoreController::class, 'update'])->name('api.v1.seller.stores.update');
+    Route::apiResource('products', SellerProductController::class);
 });
