@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Seller;
+namespace Tests\Unit\Services\Seller;
 
 use App\Exceptions\SellerException;
 use App\Models\Product;
@@ -59,6 +59,7 @@ class SellerProductVariantServiceTest extends TestCase
         $variants = $this->service->getVariants($user->id, $product->id);
 
         $this->assertCount(2, $variants);
+
         $this->assertTrue($variants->every(fn (ProductVariant $variant): bool => $variant->product_id === $product->id));
     }
 
@@ -66,12 +67,12 @@ class SellerProductVariantServiceTest extends TestCase
     {
         $owner = User::factory()->create();
 
-        $ownerProfile = SellerProfile::factory()
+        $sellerProfile = SellerProfile::factory()
             ->for($owner)
             ->create();
 
         $store = Store::factory()
-            ->for($ownerProfile, 'seller')
+            ->for($sellerProfile, 'seller')
             ->create();
 
         $product = Product::factory()
@@ -221,6 +222,7 @@ class SellerProductVariantServiceTest extends TestCase
             ]);
 
         $this->expectException(SellerException::class);
+
         $this->expectExceptionMessage('This SKU is already in use. Please choose a different SKU.');
 
         $this->service->createVariant($user->id, $product->id, [
@@ -261,6 +263,7 @@ class SellerProductVariantServiceTest extends TestCase
             ]);
 
         $this->expectException(SellerException::class);
+
         $this->expectExceptionMessage('This SKU is already in use. Please choose a different SKU.');
 
         try {

@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace App\Services\Seller;
 
+use App\Exceptions\SellerException;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Services\Concerns\HandlesUniqueConstraintRetries;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 
 class SellerProductVariantService
 {
+    use HandlesUniqueConstraintRetries;
+
     public function getVariants(int $userId, int $productId): Collection
     {
         $this->getProduct($userId, $productId);
@@ -35,25 +40,41 @@ class SellerProductVariantService
     {
         $product = $this->getProduct($userId, $productId);
 
-        return ProductVariant::query()->create([
-            'product_id' => $product->id,
-            'sku' => $data['sku'],
-            'price' => $data['price'],
-            'compare_at_price' => $data['compare_at_price'] ?? null,
-            'is_active' => $data['is_active'] ?? true,
-        ]);
+        try {
+            return ProductVariant::query()->create([
+                'product_id' => $product->id,
+                'sku' => $data['sku'],
+                'price' => $data['price'],
+                'compare_at_price' => $data['compare_at_price'] ?? null,
+                'is_active' => $data['is_active'] ?? true,
+            ]);
+        } catch (QueryException $exception) {
+            if ($this->isSkuUniqueConstraintViolation($exception)) {
+                throw new SellerException('This SKU is already in use. Please choose a different SKU.');
+            }
+
+            throw $exception;
+        }
     }
 
     public function updateVariant(int $userId, int $variantId, array $data): ProductVariant
     {
         $variant = $this->getVariant($userId, $variantId);
 
-        $variant->update([
-            'sku' => $data['sku'],
-            'price' => $data['price'],
-            'compare_at_price' => $data['compare_at_price'] ?? null,
-            'is_active' => $data['is_active'] ?? true,
-        ]);
+        try {
+            $variant->update([
+                'sku' => $data['sku'],
+                'price' => $data['price'],
+                'compare_at_price' => $data['compare_at_price'] ?? null,
+                'is_active' => $data['is_active'] ?? true,
+            ]);
+        } catch (QueryException $exception) {
+            if ($this->isSkuUniqueConstraintViolation($exception)) {
+                throw new SellerException('This SKU is already in use. Please choose a different SKU.');
+            }
+
+            throw $exception;
+        }
 
         return $variant->refresh();
     }
@@ -80,5 +101,11 @@ class SellerProductVariantService
         }
 
         return $product;
+    }
+
+    private function isSkuUniqueConstraintViolation(QueryException $exception): bool
+    {
+        return $this->isUniqueConstraintViolation($exception)
+            && str_contains($exception->errorInfo[2] ?? '', 'sku');
     }
 }
