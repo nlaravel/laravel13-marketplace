@@ -32,9 +32,9 @@ class Edit extends Component
 
     public function mount(Product $product): void
     {
-        $this->product = $this->productService->getProduct(auth()->id(), $product->id);
+        $this->authorize('update', $product);
 
-        $this->authorize('update', $this->product);
+        $this->product = $product;
 
         $this->categoryId = $this->product->category_id;
         $this->name = $this->product->name;
