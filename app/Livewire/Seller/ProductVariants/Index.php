@@ -27,6 +27,8 @@ class Index extends Component
     public function mount(Product $product): void
     {
         $this->authorize('view', $product);
+
+        $this->product = $product;
     }
 
     #[Computed]
